@@ -2,14 +2,16 @@
 Dead simple Display Manager running in CLI as TTY login, that starts .xinitrc or .winitrc.
 
 ## Build dependencies
-go
-gcc
-pam-devel
+- go
+- gcc
+- pam-devel
 
 ## Dependencies
-pam
-xorg (optional)
-wayland (optional)
+- pam
+- xorg (optional)
+- xauth (required for xorg)
+- mcookie (required for xorg)
+- wayland (optional)
 
 ## .xinitrc sample
 ```
