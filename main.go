@@ -230,7 +230,6 @@ func xorg(uid uint32, gid uint32) {
 
 // Finds free display for spawning Xorg instance.
 func getFreeXDisplay() int {
-	// TODO: check for existance of /tmp/.X%d-lock
 	for i := 0; i < 32; i++ {
 		filename := fmt.Sprintf("/tmp/.X%d-lock", i)
 		if _, err := os.Stat(filename); os.IsNotExist(err) {
