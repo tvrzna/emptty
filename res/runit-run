@@ -1,0 +1,2 @@
+#!/bin/sh
+exec setsid agetty -nl /usr/bin/emptty 38400 tty7 linux
