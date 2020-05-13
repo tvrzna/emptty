@@ -1,2 +1,5 @@
 #!/bin/sh
-exec setsid agetty -nl /usr/bin/emptty 38400 tty7 linux
+TTY_NUMBER=7
+[ -r conf ] && . ./conf
+
+exec setsid agetty -nl /usr/bin/emptty 38400 tty${TTY_NUMBER} linux
