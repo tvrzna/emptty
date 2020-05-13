@@ -16,20 +16,25 @@ import (
 )
 
 const (
-	envXdgRuntimeDir = "XDG_RUNTIME_DIR"
-	envHome = "HOME"
-	envPwd = "PWD"
+	envXdgRuntimeDir  = "XDG_RUNTIME_DIR"
+	envHome           = "HOME"
+	envPwd            = "PWD"
 	envXdgSessionType = "XDG_SESSION_TYPE"
-	envUser = "USER"
-	envLogname = "LOGNAME"
-	envXauthority = "XAUTHORITY"
-	envDisplay = "DISPLAY"
+	envUser           = "USER"
+	envLogname        = "LOGNAME"
+	envXauthority     = "XAUTHORITY"
+	envDisplay        = "DISPLAY"
 )
+
+const version = "0.0.1"
+const motd = `┌─┐┌┬┐┌─┐┌┬┐┌┬┐┬ ┬
+├┤ │││├─┘ │  │ └┬┘
+└─┘┴ ┴┴   ┴  ┴  ┴   ` + version
 
 var config *Config
 
 func main() {
-	fmt.Printf("emptty 0.0.1\n\n")
+	fmt.Printf("%s\n\n", motd)
 	config = LoadConfig()
 
 	switchTTY(config.tty)
@@ -49,15 +54,17 @@ func main() {
 
 // If error is not nil, then use log.Fatal to stop application
 func handleErr(err error) {
-	if (err != nil) {
+	if err != nil {
 		log.Fatal(err)
 	}
 }
 
 // Perform switch to defined TTY.
 func switchTTY(ttyNumber int) {
-	ttyCmd := exec.Command("/bin/chvt", strconv.Itoa(ttyNumber))
-	ttyCmd.Run()
+	if ttyNumber > 0 {
+		ttyCmd := exec.Command("/bin/chvt", strconv.Itoa(ttyNumber))
+		ttyCmd.Run()
+	}
 }
 
 // Handle PAM authentication of user.
@@ -65,7 +72,7 @@ func switchTTY(ttyNumber int) {
 //
 // If autologin is enabled, it behaves as user has been authorized.
 func authUser() *user.User {
-	if (config.autologin) {
+	if config.autologin {
 		usr, err := user.Lookup(config.defaultUser)
 		handleErr(err)
 		return usr
@@ -120,7 +127,7 @@ func defineEnvironment(usr *user.User, uid int, gid int) {
 	os.Setenv(envPwd, usr.HomeDir)
 	os.Setenv(envUser, usr.Username)
 	os.Setenv(envLogname, usr.Username)
-	os.Setenv(envXdgRuntimeDir, "/run/user/" + usr.Uid)
+	os.Setenv(envXdgRuntimeDir, "/run/user/"+usr.Uid)
 	log.Print("Defined Environment")
 
 	// create XDG folder
@@ -164,8 +171,8 @@ func wayland(uid uint32, gid uint32) {
 func xorg(uid uint32, gid uint32) {
 	// Set environment
 	os.Setenv(envXdgSessionType, "x11")
-	os.Setenv(envXauthority, os.Getenv(envXdgRuntimeDir) + "/.godmxauth")
-	os.Setenv(envDisplay, ":" + strconv.Itoa(getFreeXDisplay()))
+	os.Setenv(envXauthority, os.Getenv(envXdgRuntimeDir)+"/.godmxauth")
+	os.Setenv(envDisplay, ":"+strconv.Itoa(getFreeXDisplay()))
 	log.Print("Defined Xorg environment")
 
 	// create xauth
@@ -188,6 +195,7 @@ func xorg(uid uint32, gid uint32) {
 	cmd.SysProcAttr.Credential = &syscall.Credential{Uid: uid, Gid: gid}
 	_, err = cmd.Output()
 	handleErr(err)
+
 	log.Print("Generated xauthority")
 
 	// start X
@@ -204,7 +212,7 @@ func xorg(uid uint32, gid uint32) {
 	xinit.SysProcAttr = &syscall.SysProcAttr{}
 	xinit.SysProcAttr.Credential = &syscall.Credential{Uid: uid, Gid: gid}
 	err = xinit.Start()
-	if (err != nil) {
+	if err != nil {
 		xorg.Process.Signal(os.Interrupt)
 		log.Fatal(err)
 	}
@@ -221,7 +229,7 @@ func xorg(uid uint32, gid uint32) {
 }
 
 // Finds free display for spawning Xorg instance.
-func getFreeXDisplay() int{
+func getFreeXDisplay() int {
 	// TODO: check for existance of /tmp/.X%d-lock
 	for i := 0; i < 32; i++ {
 		filename := fmt.Sprintf("/tmp/.X%d-lock", i)

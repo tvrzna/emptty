@@ -6,6 +6,7 @@ import (
 
 // EnEnvironment defines possible Environments
 type EnEnvironment int
+
 const (
 	// Xorg represents Xorg environment
 	Xorg EnEnvironment = iota + 1
@@ -18,8 +19,8 @@ const (
 type Config struct {
 	environment EnEnvironment
 	defaultUser string
-	autologin bool
-	tty int
+	autologin   bool
+	tty         int
 }
 
 // LoadConfig handles loading of application configuration.
@@ -35,7 +36,7 @@ func LoadConfig() *Config {
 
 	c.environment = parseEnv(*env)
 	c.defaultUser = *usr
-	c.tty = *tty;
+	c.tty = *tty
 	if *autologin && c.defaultUser != "" {
 		c.autologin = *autologin
 	}
