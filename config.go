@@ -54,9 +54,9 @@ func LoadConfig() *Config {
 
 // Parse TTY number.
 func parseTTY(tty string) int {
-	val, err := strconv.ParseInt(sanitizeValue(tty, "7"), 10, 32)
+	val, err := strconv.ParseInt(sanitizeValue(tty, "0"), 10, 32)
 	if err != nil {
-		return 7
+		return 0
 	}
 	return int(val)
 }
