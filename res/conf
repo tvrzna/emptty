@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # TTY, where emptty will start.
-#export TTY_NUMBER=7
+export TTY_NUMBER=7
 
 # Preselected user, if AUTOLOGIN is enabled, this user is logged in.
 #export DEFAULT_USER=user
