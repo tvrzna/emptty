@@ -6,12 +6,12 @@ import (
 	"strings"
 )
 
-// EnEnvironment defines possible Environments.
-type EnEnvironment int
+// enEnvironment defines possible Environments.
+type enEnvironment int
 
 const (
 	// Xorg represents Xorg environment
-	Xorg EnEnvironment = iota + 1
+	Xorg enEnvironment = iota + 1
 
 	// Wayland represents Wayland environment
 	Wayland
@@ -24,17 +24,17 @@ const (
 	envEnvironment = "ENVIRONMENT"
 )
 
-// Config defines structure of application configuration.
-type Config struct {
-	environment EnEnvironment
+// config defines structure of application configuration.
+type config struct {
+	environment enEnvironment
 	defaultUser string
 	autologin   bool
 	tty         int
 }
 
 // LoadConfig handles loading of application configuration.
-func LoadConfig() *Config {
-	c := Config{}
+func loadConfig() *config {
+	c := config{}
 
 	c.environment = parseEnv(os.Getenv(envEnvironment))
 	c.tty = parseTTY(os.Getenv(envTTYnumber))
@@ -62,12 +62,11 @@ func parseTTY(tty string) int {
 }
 
 // Parse input env and selects corresponding environment.
-func parseEnv(env string) EnEnvironment {
+func parseEnv(env string) enEnvironment {
 	switch sanitizeValue(env, "xorg") {
 	case "wayland":
 		return Wayland
 	case "xorg":
-	default:
 		return Xorg
 	}
 	return Xorg

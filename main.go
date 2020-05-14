@@ -31,19 +31,19 @@ const motd = `┌─┐┌┬┐┌─┐┌┬┐┌┬┐┬ ┬
 ├┤ │││├─┘ │  │ └┬┘
 └─┘┴ ┴┴   ┴  ┴  ┴   ` + version
 
-var config *Config
+var conf *config
 
 func main() {
 	fmt.Printf("%s\n\n", motd)
-	config = LoadConfig()
+	conf = loadConfig()
 
-	switchTTY(config.tty)
+	switchTTY(conf.tty)
 
 	usr := authUser()
 	uid, gid := getUIDandGID(usr)
 	defineEnvironment(usr, uid, gid)
 
-	switch config.environment {
+	switch conf.environment {
 	case Wayland:
 		wayland(uint32(uid), uint32(gid))
 		break
@@ -72,12 +72,12 @@ func switchTTY(ttyNumber int) {
 //
 // If autologin is enabled, it behaves as user has been authorized.
 func authUser() *user.User {
-	if config.autologin {
-		usr, err := user.Lookup(config.defaultUser)
+	if conf.autologin {
+		usr, err := user.Lookup(conf.defaultUser)
 		handleErr(err)
 		return usr
 	}
-	trans, err := pam.StartFunc("emptty", config.defaultUser, func(s pam.Style, msg string) (string, error) {
+	trans, err := pam.StartFunc("emptty", conf.defaultUser, func(s pam.Style, msg string) (string, error) {
 		switch s {
 		case pam.PromptEchoOff:
 			return speakeasy.Ask("Password: ")
