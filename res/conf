@@ -13,3 +13,6 @@ export AUTOLOGIN=false
 # If "xorg" is selected, it expects to have prepared .xinitrc file with +x at home folder.
 # If "wayland" is selected, it expects to have prepared .winitrc file with +x at home folder.
 export ENVIRONMENT=xorg
+
+# Fallback/default LANG, if user does not have set own in init script.
+#export LANG=en_US.UTF-8
