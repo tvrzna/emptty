@@ -174,9 +174,12 @@ func xorg(uid uint32, gid uint32) {
 
 	// start X
 	log.Print("Starting Xorg")
-	xorg := exec.Command("Xorg", os.Getenv(envDisplay))
+	xorg := exec.Command("/bin/Xorg", os.Getenv(envDisplay))
 	xorg.Env = append(os.Environ())
 	xorg.Start()
+	if xorg.Process == nil {
+		handleErr(errors.New("Xorg is not running"))
+	}
 	log.Print("Started Xorg")
 
 	// start xinit
