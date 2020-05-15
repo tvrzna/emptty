@@ -145,7 +145,7 @@ func wayland(uid uint32, gid uint32) {
 func xorg(uid uint32, gid uint32) {
 	// Set environment
 	os.Setenv(envXdgSessionType, "x11")
-	os.Setenv(envXauthority, os.Getenv(envXdgRuntimeDir)+"/.godmxauth")
+	os.Setenv(envXauthority, os.Getenv(envXdgRuntimeDir)+"/.emptty-xauth")
 	os.Setenv(envDisplay, ":"+strconv.Itoa(getFreeXDisplay()))
 	log.Print("Defined Xorg environment")
 
@@ -156,14 +156,14 @@ func xorg(uid uint32, gid uint32) {
 	log.Print("Created xauthority file")
 
 	// generate mcookie
-	cmd := exec.Command("/bin/sh", "-c", "/bin/mcookie")
+	cmd := exec.Command("/bin/mcookie")
 	cmd.Env = append(os.Environ())
 	mcookie, err := cmd.Output()
 	handleErr(err)
 	log.Print("Generated mcookie")
 
 	// create xauth
-	cmd = exec.Command("/bin/sh", "-c", "xauth", "add", os.Getenv(envDisplay), ".", string(mcookie))
+	cmd = exec.Command("/bin/xauth", "add", os.Getenv(envDisplay), ".", string(mcookie))
 	cmd.Env = append(os.Environ())
 	cmd.SysProcAttr = &syscall.SysProcAttr{}
 	cmd.SysProcAttr.Credential = &syscall.Credential{Uid: uid, Gid: gid}
