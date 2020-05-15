@@ -21,6 +21,14 @@ install:
 	@install -DZ res/conf -m 755 -T ${DESTDIR}/etc/${DISTFILE}/conf
 	@echo "Done"
 
+install-systemd:
+	@echo "Installing..."
+	@install -DZs ${DISTFILE} -m 755 -t ${DESTDIR}/usr/bin
+	@install -DZ res/pam -m 644 -T ${DESTDIR}/etc/pam.d/${DISTFILE}
+	@install -DZ res/systemd-service -m 755 -T ${DESTDIR}/usr/lib/systemd/system/${DISTFILE}.service
+	@install -DZ res/conf -m 755 -T ${DESTDIR}/etc/${DISTFILE}/conf
+	@echo "Done"
+
 uninstall:
 	@echo "Uninstalling..."
 	@rm -rf ${DESTDIR}/etc/sv/${DISTFILE}

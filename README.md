@@ -1,5 +1,5 @@
 # emptty
-Dead simple Display Manager running in CLI as TTY login, that starts .xinitrc or .winitrc.
+Dead simple Display Manager running in CLI as TTY login, that starts Xorg or Wayland.
 
 ### Configuration
 Configuration is handled via environment variables.
@@ -35,18 +35,7 @@ exec dbus-launch sway
 
 ### Dependencies
 - pam
-- xorg (optional)
-- xauth (required for xorg)
+- xorg / xorg-server (optional)
+- xauth / xorg-xauth (required for xorg)
 - mcookie (required for xorg)
 - wayland (optional)
-
----
-#### TODO:
-- [x] PAM
-- [x] Xorg support
-- [x] runit service
-- [x] Common failure handling
-- [x] Configuration
-- [x] Wayland
-- [x] Autologin/Preset username
-- [ ] systemd service
