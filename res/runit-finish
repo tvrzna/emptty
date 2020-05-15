@@ -1,2 +1,5 @@
 #!/bin/sh
-exec utmpset -w tty7
+TTY_NUMBER=7
+[ -r /etc/emptty/conf ] && . /etc/emptty/conf
+
+exec utmpset -w tty${TTY_NUMBER}
