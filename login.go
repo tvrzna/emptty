@@ -129,7 +129,7 @@ func defineEnvironment(usr *user.User, uid int, gid int) {
 
 // Reads default shell of authorized user
 func getUserShell(usr *user.User) string {
-	out, err := exec.Command("getent", "passwd", usr.Uid).Output()
+	out, err := exec.Command("/bin/getent", "passwd", usr.Uid).Output()
 	handleErr(err)
 
 	ent := strings.Split(strings.TrimSuffix(string(out), "\n"), ":")
