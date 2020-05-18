@@ -16,22 +16,29 @@ install:
 	@echo "Installing..."
 	@install -DZs ${DISTFILE} -m 755 -t ${DESTDIR}/usr/bin
 	@install -DZ res/pam -m 644 -T ${DESTDIR}/etc/pam.d/${DISTFILE}
-	@install -DZ res/runit-run -m 755 -T ${DESTDIR}/etc/sv/${DISTFILE}/run
-	@install -DZ res/runit-finish -m 755 -T ${DESTDIR}/etc/sv/${DISTFILE}/finish
+	@echo "Done"
+
+install-config:
+	@echo "Installing config..."
 	@install -DZ res/conf -m 755 -T ${DESTDIR}/etc/${DISTFILE}/conf
 	@echo "Done"
 
+install-runit:
+	@echo "Installing runit service..."
+	@install -DZ res/runit-run -m 755 -T ${DESTDIR}/etc/sv/${DISTFILE}/run
+	@install -DZ res/runit-finish -m 755 -T ${DESTDIR}/etc/sv/${DISTFILE}/finish
+	@echo "Done"
+
+
 install-systemd:
-	@echo "Installing..."
-	@install -DZs ${DISTFILE} -m 755 -t ${DESTDIR}/usr/bin
-	@install -DZ res/pam -m 644 -T ${DESTDIR}/etc/pam.d/${DISTFILE}
+	@echo "Installing systemd service..."
 	@install -DZ res/systemd-service -m 755 -T ${DESTDIR}/usr/lib/systemd/system/${DISTFILE}.service
-	@install -DZ res/conf -m 755 -T ${DESTDIR}/etc/${DISTFILE}/conf
 	@echo "Done"
 
 uninstall:
 	@echo "Uninstalling..."
 	@rm -rf ${DESTDIR}/etc/sv/${DISTFILE}
-	@rm -rf ${DESTDIR}/etc/pam.d/emptty
+	@rm -f ${DESTDIR}/usr/lib/systemd/system/${DISTFILE}.service
+	@rm -f ${DESTDIR}/etc/pam.d/emptty
 	@rm -rf ${DESTDIR}/usr/bin/${DISTFILE}
 	@echo "Done"

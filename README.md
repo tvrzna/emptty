@@ -39,3 +39,9 @@ exec dbus-launch sway
 - xauth / xorg-xauth (required for xorg)
 - mcookie (required for xorg)
 - wayland (optional)
+
+## Build & install
+- `make clean` to cleanup already built binary.
+- `make install` to install binary and pam module.
+- `make install-config` to create default conf file in /etc/emptty/.
+- `make install-runit` to install as runit service or `make install-systemd` to install as systemd service.
