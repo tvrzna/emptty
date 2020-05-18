@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"os/user"
 	"strconv"
+	"strings"
 	"syscall"
 
 	"github.com/bgentry/speakeasy"
@@ -24,6 +25,7 @@ const (
 	envLogname        = "LOGNAME"
 	envXauthority     = "XAUTHORITY"
 	envDisplay        = "DISPLAY"
+	envShell          = "SHELL"
 )
 
 // Login into graphical environment
@@ -102,6 +104,8 @@ func defineEnvironment(usr *user.User, uid int, gid int) {
 	os.Setenv(envUser, usr.Username)
 	os.Setenv(envLogname, usr.Username)
 	os.Setenv(envXdgRuntimeDir, "/run/user/"+usr.Uid)
+	os.Setenv(envShell, getUserShell(usr))
+
 	log.Print("Defined Environment")
 
 	// create XDG folder
@@ -121,6 +125,15 @@ func defineEnvironment(usr *user.User, uid int, gid int) {
 	log.Print("Defined gid")
 
 	os.Chdir(os.Getenv(envPwd))
+}
+
+// Reads default shell of authorized user
+func getUserShell(usr *user.User) string {
+	out, err := exec.Command("getent", "passwd", usr.Uid).Output()
+	handleErr(err)
+
+	ent := strings.Split(strings.TrimSuffix(string(out), "\n"), ":")
+	return ent[6]
 }
 
 // Prepares and stars Wayland session for authorized user.
