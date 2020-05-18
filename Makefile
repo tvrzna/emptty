@@ -9,7 +9,7 @@ build:
 	@echo "Building..."
 	@go get github.com/bgentry/speakeasy
 	@go get github.com/msteinert/pam
-	@GOOS=linux go build -o ${DISTFILE}
+	@go build -o ${DISTFILE}
 	@echo "Done"
 
 install:
