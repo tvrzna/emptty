@@ -18,9 +18,11 @@ import (
 
 const (
 	envXdgRuntimeDir  = "XDG_RUNTIME_DIR"
+	envXdgSessionType = "XDG_SESSION_TYPE"
+	envXdgSeat        = "XDG_SEAT"
+	envXdgVtnr        = "XDG_VTNR"
 	envHome           = "HOME"
 	envPwd            = "PWD"
-	envXdgSessionType = "XDG_SESSION_TYPE"
 	envUser           = "USER"
 	envLogname        = "LOGNAME"
 	envXauthority     = "XAUTHORITY"
@@ -104,12 +106,14 @@ func defineEnvironment(usr *user.User, uid int, gid int) {
 	os.Setenv(envUser, usr.Username)
 	os.Setenv(envLogname, usr.Username)
 	os.Setenv(envXdgRuntimeDir, "/run/user/"+usr.Uid)
+	os.Setenv(envXdgSeat, "seat0")
+	os.Setenv(envXdgVtnr, strconv.Itoa(conf.tty))
 	os.Setenv(envShell, getUserShell(usr))
 
 	log.Print("Defined Environment")
 
 	// create XDG folder
-	err := os.MkdirAll(os.Getenv(envXdgRuntimeDir), os.ModePerm)
+	err := os.MkdirAll(os.Getenv(envXdgRuntimeDir), 0700)
 	handleErr(err)
 	log.Print("Created XDG folder")
 
