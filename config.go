@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"os"
 	"strconv"
 	"strings"
@@ -15,6 +16,8 @@ const (
 
 	// Wayland represents Wayland environment
 	Wayland
+
+	Unknown
 )
 
 const (
@@ -36,12 +39,32 @@ type config struct {
 func loadConfig() *config {
 	c := config{}
 
-	c.environment = parseEnv(os.Getenv(envEnvironment))
-	c.tty = parseTTY(os.Getenv(envTTYnumber))
-	c.defaultUser = parseDefaultUser(os.Getenv(envDefaultUser))
-	autologin := parseAutologin(os.Getenv(envAutologin))
-	if autologin && c.defaultUser != "" {
-		c.autologin = autologin
+	tmpConfig := parseConfigFromFile()
+
+	c.environment = parseEnv(os.Getenv(envEnvironment), "unknown")
+	if c.environment == Unknown {
+		c.environment = tmpConfig.environment
+	}
+
+	c.tty = parseTTY(os.Getenv(envTTYnumber), "-1")
+	if c.tty == -1 {
+		c.tty = tmpConfig.tty
+	}
+
+	c.defaultUser = parseDefaultUser(os.Getenv(envDefaultUser), "@@@@")
+	if c.defaultUser == "@@@@" {
+		c.defaultUser = tmpConfig.defaultUser
+	}
+
+	c.autologin = parseAutologin(os.Getenv(envAutologin), "nil")
+	if os.Getenv(envAutologin) == "" {
+		c.autologin = tmpConfig.autologin
+	}
+
+	if c.autologin && c.defaultUser != "" {
+		c.autologin = true
+	} else {
+		c.autologin = false
 	}
 
 	os.Unsetenv(envEnvironment)
@@ -52,9 +75,49 @@ func loadConfig() *config {
 	return &c
 }
 
+func parseConfigFromFile() *config {
+	c := config{environment: Xorg, tty: 0, defaultUser: "", autologin: false}
+
+	file, err := os.Open("/etc/emptty/conf")
+	if err != nil {
+		return &c
+	}
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if !strings.HasPrefix(line, "#") && strings.Index(line, "=") >= 0 {
+			splitIndex := strings.Index(line, "=")
+			key := strings.ReplaceAll(line[:splitIndex], "export ", "")
+			value := line[splitIndex+1:]
+			if strings.Index(value, "#") >= 0 {
+				value = value[:strings.Index(value, "#")]
+			}
+
+			switch key {
+			case envTTYnumber:
+				c.tty = parseTTY(value, "0")
+				break
+			case envDefaultUser:
+				c.defaultUser = parseDefaultUser(value, "")
+				break
+			case envAutologin:
+				c.autologin = parseAutologin(value, "false")
+				break
+			case envEnvironment:
+				c.environment = parseEnv(value, "xorg")
+				break
+			}
+		}
+	}
+	handleErr(scanner.Err())
+
+	return &c
+}
+
 // Parse TTY number.
-func parseTTY(tty string) int {
-	val, err := strconv.ParseInt(sanitizeValue(tty, "0"), 10, 32)
+func parseTTY(tty string, defaultValue string) int {
+	val, err := strconv.ParseInt(sanitizeValue(tty, defaultValue), 10, 32)
 	if err != nil {
 		return 0
 	}
@@ -62,19 +125,19 @@ func parseTTY(tty string) int {
 }
 
 // Parse input env and selects corresponding environment.
-func parseEnv(env string) enEnvironment {
-	switch sanitizeValue(env, "xorg") {
+func parseEnv(env string, defaultValue string) enEnvironment {
+	switch sanitizeValue(env, defaultValue) {
 	case "wayland":
 		return Wayland
 	case "xorg":
 		return Xorg
 	}
-	return Xorg
+	return Unknown
 }
 
 // Parse, if autologin is enabled.
-func parseAutologin(autologin string) bool {
-	val, err := strconv.ParseBool(sanitizeValue(autologin, "false"))
+func parseAutologin(autologin string, defaultValue string) bool {
+	val, err := strconv.ParseBool(sanitizeValue(autologin, defaultValue))
 	if err != nil {
 		return false
 	}
@@ -82,8 +145,8 @@ func parseAutologin(autologin string) bool {
 }
 
 // Parse default user.
-func parseDefaultUser(defaultUser string) string {
-	return sanitizeValue(defaultUser, "")
+func parseDefaultUser(defaultUser string, defaultValue string) string {
+	return sanitizeValue(defaultUser, defaultValue)
 }
 
 // Sanitize value.
