@@ -1,15 +1,13 @@
 [Unit]
 Description=emptty display manager
 After=systemd-user-sessions.service plymouth-quit-wait.service
-Conflicts=getty@tty1.service
+Conflicts=getty@tty7.service
 
 [Service]
 Type=idle
-ExecStartPre=/etc/emptty/conf
-ExecStart=/usr/bin/agetty -nl /usr/bin/emptty 38400 tty1 linux
+ExecStart=/usr/bin/agetty -nl /usr/bin/emptty 38400 tty7 linux
 Restart=always
-RestartSec=0
-TTYPath=/dev/tty1
+TTYPath=/dev/tty7
 TTYReset=yes
 KillMode=process
 IgnoreSIGPIPE=no
