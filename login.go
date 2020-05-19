@@ -33,15 +33,15 @@ const (
 // Login into graphical environment
 func login() {
 	usr, trans := authUser()
-	uid, gid := getUIDandGID(usr)
-	defineEnvironment(usr, uid, gid)
+	uid, gid, gids := getUIDandGID(usr)
+	defineEnvironment(usr, uid, gid, gids)
 
 	switch conf.environment {
 	case Wayland:
-		wayland(uint32(uid), uint32(gid))
+		wayland(uint32(uid), uint32(gid), gids)
 		break
 	case Xorg:
-		xorg(uint32(uid), uint32(gid))
+		xorg(uint32(uid), uint32(gid), gids)
 	}
 
 	if trans != nil {
@@ -94,15 +94,23 @@ func authUser() (*user.User, *pam.Transaction) {
 }
 
 // Reads Uid and Gid from user.User and returns them as int.
-func getUIDandGID(usr *user.User) (int, int) {
+func getUIDandGID(usr *user.User) (int, int, []uint32) {
 	uid, _ := strconv.ParseInt(usr.Uid, 10, 32)
 	gid, _ := strconv.ParseInt(usr.Gid, 10, 32)
-	return int(uid), int(gid)
+	var gids []uint32
+	strGids, err := usr.GroupIds()
+	if err == nil {
+		for _, val := range strGids {
+			value, _ := strconv.ParseInt(val, 10, 32)
+			gids = append(gids, uint32(value))
+		}
+	}
+	return int(uid), int(gid), gids
 }
 
 // Prepares environment and env variables for authorized user.
 // Defines users Uid and Gid for further syscalls.
-func defineEnvironment(usr *user.User, uid int, gid int) {
+func defineEnvironment(usr *user.User, uid int, gid int, gids []uint32) {
 	os.Setenv(envHome, usr.HomeDir)
 	os.Setenv(envPwd, usr.HomeDir)
 	os.Setenv(envUser, usr.Username)
@@ -129,6 +137,14 @@ func defineEnvironment(usr *user.User, uid int, gid int) {
 	handleErr(err)
 	log.Print("Defined gid")
 
+	intGids := make([]int, len(gids))
+	for _, val := range gids {
+		intGids = append(intGids, int(val))
+	}
+
+	err = syscall.Setgroups(intGids)
+	handleErr(err)
+
 	os.Chdir(os.Getenv(envPwd))
 }
 
@@ -142,7 +158,7 @@ func getUserShell(usr *user.User) string {
 }
 
 // Prepares and stars Wayland session for authorized user.
-func wayland(uid uint32, gid uint32) {
+func wayland(uid uint32, gid uint32, gids []uint32) {
 	// Set environment
 	os.Setenv(envXdgSessionType, "wayland")
 	log.Print("Defined Wayland environment")
@@ -152,7 +168,7 @@ func wayland(uid uint32, gid uint32) {
 	wayland := exec.Command(os.Getenv(envHome) + "/.winitrc")
 	wayland.Env = append(os.Environ())
 	wayland.SysProcAttr = &syscall.SysProcAttr{}
-	wayland.SysProcAttr.Credential = &syscall.Credential{Uid: uid, Gid: gid}
+	wayland.SysProcAttr.Credential = &syscall.Credential{Uid: uid, Gid: gid, Groups: gids}
 	err := wayland.Start()
 	handleErr(err)
 	wayland.Wait()
@@ -160,7 +176,7 @@ func wayland(uid uint32, gid uint32) {
 }
 
 // Prepares and starts Xorg session for authorized user.
-func xorg(uid uint32, gid uint32) {
+func xorg(uid uint32, gid uint32, gids []uint32) {
 	// Set environment
 	os.Setenv(envXdgSessionType, "x11")
 	os.Setenv(envXauthority, os.Getenv(envXdgRuntimeDir)+"/.emptty-xauth")
@@ -184,7 +200,7 @@ func xorg(uid uint32, gid uint32) {
 	cmd = exec.Command("/bin/xauth", "add", os.Getenv(envDisplay), ".", string(mcookie))
 	cmd.Env = append(os.Environ())
 	cmd.SysProcAttr = &syscall.SysProcAttr{}
-	cmd.SysProcAttr.Credential = &syscall.Credential{Uid: uid, Gid: gid}
+	cmd.SysProcAttr.Credential = &syscall.Credential{Uid: uid, Gid: gid, Groups: gids}
 	_, err = cmd.Output()
 	handleErr(err)
 
@@ -205,7 +221,7 @@ func xorg(uid uint32, gid uint32) {
 	xinit := exec.Command(os.Getenv(envHome) + "/.xinitrc")
 	xinit.Env = append(os.Environ())
 	xinit.SysProcAttr = &syscall.SysProcAttr{}
-	xinit.SysProcAttr.Credential = &syscall.Credential{Uid: uid, Gid: gid}
+	xinit.SysProcAttr.Credential = &syscall.Credential{Uid: uid, Gid: gid, Groups: gids}
 	err = xinit.Start()
 	if err != nil {
 		xorg.Process.Signal(os.Interrupt)
