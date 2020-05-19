@@ -32,7 +32,7 @@ const (
 
 // Login into graphical environment
 func login() {
-	usr := authUser()
+	usr, trans := authUser()
 	uid, gid := getUIDandGID(usr)
 	defineEnvironment(usr, uid, gid)
 
@@ -43,17 +43,21 @@ func login() {
 	case Xorg:
 		xorg(uint32(uid), uint32(gid))
 	}
+
+	if trans != nil {
+		trans.CloseSession(0)
+	}
 }
 
 // Handle PAM authentication of user.
 // If user is successfully authorized, it returns user.User.
 //
 // If autologin is enabled, it behaves as user has been authorized.
-func authUser() *user.User {
+func authUser() (*user.User, *pam.Transaction) {
 	if conf.autologin {
 		usr, err := user.Lookup(conf.defaultUser)
 		handleErr(err)
-		return usr
+		return usr, nil
 	}
 	trans, err := pam.StartFunc("emptty", conf.defaultUser, func(s pam.Style, msg string) (string, error) {
 		switch s {
@@ -86,9 +90,7 @@ func authUser() *user.User {
 	pamUsr, _ := trans.GetItem(pam.User)
 	usr, _ := user.Lookup(pamUsr)
 
-	trans.CloseSession(0)
-
-	return usr
+	return usr, trans
 }
 
 // Reads Uid and Gid from user.User and returns them as int.
@@ -107,7 +109,6 @@ func defineEnvironment(usr *user.User, uid int, gid int) {
 	os.Setenv(envLogname, usr.Username)
 	os.Setenv(envXdgRuntimeDir, "/run/user/"+usr.Uid)
 	os.Setenv(envXdgSeat, "seat0")
-	os.Setenv(envXdgVtnr, strconv.Itoa(conf.tty))
 	os.Setenv(envShell, getUserShell(usr))
 
 	log.Print("Defined Environment")
