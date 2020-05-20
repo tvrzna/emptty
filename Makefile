@@ -35,6 +35,11 @@ install-systemd:
 	@install -DZ res/systemd-service -m 755 -T ${DESTDIR}/usr/lib/systemd/system/${DISTFILE}.service
 	@echo "Done"
 
+install-openrc:
+	@echo "Installing OpenRC service..."
+	@install -DZ res/openrc-service -m 755 -T ${DESTDIR}/etc/init.d/${DISTFILE}
+	@echo "Done"
+
 uninstall:
 	@echo "Uninstalling..."
 	@rm -rf ${DESTDIR}/etc/sv/${DISTFILE}

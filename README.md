@@ -45,4 +45,6 @@ exec dbus-launch sway
 - `make clean` to cleanup already built binary.
 - `make install` to install binary and pam module.
 - `make install-config` to create default conf file in /etc/emptty/.
-- `make install-runit` to install as runit service or `make install-systemd` to install as systemd service.
+- `make install-runit` to install as runit service
+- `make install-openrc` to install as openrc service
+- `make install-systemd` to install as systemd service.
