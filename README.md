@@ -9,6 +9,7 @@ Configuration is handled via environment variables.
 `DEFAULT_USER` Preselected user, if AUTOLOGIN is enabled, this user is logged in.
 
 `AUTOLOGIN` Enables Autologin, if DEFAULT_USER is defined. Possible values are "true" or "false".
+__NOTE:__ to enable autologin DEFAULT_USER must be in group nopasswdlogin, otherwise user will NOT be authorized.
 
 `ENVIRONMENT` Selects, which environment will be used. Possible values are "xorg" or "wayland".
 - If "xorg" is selected, it expects to have prepared .xinitrc file with +x at home folder.

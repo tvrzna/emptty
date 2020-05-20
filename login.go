@@ -54,16 +54,21 @@ func login() {
 //
 // If autologin is enabled, it behaves as user has been authorized.
 func authUser() (*user.User, *pam.Transaction) {
-	if conf.autologin {
-		usr, err := user.Lookup(conf.defaultUser)
-		handleErr(err)
-		return usr, nil
-	}
 	trans, err := pam.StartFunc("emptty", conf.defaultUser, func(s pam.Style, msg string) (string, error) {
 		switch s {
 		case pam.PromptEchoOff:
+			if conf.autologin {
+				break
+			}
+			if conf.defaultUser != "" {
+				hostname, _ := os.Hostname()
+				fmt.Printf("%s login: %s\n", hostname, conf.defaultUser)
+			}
 			return speakeasy.Ask("Password: ")
 		case pam.PromptEchoOn:
+			if conf.autologin {
+				break
+			}
 			hostname, _ := os.Hostname()
 			fmt.Printf("%s login: ", hostname)
 			input, err := bufio.NewReader(os.Stdin).ReadString('\n')
@@ -81,11 +86,11 @@ func authUser() (*user.User, *pam.Transaction) {
 		return "", errors.New("Unrecognized message style")
 	})
 
-	err = trans.Authenticate(0)
+	err = trans.Authenticate(pam.Silent)
 	handleErr(err)
 	log.Print("Authenticate OK")
 
-	trans.OpenSession(0)
+	trans.OpenSession(pam.Silent)
 
 	pamUsr, _ := trans.GetItem(pam.User)
 	usr, _ := user.Lookup(pamUsr)
