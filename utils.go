@@ -1,7 +1,10 @@
 package main
 
 import (
+	"bufio"
+	"fmt"
 	"log"
+	"os"
 	"os/exec"
 	"strconv"
 )
@@ -14,9 +17,12 @@ func switchTTY(ttyNumber int) {
 	}
 }
 
-// If error is not nil, then use log.Fatal to stop application
+// If error is not nil, otherwise it prints error, waits for user input and then exits the program.
 func handleErr(err error) {
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
+		fmt.Printf("\nPress Enter to continue...")
+		bufio.NewReader(os.Stdin).ReadString('\n')
+		os.Exit(1)
 	}
 }
