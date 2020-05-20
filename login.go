@@ -155,7 +155,7 @@ func defineEnvironment(usr *user.User, uid int, gid int, gids []uint32) {
 
 // Reads default shell of authorized user
 func getUserShell(usr *user.User) string {
-	out, err := exec.Command("/bin/getent", "passwd", usr.Uid).Output()
+	out, err := exec.Command("/usr/bin/getent", "passwd", usr.Uid).Output()
 	handleErr(err)
 
 	ent := strings.Split(strings.TrimSuffix(string(out), "\n"), ":")
@@ -195,14 +195,14 @@ func xorg(uid uint32, gid uint32, gids []uint32) {
 	log.Print("Created xauthority file")
 
 	// generate mcookie
-	cmd := exec.Command("/bin/mcookie")
+	cmd := exec.Command("/usr/bin/mcookie")
 	cmd.Env = append(os.Environ())
 	mcookie, err := cmd.Output()
 	handleErr(err)
 	log.Print("Generated mcookie")
 
 	// create xauth
-	cmd = exec.Command("/bin/xauth", "add", os.Getenv(envDisplay), ".", string(mcookie))
+	cmd = exec.Command("/usr/bin/xauth", "add", os.Getenv(envDisplay), ".", string(mcookie))
 	cmd.Env = append(os.Environ())
 	cmd.SysProcAttr = &syscall.SysProcAttr{}
 	cmd.SysProcAttr.Credential = &syscall.Credential{Uid: uid, Gid: gid, Groups: gids}
@@ -213,7 +213,7 @@ func xorg(uid uint32, gid uint32, gids []uint32) {
 
 	// start X
 	log.Print("Starting Xorg")
-	xorg := exec.Command("/bin/Xorg", os.Getenv(envDisplay))
+	xorg := exec.Command("/usr/bin/Xorg", os.Getenv(envDisplay))
 	xorg.Env = append(os.Environ())
 	xorg.Start()
 	if xorg.Process == nil {

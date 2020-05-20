@@ -12,7 +12,7 @@ import (
 // Perform switch to defined TTY.
 func switchTTY(ttyNumber int) {
 	if ttyNumber > 0 {
-		ttyCmd := exec.Command("/bin/chvt", strconv.Itoa(ttyNumber))
+		ttyCmd := exec.Command("/usr/bin/chvt", strconv.Itoa(ttyNumber))
 		ttyCmd.Run()
 	}
 }
