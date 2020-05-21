@@ -44,6 +44,7 @@ uninstall:
 	@echo "Uninstalling..."
 	@rm -rf ${DESTDIR}/etc/sv/${DISTFILE}
 	@rm -f ${DESTDIR}/usr/lib/systemd/system/${DISTFILE}.service
+	@rm -f ${DESTDIR}/etc/init.d/${DISTFILE}
 	@rm -f ${DESTDIR}/etc/pam.d/emptty
 	@rm -rf ${DESTDIR}/usr/bin/${DISTFILE}
 	@echo "Done"
