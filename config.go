@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"os"
 	"strconv"
 	"strings"
@@ -78,39 +77,24 @@ func loadConfig() *config {
 func parseConfigFromFile() *config {
 	c := config{environment: Xorg, tty: 0, defaultUser: "", autologin: false}
 
-	file, err := os.Open("/etc/emptty/conf")
-	if err != nil {
-		return &c
-	}
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := strings.TrimSpace(scanner.Text())
-		if !strings.HasPrefix(line, "#") && strings.Index(line, "=") >= 0 {
-			splitIndex := strings.Index(line, "=")
-			key := strings.ReplaceAll(line[:splitIndex], "export ", "")
-			value := line[splitIndex+1:]
-			if strings.Index(value, "#") >= 0 {
-				value = value[:strings.Index(value, "#")]
-			}
-
-			switch key {
-			case envTTYnumber:
-				c.tty = parseTTY(value, "0")
-				break
-			case envDefaultUser:
-				c.defaultUser = parseDefaultUser(value, "")
-				break
-			case envAutologin:
-				c.autologin = parseAutologin(value, "false")
-				break
-			case envEnvironment:
-				c.environment = parseEnv(value, "xorg")
-				break
-			}
+	err := readProperties("/etc/emptty/conf", func(key string, value string) error {
+		switch key {
+		case envTTYnumber:
+			c.tty = parseTTY(value, "0")
+			break
+		case envDefaultUser:
+			c.defaultUser = parseDefaultUser(value, "")
+			break
+		case envAutologin:
+			c.autologin = parseAutologin(value, "false")
+			break
+		case envEnvironment:
+			c.environment = parseEnv(value, "xorg")
+			break
 		}
-	}
-	handleErr(scanner.Err())
+		return nil
+	})
+	handleErr(err)
 
 	return &c
 }
