@@ -16,6 +16,9 @@ const (
 	// Wayland represents Wayland environment
 	Wayland
 
+	// Selection represents environment, that must be selected from list.
+	Selection
+
 	Unknown
 )
 
@@ -115,6 +118,8 @@ func parseEnv(env string, defaultValue string) enEnvironment {
 		return Wayland
 	case "xorg":
 		return Xorg
+	case "selection":
+		return Selection
 	}
 	return Unknown
 }
