@@ -19,7 +19,7 @@ type propertyFunc func(key string, value string) error
 func readProperties(filePath string, method propertyFunc) error {
 	file, err := os.Open(filePath)
 	if err != nil {
-		return errors.New("Hello")
+		return errors.New("Could not open file " + filePath)
 	}
 
 	scanner := bufio.NewScanner(file)
