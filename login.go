@@ -17,17 +17,18 @@ import (
 )
 
 const (
-	envXdgRuntimeDir  = "XDG_RUNTIME_DIR"
-	envXdgSessionType = "XDG_SESSION_TYPE"
-	envXdgSeat        = "XDG_SEAT"
-	envXdgVtnr        = "XDG_VTNR"
-	envHome           = "HOME"
-	envPwd            = "PWD"
-	envUser           = "USER"
-	envLogname        = "LOGNAME"
-	envXauthority     = "XAUTHORITY"
-	envDisplay        = "DISPLAY"
-	envShell          = "SHELL"
+	envXdgRuntimeDir   = "XDG_RUNTIME_DIR"
+	envXdgSessionType  = "XDG_SESSION_TYPE"
+	envXdgSessionClass = "XDG_SESSION_CLASS"
+	envXdgSeat         = "XDG_SEAT"
+	envXdgVtnr         = "XDG_VTNR"
+	envHome            = "HOME"
+	envPwd             = "PWD"
+	envUser            = "USER"
+	envLogname         = "LOGNAME"
+	envXauthority      = "XAUTHORITY"
+	envDisplay         = "DISPLAY"
+	envShell           = "SHELL"
 )
 
 // Login into graphical environment
@@ -134,6 +135,7 @@ func defineEnvironment(usr *user.User, uid int, gid int, gids []uint32) {
 	os.Setenv(envLogname, usr.Username)
 	os.Setenv(envXdgRuntimeDir, "/run/user/"+usr.Uid)
 	os.Setenv(envXdgSeat, "seat0")
+	os.Setenv(envXdgSessionClass, "user")
 	os.Setenv(envShell, getUserShell(usr))
 	os.Setenv(envLang, conf.lang)
 
@@ -256,6 +258,11 @@ func xorg(uid uint32, gid uint32, gids []uint32, d *desktop) {
 // Prepares command for starting GUI
 func prepareGuiCommand(uid uint32, gid uint32, gids []uint32, d *desktop) (*exec.Cmd, string) {
 	strExec := getStrExec(d)
+
+	if conf.dbusLaunch && !strings.Contains(strExec, "dbus-launch") {
+		strExec = "dbus-launch " + strExec
+	}
+
 	arrExec := strings.Split(strExec, " ")
 
 	var cmd *exec.Cmd

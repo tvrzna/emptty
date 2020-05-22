@@ -22,6 +22,7 @@ const (
 	envDefaultUser = "DEFAULT_USER"
 	envAutologin   = "AUTOLOGIN"
 	envLang        = "LANG"
+	envDbusLaunch  = "DBUS_LAUNCH"
 )
 
 // config defines structure of application configuration.
@@ -30,6 +31,7 @@ type config struct {
 	autologin   bool
 	tty         int
 	lang        string
+	dbusLaunch  bool
 }
 
 // LoadConfig handles loading of application configuration.
@@ -48,7 +50,7 @@ func loadConfig() *config {
 		c.defaultUser = tmpConfig.defaultUser
 	}
 
-	c.autologin = parseAutologin(os.Getenv(envAutologin), "nil")
+	c.autologin = parseBool(os.Getenv(envAutologin), "nil")
 	if os.Getenv(envAutologin) == "" {
 		c.autologin = tmpConfig.autologin
 	}
@@ -56,6 +58,11 @@ func loadConfig() *config {
 	c.lang = sanitizeValue(os.Getenv(envLang), "")
 	if c.lang == "" {
 		c.lang = tmpConfig.lang
+	}
+
+	c.dbusLaunch = parseBool(os.Getenv(envDbusLaunch), "nil")
+	if os.Getenv(envDbusLaunch) == "" {
+		c.dbusLaunch = tmpConfig.dbusLaunch
 	}
 
 	if c.autologin && c.defaultUser != "" {
@@ -85,10 +92,13 @@ func parseConfigFromFile() *config {
 			c.defaultUser = parseDefaultUser(value, "")
 			break
 		case envAutologin:
-			c.autologin = parseAutologin(value, "false")
+			c.autologin = parseBool(value, "false")
 			break
 		case envLang:
 			c.lang = sanitizeValue(value, "en_US.UTF-8")
+			break
+		case envDbusLaunch:
+			c.dbusLaunch = parseBool(value, "true")
 			break
 		}
 	})
@@ -128,8 +138,8 @@ func stringifyEnv(env enEnvironment) string {
 	return "xorg"
 }
 
-// Parse, if autologin is enabled.
-func parseAutologin(autologin string, defaultValue string) bool {
+// Parse boolean values
+func parseBool(autologin string, defaultValue string) bool {
 	val, err := strconv.ParseBool(sanitizeValue(autologin, defaultValue))
 	if err != nil {
 		return false

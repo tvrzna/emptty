@@ -11,3 +11,6 @@ export AUTOLOGIN=false
 
 # Default LANG, if user does not have set own in init script.
 #export LANG=en_US.UTF-8
+
+# Starts desktop with calling "dbus-launch".
+export DBUS_LAUNCH=true
