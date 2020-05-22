@@ -102,6 +102,8 @@ func authUser() (*user.User, *pam.Transaction) {
 	handleErr(err)
 	log.Print("Authenticate OK")
 
+	trans.SetItem(pam.Tty, "tty"+strconv.Itoa(conf.tty))
+
 	trans.OpenSession(pam.Silent)
 
 	pamUsr, _ := trans.GetItem(pam.User)
