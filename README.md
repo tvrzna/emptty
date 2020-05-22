@@ -13,12 +13,16 @@ Default startup configuration. On each change it requires to restart emptty.
 `AUTOLOGIN` Enables Autologin, if DEFAULT_USER is defined. Possible values are "true" or "false".
 __NOTE:__ to enable autologin DEFAULT_USER must be in group nopasswdlogin, otherwise user will NOT be authorized.
 
+`LANG` defines locale for all users. Default value is "en_US.UTF-8"
+
 ##### ${HOME}/.emptty
 Optional configuration file, that could be also handled as shell script. If is not presented, emptty shows selection of installed desktops.
 
 `ENVIRONMENT` Selects, which environment should be defined for following command. Possible values are "xorg" and "wayland", "xorg" is default.
 
 `COMMAND` Defines command to start Desktop Environment/Window Manager. This value does not need to be defined, if .emptty file is presented as shell script (with shebang at the start and execution permissions).
+
+`LANG` Defines locale for logged user, has higner priority than LANG from global configuration
 
 ### Build dependencies
 - go

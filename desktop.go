@@ -13,6 +13,7 @@ import (
 const (
 	confEnvironment = "ENVIRONMENT"
 	confCommand     = "COMMAND"
+	confLang        = "LANG"
 )
 
 // desktop defines structure for display environments and window managers
@@ -99,11 +100,13 @@ func listDesktops(path string, env enEnvironment) []*desktop {
 }
 
 // Parses user-specified configuration from file and returns it as desktop structure
-func loadUserDesktop(homeDir string) *desktop {
+func loadUserDesktop(homeDir string) (*desktop, string) {
 	confFile := homeDir + "/.emptty"
 
+	var lang string
 	if fileExists(confFile) {
 		d := desktop{isUser: true, path: confFile, env: Xorg}
+
 		err := readProperties(confFile, func(key string, value string) error {
 			switch key {
 			case confCommand:
@@ -112,14 +115,16 @@ func loadUserDesktop(homeDir string) *desktop {
 			case confEnvironment:
 				d.env = parseEnv(value, "xorg")
 				break
+			case confLang:
+				lang = value
 			}
 			return nil
 		})
 		handleErr(err)
-		return &d
+		return &d, lang
 	}
 
-	return nil
+	return nil, lang
 }
 
 // Inits desktop object from .desktop fiel on defined path

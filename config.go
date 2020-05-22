@@ -21,6 +21,7 @@ const (
 	envTTYnumber   = "TTY_NUMBER"
 	envDefaultUser = "DEFAULT_USER"
 	envAutologin   = "AUTOLOGIN"
+	envLang        = "LANG"
 )
 
 // config defines structure of application configuration.
@@ -28,6 +29,7 @@ type config struct {
 	defaultUser string
 	autologin   bool
 	tty         int
+	lang        string
 }
 
 // LoadConfig handles loading of application configuration.
@@ -51,6 +53,11 @@ func loadConfig() *config {
 		c.autologin = tmpConfig.autologin
 	}
 
+	c.lang = sanitizeValue(os.Getenv(envLang), "")
+	if c.lang == "" {
+		c.lang = tmpConfig.lang
+	}
+
 	if c.autologin && c.defaultUser != "" {
 		c.autologin = true
 	} else {
@@ -60,13 +67,14 @@ func loadConfig() *config {
 	os.Unsetenv(envTTYnumber)
 	os.Unsetenv(envDefaultUser)
 	os.Unsetenv(envAutologin)
+	os.Unsetenv(envLang)
 
 	return &c
 }
 
 // Parses configuration from file and returns it as config structure
 func parseConfigFromFile() *config {
-	c := config{tty: 0, defaultUser: "", autologin: false}
+	c := config{tty: 0, defaultUser: "", autologin: false, lang: "en_US.UTF-8"}
 
 	err := readProperties("/etc/emptty/conf", func(key string, value string) error {
 		switch strings.ToUpper(key) {
@@ -79,6 +87,8 @@ func parseConfigFromFile() *config {
 		case envAutologin:
 			c.autologin = parseAutologin(value, "false")
 			break
+		case envLang:
+			c.lang = sanitizeValue(value, "en_US.UTF-8")
 		}
 		return nil
 	})

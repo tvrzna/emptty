@@ -36,10 +36,14 @@ func login() {
 	uid, gid, gids := getUIDandGID(usr)
 
 	var d *desktop
-	d = loadUserDesktop(usr.HomeDir)
+	d, usrLang := loadUserDesktop(usr.HomeDir)
 
 	if d == nil {
 		d = selectDesktop(uid)
+	}
+
+	if usrLang != "" {
+		conf.lang = usrLang
 	}
 
 	defineEnvironment(usr, uid, gid, gids)
@@ -131,6 +135,7 @@ func defineEnvironment(usr *user.User, uid int, gid int, gids []uint32) {
 	os.Setenv(envXdgRuntimeDir, "/run/user/"+usr.Uid)
 	os.Setenv(envXdgSeat, "seat0")
 	os.Setenv(envShell, getUserShell(usr))
+	os.Setenv(envLang, conf.lang)
 
 	log.Print("Defined Environment")
 

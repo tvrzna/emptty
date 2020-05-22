@@ -9,5 +9,5 @@ export TTY_NUMBER=7
 # Enables Autologin, if DEFAULT_USER is defined. Possible values are "true" or "false".
 export AUTOLOGIN=false
 
-# Fallback/default LANG, if user does not have set own in init script.
+# Default LANG, if user does not have set own in init script.
 #export LANG=en_US.UTF-8
