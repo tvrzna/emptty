@@ -252,11 +252,18 @@ func xorg(uid uint32, gid uint32, gids []uint32, d *desktop) {
 	log.Print("Cleaned up xauthority")
 }
 
+// Prepares command for starting GUI
 func prepareGuiCommand(uid uint32, gid uint32, gids []uint32, d *desktop) (*exec.Cmd, string) {
 	strExec := getStrExec(d)
 	arrExec := strings.Split(strExec, " ")
 
-	cmd := exec.Command(arrExec[0], arrExec...)
+	var cmd *exec.Cmd
+	if len(arrExec) > 1 {
+		cmd = exec.Command(arrExec[0], arrExec...)
+	} else {
+		cmd = exec.Command(arrExec[0])
+	}
+
 	cmd.Env = append(os.Environ())
 	cmd.SysProcAttr = &syscall.SysProcAttr{}
 	cmd.SysProcAttr.Credential = &syscall.Credential{Uid: uid, Gid: gid, Groups: gids}
