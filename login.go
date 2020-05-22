@@ -18,6 +18,7 @@ import (
 
 const (
 	envXdgRuntimeDir   = "XDG_RUNTIME_DIR"
+	envXdgSessionId    = "XDG_SESSION_ID"
 	envXdgSessionType  = "XDG_SESSION_TYPE"
 	envXdgSessionClass = "XDG_SESSION_CLASS"
 	envXdgSeat         = "XDG_SEAT"
@@ -47,7 +48,7 @@ func login() {
 		conf.lang = usrLang
 	}
 
-	defineEnvironment(usr, uid, gid, gids)
+	defineEnvironment(usr, uid, gid, gids, trans)
 
 	switch d.env {
 	case Wayland:
@@ -57,9 +58,7 @@ func login() {
 		xorg(uint32(uid), uint32(gid), gids, d)
 	}
 
-	if trans != nil {
-		trans.CloseSession(0)
-	}
+	trans.CloseSession(0)
 }
 
 // Handle PAM authentication of user.
@@ -128,7 +127,13 @@ func getUIDandGID(usr *user.User) (int, int, []uint32) {
 
 // Prepares environment and env variables for authorized user.
 // Defines users Uid and Gid for further syscalls.
-func defineEnvironment(usr *user.User, uid int, gid int, gids []uint32) {
+func defineEnvironment(usr *user.User, uid int, gid int, gids []uint32, trans *pam.Transaction) {
+	envs, _ := trans.GetEnvList()
+	for key, value := range envs {
+		log.Printf("%s=%s", key, value)
+		os.Setenv(key, value)
+	}
+
 	os.Setenv(envHome, usr.HomeDir)
 	os.Setenv(envPwd, usr.HomeDir)
 	os.Setenv(envUser, usr.Username)
