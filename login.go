@@ -35,11 +35,16 @@ func login() {
 	usr, trans := authUser()
 	uid, gid, gids := getUIDandGID(usr)
 
-	d := selectDesktop(uid)
+	var d *desktop
+	d = loadUserDesktop(usr.HomeDir)
+
+	if d == nil {
+		d = selectDesktop(uid)
+	}
 
 	defineEnvironment(usr, uid, gid, gids)
 
-	switch conf.environment {
+	switch d.env {
 	case Wayland:
 		wayland(uint32(uid), uint32(gid), gids, d)
 		break
@@ -99,49 +104,6 @@ func authUser() (*user.User, *pam.Transaction) {
 	usr, _ := user.Lookup(pamUsr)
 
 	return usr, trans
-}
-
-// Allows to select desktop, which could be selected.
-func selectDesktop(uid int) *desktop {
-	var result *desktop
-	if conf.environment == Selection {
-		desktops := listAllDesktops()
-		if len(desktops) == 0 {
-			log.Fatal("Not found any installed desktop.")
-		}
-
-		for result == nil {
-			fmt.Printf("\nSelect desktop:\n")
-			for i, v := range desktops {
-				if i > 0 {
-					fmt.Print(", ")
-				}
-				fmt.Printf("[%d] %s", i, v.name)
-			}
-			defaultDesktop := 0
-			// TODO: preselected value!
-			fmt.Printf(" - [%d]: ", defaultDesktop)
-
-			selection, _ := bufio.NewReader(os.Stdin).ReadString('\n')
-			selection = strings.TrimSpace(selection)
-			if selection == "" {
-				selection = strconv.Itoa(defaultDesktop)
-			}
-
-			id, err := strconv.ParseUint(selection, 10, 32)
-			if err != nil {
-				continue
-			}
-			if int(id) < len(desktops) {
-				result = desktops[id]
-			}
-		}
-
-		conf.environment = result.env
-		// TODO: save last selection!
-		return result
-	}
-	return nil
 }
 
 // Reads Uid and Gid from user.User and returns them as int.
@@ -215,17 +177,9 @@ func wayland(uid uint32, gid uint32, gids []uint32, d *desktop) {
 	log.Print("Defined Wayland environment")
 
 	// start Wayland
-	var strExec string
-	if d != nil {
-		strExec = d.exec
-	} else {
-		strExec = os.Getenv(envHome) + "/.winitrc"
-	}
+	wayland, strExec := prepareGuiCommand(uid, gid, gids, d)
+
 	log.Print("Starting " + strExec)
-	wayland := exec.Command(strExec)
-	wayland.Env = append(os.Environ())
-	wayland.SysProcAttr = &syscall.SysProcAttr{}
-	wayland.SysProcAttr.Credential = &syscall.Credential{Uid: uid, Gid: gid, Groups: gids}
 	err := wayland.Start()
 	handleErr(err)
 	wayland.Wait()
@@ -274,17 +228,8 @@ func xorg(uid uint32, gid uint32, gids []uint32, d *desktop) {
 	log.Print("Started Xorg")
 
 	// start xinit
-	var strExec string
-	if d != nil {
-		strExec = d.exec
-	} else {
-		strExec = os.Getenv(envHome) + "/.xinitrc"
-	}
+	xinit, strExec := prepareGuiCommand(uid, gid, gids, d)
 	log.Print("Starting " + strExec)
-	xinit := exec.Command(strExec)
-	xinit.Env = append(os.Environ())
-	xinit.SysProcAttr = &syscall.SysProcAttr{}
-	xinit.SysProcAttr.Credential = &syscall.Credential{Uid: uid, Gid: gid, Groups: gids}
 	err = xinit.Start()
 	if err != nil {
 		xorg.Process.Signal(os.Interrupt)
@@ -300,6 +245,24 @@ func xorg(uid uint32, gid uint32, gids []uint32, d *desktop) {
 	// Remove auth
 	os.Remove(os.Getenv(envXauthority))
 	log.Print("Cleaned up xauthority")
+}
+
+func prepareGuiCommand(uid uint32, gid uint32, gids []uint32, d *desktop) (*exec.Cmd, string) {
+	strExec := getStrExec(d)
+	arrExec := strings.Split(strExec, " ")
+
+	cmd := exec.Command(arrExec[0], arrExec...)
+	cmd.Env = append(os.Environ())
+	cmd.SysProcAttr = &syscall.SysProcAttr{}
+	cmd.SysProcAttr.Credential = &syscall.Credential{Uid: uid, Gid: gid, Groups: gids}
+	return cmd, strExec
+}
+
+func getStrExec(d *desktop) string {
+	if d.exec != "" {
+		return d.exec
+	}
+	return d.path
 }
 
 // Finds free display for spawning Xorg instance.

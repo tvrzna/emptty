@@ -2,7 +2,9 @@
 Dead simple Display Manager running in CLI as TTY login, that starts Xorg or Wayland.
 
 ### Configuration
-Configuration is handled via environment variables.
+
+##### /etc/emptty/conf
+Default startup configuration. On each change it requires to restart emptty.
 
 `TTY_NUMBER` TTY, where emptty will start.
 
@@ -11,23 +13,12 @@ Configuration is handled via environment variables.
 `AUTOLOGIN` Enables Autologin, if DEFAULT_USER is defined. Possible values are "true" or "false".
 __NOTE:__ to enable autologin DEFAULT_USER must be in group nopasswdlogin, otherwise user will NOT be authorized.
 
-`ENVIRONMENT` Selects, which environment will be used. Possible values are "xorg" or "wayland".
-- If "xorg" is selected, it expects to have prepared .xinitrc file with +x at home folder.
-- If "wayland" is selected, it expects to have prepared .winitrc file with +x at home folder.
+##### ${HOME}/.emptty
+Optional configuration file, that could be also handled as shell script. If is not presented, emptty shows selection of installed desktops.
 
-### .xinitrc sample
-```
-#!/bin/sh
-export LANG=en_US.UTF-8
-exec dbus-launch i3
-```
+`ENVIRONMENT` Selects, which environment should be defined for following command. Possible values are "xorg" and "wayland", "xorg" is default.
 
-### .winitrc sample
-```
-#!/bin/sh
-export LANG=en_US.UTF-8
-exec dbus-launch sway
-```
+`COMMAND` Defines command to start Desktop Environment/Window Manager. This value does not need to be defined, if .emptty file is presented as shell script (with shebang at the start and execution permissions).
 
 ### Build dependencies
 - go

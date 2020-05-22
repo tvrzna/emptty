@@ -32,11 +32,19 @@ func readProperties(filePath string, method propertyFunc) error {
 			if strings.Index(value, "#") >= 0 {
 				value = value[:strings.Index(value, "#")]
 			}
+			key = strings.TrimSpace(key)
+			value = strings.TrimSpace(value)
 			err := method(key, value)
 			handleErr(err)
 		}
 	}
 	return scanner.Err()
+}
+
+// Checks, if file on path exists.
+func fileExists(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil
 }
 
 // Perform switch to defined TTY.
