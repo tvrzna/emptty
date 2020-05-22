@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -25,6 +26,13 @@ type desktop struct {
 	path   string
 }
 
+// lastSession defines structure for last used session on user login
+type lastSession struct {
+	uid  int
+	exec string
+	env  enEnvironment
+}
+
 // Allows to select desktop, which could be selected.
 func selectDesktop(uid int) *desktop {
 	desktops := listAllDesktops()
@@ -32,22 +40,23 @@ func selectDesktop(uid int) *desktop {
 		log.Fatal("Not found any installed desktop.")
 	}
 
+	lastSessions := loadLastSessions()
+
 	for true {
-		fmt.Printf("\nSelect desktop:\n")
+		fmt.Printf("\n")
 		for i, v := range desktops {
 			if i > 0 {
 				fmt.Print(", ")
 			}
 			fmt.Printf("[%d] %s", i, v.name)
 		}
-		defaultDesktop := 0
-		// TODO: preselected value!
-		fmt.Printf(" - [%d]: ", defaultDesktop)
+		lastDesktop := getLastDesktop(uid, desktops, lastSessions)
+		fmt.Printf("\nSelect [%d]: ", lastDesktop)
 
 		selection, _ := bufio.NewReader(os.Stdin).ReadString('\n')
 		selection = strings.TrimSpace(selection)
 		if selection == "" {
-			selection = strconv.Itoa(defaultDesktop)
+			selection = strconv.Itoa(lastDesktop)
 		}
 
 		id, err := strconv.ParseUint(selection, 10, 32)
@@ -55,8 +64,9 @@ func selectDesktop(uid int) *desktop {
 			continue
 		}
 		if int(id) < len(desktops) {
-			// TODO: save last selection!
-			return desktops[id]
+			d := desktops[id]
+			setLastSession(uid, d, lastSessions)
+			return d
 		}
 	}
 	return nil
@@ -73,7 +83,7 @@ func listAllDesktops() []*desktop {
 	}
 
 	// load Wayland desktops
-	waylandDesktops := listDesktops("/usr/share/wayland-sessions/", Xorg)
+	waylandDesktops := listDesktops("/usr/share/wayland-sessions/", Wayland)
 	if waylandDesktops != nil && len(waylandDesktops) > 0 {
 		result = append(result, waylandDesktops...)
 	}
@@ -107,7 +117,7 @@ func loadUserDesktop(homeDir string) (*desktop, string) {
 	if fileExists(confFile) {
 		d := desktop{isUser: true, path: confFile, env: Xorg}
 
-		err := readProperties(confFile, func(key string, value string) error {
+		err := readProperties(confFile, func(key string, value string) {
 			switch key {
 			case confCommand:
 				d.exec = sanitizeValue(value, "")
@@ -118,7 +128,6 @@ func loadUserDesktop(homeDir string) (*desktop, string) {
 			case confLang:
 				lang = value
 			}
-			return nil
 		})
 		handleErr(err)
 		return &d, lang
@@ -130,7 +139,7 @@ func loadUserDesktop(homeDir string) (*desktop, string) {
 // Inits desktop object from .desktop fiel on defined path
 func getDesktop(path string, env enEnvironment) *desktop {
 	d := desktop{env: env, isUser: false, path: path}
-	readProperties(path, func(key string, value string) error {
+	readProperties(path, func(key string, value string) {
 		switch key {
 		case "Name":
 			d.name = value
@@ -139,7 +148,82 @@ func getDesktop(path string, env enEnvironment) *desktop {
 			d.exec = value
 			break
 		}
-		return nil
 	})
 	return &d
+}
+
+// Gets index of last used desktop.
+func getLastDesktop(uid int, desktops []*desktop, lastSessions []*lastSession) int {
+	l := getLastSession(uid, lastSessions)
+	if l != nil {
+		for i, d := range desktops {
+			if d.exec == l.exec && d.env == l.env {
+				return i
+			}
+		}
+	}
+	return 0
+}
+
+// Gets Last Session of declared uid.
+func getLastSession(uid int, lastSessions []*lastSession) *lastSession {
+	if lastSessions != nil {
+		for _, session := range lastSessions {
+			if session.uid == uid {
+				return session
+			}
+		}
+	}
+	return nil
+}
+
+// Sets Last session for declared uid and saves all to file.
+func setLastSession(uid int, d *desktop, lastSessions []*lastSession) {
+	session := getLastSession(uid, lastSessions)
+
+	if session == nil {
+		lastSessions = append(lastSessions, &lastSession{uid: uid, exec: d.exec, env: d.env})
+	} else {
+		session.exec = d.exec
+		session.env = d.env
+	}
+
+	saveLastSessions(lastSessions)
+}
+
+// Load all last sessions from file.
+func loadLastSessions() []*lastSession {
+	var result []*lastSession
+	if fileExists("/etc/emptty/last-sessions") {
+		readProperties("/etc/emptty/last-sessions", func(key string, value string) {
+			l := lastSession{}
+
+			uid, err := strconv.ParseInt(key, 10, 32)
+			if err != nil {
+				return
+			}
+			l.uid = int(uid)
+
+			arrValue := strings.Split(value, ";")
+			l.exec = arrValue[0]
+			l.env = parseEnv(arrValue[1], "xorg")
+
+			result = append(result, &l)
+		})
+	}
+	return result
+}
+
+// Save all last sessions to file.
+func saveLastSessions(lastSessions []*lastSession) {
+	var arr []string
+	for _, s := range lastSessions {
+		arr = append(arr, fmt.Sprintf("%d=%s;%s", s.uid, s.exec, stringifyEnv(s.env)))
+	}
+	resultStr := strings.Join(arr, "\n")
+
+	err := ioutil.WriteFile("/etc/emptty/last-sessions", []byte(resultStr), 0600)
+	if err != nil {
+		log.Print(err)
+	}
 }

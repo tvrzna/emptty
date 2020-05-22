@@ -76,7 +76,7 @@ func loadConfig() *config {
 func parseConfigFromFile() *config {
 	c := config{tty: 0, defaultUser: "", autologin: false, lang: "en_US.UTF-8"}
 
-	err := readProperties("/etc/emptty/conf", func(key string, value string) error {
+	err := readProperties("/etc/emptty/conf", func(key string, value string) {
 		switch strings.ToUpper(key) {
 		case envTTYnumber:
 			c.tty = parseTTY(value, "0")
@@ -89,8 +89,8 @@ func parseConfigFromFile() *config {
 			break
 		case envLang:
 			c.lang = sanitizeValue(value, "en_US.UTF-8")
+			break
 		}
-		return nil
 	})
 	handleErr(err)
 
@@ -115,6 +115,17 @@ func parseEnv(env string, defaultValue string) enEnvironment {
 		return Xorg
 	}
 	return Xorg
+}
+
+// Stringify enEnvironment value
+func stringifyEnv(env enEnvironment) string {
+	switch env {
+	case Xorg:
+		return "xorg"
+	case Wayland:
+		return "wayland"
+	}
+	return "xorg"
 }
 
 // Parse, if autologin is enabled.

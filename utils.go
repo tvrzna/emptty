@@ -12,7 +12,7 @@ import (
 )
 
 // propertyFunc defines method to be invoked during readProperties method for each record.
-type propertyFunc func(key string, value string) error
+type propertyFunc func(key string, value string)
 
 // readProperties reads defined filePath per line and parses each key-value pair.
 // These pairs are used as parameters for invoking propertyFunc
@@ -34,8 +34,7 @@ func readProperties(filePath string, method propertyFunc) error {
 			}
 			key = strings.TrimSpace(key)
 			value = strings.TrimSpace(value)
-			err := method(key, value)
-			handleErr(err)
+			method(key, value)
 		}
 	}
 	return scanner.Err()
