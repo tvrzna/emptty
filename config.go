@@ -75,6 +75,7 @@ func loadConfig() *config {
 	os.Unsetenv(envDefaultUser)
 	os.Unsetenv(envAutologin)
 	os.Unsetenv(envLang)
+	os.Unsetenv(envDbusLaunch)
 
 	return &c
 }
