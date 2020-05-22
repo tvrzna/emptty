@@ -18,6 +18,7 @@ type propertyFunc func(key string, value string)
 // These pairs are used as parameters for invoking propertyFunc
 func readProperties(filePath string, method propertyFunc) error {
 	file, err := os.Open(filePath)
+	defer file.Close()
 	if err != nil {
 		return errors.New("Could not open file " + filePath)
 	}

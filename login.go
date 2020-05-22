@@ -201,7 +201,8 @@ func xorg(uid uint32, gid uint32, gids []uint32, d *desktop) {
 
 	// create xauth
 	os.Remove(os.Getenv(envXauthority))
-	_, err := os.Create(os.Getenv(envXauthority))
+	xauthority, err := os.Create(os.Getenv(envXauthority))
+	defer xauthority.Close()
 	handleErr(err)
 	log.Print("Created xauthority file")
 
