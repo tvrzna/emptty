@@ -7,8 +7,6 @@ clean:
 
 build:
 	@echo "Building..."
-	@go get github.com/bgentry/speakeasy
-	@go get github.com/msteinert/pam
 	@go build -o ${DISTFILE}
 	@echo "Done"
 
