@@ -42,6 +42,6 @@ Optional configuration file, that could be also handled as shell script. If is n
 - `make clean` to cleanup already built binary.
 - `make install` to install binary and pam module.
 - `make install-config` to create default conf file in /etc/emptty/.
-- `make install-runit` to install as runit service
-- `make install-openrc` to install as openrc service
-- `make install-systemd` to install as systemd service.
+- `make install-runit` to install runit service
+- `make install-openrc` to install openrc service
+- `make install-systemd` to install systemd service.

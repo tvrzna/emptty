@@ -22,7 +22,6 @@ const (
 	envXdgSessionType  = "XDG_SESSION_TYPE"
 	envXdgSessionClass = "XDG_SESSION_CLASS"
 	envXdgSeat         = "XDG_SEAT"
-	envXdgVtnr         = "XDG_VTNR"
 	envHome            = "HOME"
 	envPwd             = "PWD"
 	envUser            = "USER"
@@ -58,7 +57,7 @@ func login() {
 		xorg(uint32(uid), uint32(gid), gids, d)
 	}
 
-	trans.CloseSession(0)
+	trans.CloseSession(pam.Silent)
 }
 
 // Handle PAM authentication of user.
