@@ -23,6 +23,8 @@ const (
 	confAutologin   = "AUTOLOGIN"
 	confLang        = "LANG"
 	confDbusLaunch  = "DBUS_LAUNCH"
+
+	pathConfigFile = "/etc/emptty/conf"
 )
 
 // config defines structure of application configuration.
@@ -38,8 +40,8 @@ type config struct {
 func loadConfig() *config {
 	c := config{tty: 0, defaultUser: "", autologin: false, lang: "en_US.UTF-8", dbusLaunch: true}
 
-	if fileExists("/etc/emptty/conf") {
-		err := readProperties("/etc/emptty/conf", func(key string, value string) {
+	if fileExists(pathConfigFile) {
+		err := readProperties(pathConfigFile, func(key string, value string) {
 			switch strings.ToUpper(key) {
 			case confTTYnumber:
 				c.tty = parseTTY(value, "0")
@@ -76,28 +78,6 @@ func parseTTY(tty string, defaultValue string) int {
 		return 0
 	}
 	return int(val)
-}
-
-// Parse input env and selects corresponding environment.
-func parseEnv(env string, defaultValue string) enEnvironment {
-	switch sanitizeValue(env, defaultValue) {
-	case "wayland":
-		return Wayland
-	case "xorg":
-		return Xorg
-	}
-	return Xorg
-}
-
-// Stringify enEnvironment value
-func stringifyEnv(env enEnvironment) string {
-	switch env {
-	case Xorg:
-		return "xorg"
-	case Wayland:
-		return "wayland"
-	}
-	return "xorg"
 }
 
 // Parse boolean values

@@ -14,6 +14,13 @@ import (
 const (
 	confEnvironment = "ENVIRONMENT"
 	confCommand     = "COMMAND"
+
+	constEnvXorg    = "xorg"
+	constEnvWayland = "wayland"
+
+	pathLastSessions    = "/etc/emptty/last-sessions"
+	pathXorgSessions    = "/usr/share/xsessions/"
+	pathWaylandSessions = "/usr/share/wayland-sessions/"
 )
 
 // desktop defines structure for display environments and window managers
@@ -76,13 +83,13 @@ func listAllDesktops() []*desktop {
 	var result []*desktop
 
 	// load Xorg desktops
-	xorgDesktops := listDesktops("/usr/share/xsessions/", Xorg)
+	xorgDesktops := listDesktops(pathXorgSessions, Xorg)
 	if xorgDesktops != nil && len(xorgDesktops) > 0 {
 		result = append(result, xorgDesktops...)
 	}
 
 	// load Wayland desktops
-	waylandDesktops := listDesktops("/usr/share/wayland-sessions/", Wayland)
+	waylandDesktops := listDesktops(pathWaylandSessions, Wayland)
 	if waylandDesktops != nil && len(waylandDesktops) > 0 {
 		result = append(result, waylandDesktops...)
 	}
@@ -122,7 +129,7 @@ func loadUserDesktop(homeDir string) (*desktop, string) {
 				d.exec = sanitizeValue(value, "")
 				break
 			case confEnvironment:
-				d.env = parseEnv(value, "xorg")
+				d.env = parseEnv(value, constEnvXorg)
 				break
 			case confLang:
 				lang = value
@@ -193,8 +200,8 @@ func setLastSession(uid int, d *desktop, lastSessions []*lastSession) {
 // Load all last sessions from file.
 func loadLastSessions() []*lastSession {
 	var result []*lastSession
-	if fileExists("/etc/emptty/last-sessions") {
-		readProperties("/etc/emptty/last-sessions", func(key string, value string) {
+	if fileExists(pathLastSessions) {
+		readProperties(pathLastSessions, func(key string, value string) {
 			l := lastSession{}
 
 			uid, err := strconv.ParseInt(key, 10, 32)
@@ -205,7 +212,7 @@ func loadLastSessions() []*lastSession {
 
 			arrValue := strings.Split(value, ";")
 			l.exec = arrValue[0]
-			l.env = parseEnv(arrValue[1], "xorg")
+			l.env = parseEnv(arrValue[1], constEnvXorg)
 
 			result = append(result, &l)
 		})
@@ -221,8 +228,30 @@ func saveLastSessions(lastSessions []*lastSession) {
 	}
 	resultStr := strings.Join(arr, "\n")
 
-	err := ioutil.WriteFile("/etc/emptty/last-sessions", []byte(resultStr), 0600)
+	err := ioutil.WriteFile(pathLastSessions, []byte(resultStr), 0600)
 	if err != nil {
 		log.Print(err)
 	}
+}
+
+// Parse input env and selects corresponding environment.
+func parseEnv(env string, defaultValue string) enEnvironment {
+	switch sanitizeValue(env, defaultValue) {
+	case constEnvXorg:
+		return Xorg
+	case constEnvWayland:
+		return Wayland
+	}
+	return Xorg
+}
+
+// Stringify enEnvironment value
+func stringifyEnv(env enEnvironment) string {
+	switch env {
+	case Xorg:
+		return constEnvXorg
+	case Wayland:
+		return constEnvWayland
+	}
+	return constEnvXorg
 }
