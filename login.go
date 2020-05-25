@@ -29,6 +29,7 @@ const (
 	envXauthority      = "XAUTHORITY"
 	envDisplay         = "DISPLAY"
 	envShell           = "SHELL"
+	envLang            = "LANG"
 )
 
 // Login into graphical environment

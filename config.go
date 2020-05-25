@@ -18,11 +18,11 @@ const (
 )
 
 const (
-	envTTYnumber   = "TTY_NUMBER"
-	envDefaultUser = "DEFAULT_USER"
-	envAutologin   = "AUTOLOGIN"
-	envLang        = "LANG"
-	envDbusLaunch  = "DBUS_LAUNCH"
+	confTTYnumber   = "TTY_NUMBER"
+	confDefaultUser = "DEFAULT_USER"
+	confAutologin   = "AUTOLOGIN"
+	confLang        = "LANG"
+	confDbusLaunch  = "DBUS_LAUNCH"
 )
 
 // config defines structure of application configuration.
@@ -36,74 +36,35 @@ type config struct {
 
 // LoadConfig handles loading of application configuration.
 func loadConfig() *config {
-	c := config{}
+	c := config{tty: 0, defaultUser: "", autologin: false, lang: "en_US.UTF-8", dbusLaunch: true}
 
-	tmpConfig := parseConfigFromFile()
-
-	c.tty = parseTTY(os.Getenv(envTTYnumber), "-1")
-	if c.tty == -1 {
-		c.tty = tmpConfig.tty
+	if fileExists("/etc/emptty/conf") {
+		err := readProperties("/etc/emptty/conf", func(key string, value string) {
+			switch strings.ToUpper(key) {
+			case confTTYnumber:
+				c.tty = parseTTY(value, "0")
+				break
+			case confDefaultUser:
+				c.defaultUser = parseDefaultUser(value, "")
+				break
+			case confAutologin:
+				c.autologin = parseBool(value, "false")
+				break
+			case confLang:
+				c.lang = sanitizeValue(value, "en_US.UTF-8")
+				break
+			case confDbusLaunch:
+				c.dbusLaunch = parseBool(value, "true")
+				break
+			}
+		})
+		handleErr(err)
 	}
 
-	c.defaultUser = parseDefaultUser(os.Getenv(envDefaultUser), "@@@@")
-	if c.defaultUser == "@@@@" {
-		c.defaultUser = tmpConfig.defaultUser
-	}
-
-	c.autologin = parseBool(os.Getenv(envAutologin), "nil")
-	if os.Getenv(envAutologin) == "" {
-		c.autologin = tmpConfig.autologin
-	}
-
-	c.lang = sanitizeValue(os.Getenv(envLang), "")
-	if c.lang == "" {
-		c.lang = tmpConfig.lang
-	}
-
-	c.dbusLaunch = parseBool(os.Getenv(envDbusLaunch), "nil")
-	if os.Getenv(envDbusLaunch) == "" {
-		c.dbusLaunch = tmpConfig.dbusLaunch
-	}
-
-	if c.autologin && c.defaultUser != "" {
-		c.autologin = true
-	} else {
-		c.autologin = false
-	}
-
-	os.Unsetenv(envTTYnumber)
-	os.Unsetenv(envDefaultUser)
-	os.Unsetenv(envAutologin)
-	os.Unsetenv(envLang)
-	os.Unsetenv(envDbusLaunch)
-
-	return &c
-}
-
-// Parses configuration from file and returns it as config structure
-func parseConfigFromFile() *config {
-	c := config{tty: 0, defaultUser: "", autologin: false, lang: "en_US.UTF-8"}
-
-	err := readProperties("/etc/emptty/conf", func(key string, value string) {
-		switch strings.ToUpper(key) {
-		case envTTYnumber:
-			c.tty = parseTTY(value, "0")
-			break
-		case envDefaultUser:
-			c.defaultUser = parseDefaultUser(value, "")
-			break
-		case envAutologin:
-			c.autologin = parseBool(value, "false")
-			break
-		case envLang:
-			c.lang = sanitizeValue(value, "en_US.UTF-8")
-			break
-		case envDbusLaunch:
-			c.dbusLaunch = parseBool(value, "true")
-			break
-		}
-	})
-	handleErr(err)
+	os.Unsetenv(confTTYnumber)
+	os.Unsetenv(confDefaultUser)
+	os.Unsetenv(confAutologin)
+	os.Unsetenv(confDbusLaunch)
 
 	return &c
 }

@@ -14,7 +14,6 @@ import (
 const (
 	confEnvironment = "ENVIRONMENT"
 	confCommand     = "COMMAND"
-	confLang        = "LANG"
 )
 
 // desktop defines structure for display environments and window managers
