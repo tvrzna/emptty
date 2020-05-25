@@ -296,7 +296,7 @@ func getStrExec(d *desktop) string {
 func getFreeXDisplay() int {
 	for i := 0; i < 32; i++ {
 		filename := fmt.Sprintf("/tmp/.X%d-lock", i)
-		if _, err := os.Stat(filename); os.IsNotExist(err) {
+		if !fileExists(filename) {
 			return i
 		}
 	}
