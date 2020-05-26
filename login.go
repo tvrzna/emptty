@@ -53,7 +53,6 @@ func login() {
 	switch d.env {
 	case Wayland:
 		wayland(uint32(uid), uint32(gid), gids, d)
-		break
 	case Xorg:
 		xorg(uint32(uid), uint32(gid), gids, d)
 	}

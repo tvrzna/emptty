@@ -127,10 +127,8 @@ func loadUserDesktop(homeDir string) (*desktop, string) {
 			switch key {
 			case confCommand:
 				d.exec = sanitizeValue(value, "")
-				break
 			case confEnvironment:
 				d.env = parseEnv(value, constEnvXorg)
-				break
 			case confLang:
 				lang = value
 			}
@@ -149,10 +147,8 @@ func getDesktop(path string, env enEnvironment) *desktop {
 		switch key {
 		case "Name":
 			d.name = value
-			break
 		case "Exec":
 			d.exec = value
-			break
 		}
 	})
 	return &d

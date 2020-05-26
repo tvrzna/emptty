@@ -45,19 +45,14 @@ func loadConfig() *config {
 			switch strings.ToUpper(key) {
 			case confTTYnumber:
 				c.tty = parseTTY(value, "0")
-				break
 			case confDefaultUser:
 				c.defaultUser = parseDefaultUser(value, "")
-				break
 			case confAutologin:
 				c.autologin = parseBool(value, "false")
-				break
 			case confLang:
 				c.lang = sanitizeValue(value, "en_US.UTF-8")
-				break
 			case confDbusLaunch:
 				c.dbusLaunch = parseBool(value, "true")
-				break
 			}
 		})
 		handleErr(err)
