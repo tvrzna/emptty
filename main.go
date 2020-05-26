@@ -12,6 +12,8 @@ const motd = `┌─┐┌┬┐┌─┐┌┬┐┌┬┐┬ ┬
 var conf *config
 
 func main() {
+	handleArgs()
+
 	fmt.Printf("%s\n\n", motd)
 
 	conf = loadConfig()

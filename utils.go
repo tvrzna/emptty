@@ -64,3 +64,14 @@ func handleErr(err error) {
 		os.Exit(1)
 	}
 }
+
+// Handles passed arguments.
+func handleArgs() {
+	for _, arg := range os.Args {
+		switch arg {
+		case "-v", "--version":
+			fmt.Printf("emptty %s - https://github.com/tvrzna/emptty\nReleased under the MIT License.\n\n", version)
+			os.Exit(0)
+		}
+	}
+}
