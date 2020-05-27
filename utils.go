@@ -70,7 +70,7 @@ func handleArgs() {
 	for _, arg := range os.Args {
 		switch arg {
 		case "-v", "--version":
-			fmt.Printf("emptty %s - https://github.com/tvrzna/emptty\nReleased under the MIT License.\n\n", version)
+			fmt.Printf("emptty %s\nhttps://github.com/tvrzna/emptty\n\nReleased under the MIT License.\n\n", version)
 			os.Exit(0)
 		}
 	}
