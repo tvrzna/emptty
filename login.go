@@ -35,36 +35,35 @@ const (
 // Login into graphical environment
 func login() {
 	usr, trans := authUser()
-	uid, gid, gids := getUIDandGID(usr)
 
 	var d *desktop
-	d, usrLang := loadUserDesktop(usr.HomeDir)
+	d, usrLang := loadUserDesktop(usr.homedir)
 
 	if d == nil {
-		d = selectDesktop(uid)
+		d = selectDesktop(usr.uid)
 	}
 
 	if usrLang != "" {
 		conf.lang = usrLang
 	}
 
-	defineEnvironment(usr, uid, gid, gids, trans)
+	defineEnvironment(usr, trans)
 
 	switch d.env {
 	case Wayland:
-		wayland(uint32(uid), uint32(gid), gids, d)
+		wayland(usr, d)
 	case Xorg:
-		xorg(uint32(uid), uint32(gid), gids, d)
+		xorg(usr, d)
 	}
 
 	trans.CloseSession(pam.Silent)
 }
 
 // Handle PAM authentication of user.
-// If user is successfully authorized, it returns user.User.
+// If user is successfully authorized, it returns sysuser.
 //
 // If autologin is enabled, it behaves as user has been authorized.
-func authUser() (*user.User, *pam.Transaction) {
+func authUser() (*sysuser, *pam.Transaction) {
 	trans, err := pam.StartFunc("emptty", conf.defaultUser, func(s pam.Style, msg string) (string, error) {
 		switch s {
 		case pam.PromptEchoOff:
@@ -108,38 +107,23 @@ func authUser() (*user.User, *pam.Transaction) {
 	pamUsr, _ := trans.GetItem(pam.User)
 	usr, _ := user.Lookup(pamUsr)
 
-	return usr, trans
-}
-
-// Reads Uid and Gid from user.User and returns them as int.
-func getUIDandGID(usr *user.User) (int, int, []uint32) {
-	uid, _ := strconv.ParseInt(usr.Uid, 10, 32)
-	gid, _ := strconv.ParseInt(usr.Gid, 10, 32)
-	var gids []uint32
-	strGids, err := usr.GroupIds()
-	if err == nil {
-		for _, val := range strGids {
-			value, _ := strconv.ParseInt(val, 10, 32)
-			gids = append(gids, uint32(value))
-		}
-	}
-	return int(uid), int(gid), gids
+	return getSysuser(usr), trans
 }
 
 // Prepares environment and env variables for authorized user.
 // Defines users Uid and Gid for further syscalls.
-func defineEnvironment(usr *user.User, uid int, gid int, gids []uint32, trans *pam.Transaction) {
+func defineEnvironment(usr *sysuser, trans *pam.Transaction) {
 	envs, _ := trans.GetEnvList()
 	for key, value := range envs {
 		log.Printf("%s=%s", key, value)
 		os.Setenv(key, value)
 	}
 
-	os.Setenv(envHome, usr.HomeDir)
-	os.Setenv(envPwd, usr.HomeDir)
-	os.Setenv(envUser, usr.Username)
-	os.Setenv(envLogname, usr.Username)
-	os.Setenv(envXdgRuntimeDir, "/run/user/"+usr.Uid)
+	os.Setenv(envHome, usr.homedir)
+	os.Setenv(envPwd, usr.homedir)
+	os.Setenv(envUser, usr.username)
+	os.Setenv(envLogname, usr.username)
+	os.Setenv(envXdgRuntimeDir, "/run/user/"+usr.strUid())
 	os.Setenv(envXdgSeat, "seat0")
 	os.Setenv(envXdgSessionClass, "user")
 	os.Setenv(envShell, getUserShell(usr))
@@ -153,30 +137,26 @@ func defineEnvironment(usr *user.User, uid int, gid int, gids []uint32, trans *p
 	log.Print("Created XDG folder")
 
 	// Set owner of XDG folder
-	os.Chown(os.Getenv(envXdgRuntimeDir), uid, gid)
+	os.Chown(os.Getenv(envXdgRuntimeDir), usr.uid, usr.gid)
 
-	err = syscall.Setfsuid(uid)
+	err = syscall.Setfsuid(usr.uid)
 	handleErr(err)
 	log.Print("Defined uid")
 
-	err = syscall.Setfsgid(gid)
+	err = syscall.Setfsgid(usr.gid)
 	handleErr(err)
 	log.Print("Defined gid")
 
-	intGids := make([]int, len(gids))
-	for _, val := range gids {
-		intGids = append(intGids, int(val))
-	}
-
-	err = syscall.Setgroups(intGids)
+	err = syscall.Setgroups(usr.gids)
 	handleErr(err)
+	log.Print("Defined gids")
 
 	os.Chdir(os.Getenv(envPwd))
 }
 
 // Reads default shell of authorized user
-func getUserShell(usr *user.User) string {
-	out, err := exec.Command("/usr/bin/getent", "passwd", usr.Uid).Output()
+func getUserShell(usr *sysuser) string {
+	out, err := exec.Command("/usr/bin/getent", "passwd", usr.strUid()).Output()
 	handleErr(err)
 
 	ent := strings.Split(strings.TrimSuffix(string(out), "\n"), ":")
@@ -184,13 +164,13 @@ func getUserShell(usr *user.User) string {
 }
 
 // Prepares and stars Wayland session for authorized user.
-func wayland(uid uint32, gid uint32, gids []uint32, d *desktop) {
+func wayland(usr *sysuser, d *desktop) {
 	// Set environment
 	os.Setenv(envXdgSessionType, "wayland")
 	log.Print("Defined Wayland environment")
 
 	// start Wayland
-	wayland, strExec := prepareGuiCommand(uid, gid, gids, d)
+	wayland, strExec := prepareGuiCommand(usr, d)
 
 	log.Print("Starting " + strExec)
 	err := wayland.Start()
@@ -200,7 +180,7 @@ func wayland(uid uint32, gid uint32, gids []uint32, d *desktop) {
 }
 
 // Prepares and starts Xorg session for authorized user.
-func xorg(uid uint32, gid uint32, gids []uint32, d *desktop) {
+func xorg(usr *sysuser, d *desktop) {
 	// Set environment
 	os.Setenv(envXdgSessionType, "x11")
 	os.Setenv(envXauthority, os.Getenv(envXdgRuntimeDir)+"/.emptty-xauth")
@@ -225,7 +205,7 @@ func xorg(uid uint32, gid uint32, gids []uint32, d *desktop) {
 	cmd = exec.Command("/usr/bin/xauth", "add", os.Getenv(envDisplay), ".", string(mcookie))
 	cmd.Env = append(os.Environ())
 	cmd.SysProcAttr = &syscall.SysProcAttr{}
-	cmd.SysProcAttr.Credential = &syscall.Credential{Uid: uid, Gid: gid, Groups: gids}
+	cmd.SysProcAttr.Credential = &syscall.Credential{Uid: usr.uidu32(), Gid: usr.gidu32(), Groups: usr.gidsu32}
 	_, err = cmd.Output()
 	handleErr(err)
 
@@ -242,7 +222,7 @@ func xorg(uid uint32, gid uint32, gids []uint32, d *desktop) {
 	log.Print("Started Xorg")
 
 	// start xinit
-	xinit, strExec := prepareGuiCommand(uid, gid, gids, d)
+	xinit, strExec := prepareGuiCommand(usr, d)
 	log.Print("Starting " + strExec)
 	err = xinit.Start()
 	if err != nil {
@@ -262,7 +242,7 @@ func xorg(uid uint32, gid uint32, gids []uint32, d *desktop) {
 }
 
 // Prepares command for starting GUI
-func prepareGuiCommand(uid uint32, gid uint32, gids []uint32, d *desktop) (*exec.Cmd, string) {
+func prepareGuiCommand(usr *sysuser, d *desktop) (*exec.Cmd, string) {
 	strExec := getStrExec(d)
 
 	if conf.dbusLaunch && !strings.Contains(strExec, "dbus-launch") {
@@ -280,7 +260,7 @@ func prepareGuiCommand(uid uint32, gid uint32, gids []uint32, d *desktop) (*exec
 
 	cmd.Env = append(os.Environ())
 	cmd.SysProcAttr = &syscall.SysProcAttr{}
-	cmd.SysProcAttr.Credential = &syscall.Credential{Uid: uid, Gid: gid, Groups: gids}
+	cmd.SysProcAttr.Credential = &syscall.Credential{Uid: usr.uidu32(), Gid: usr.gidu32(), Groups: usr.gidsu32}
 	return cmd, strExec
 }
 
