@@ -15,6 +15,9 @@ const (
 	confEnvironment = "ENVIRONMENT"
 	confCommand     = "COMMAND"
 
+	desktopExec = "EXEC"
+	desktopName = "NAME"
+
 	constEnvXorg    = "xorg"
 	constEnvWayland = "wayland"
 
@@ -124,7 +127,7 @@ func loadUserDesktop(homeDir string) (*desktop, string) {
 		d := desktop{isUser: true, path: confFile, env: Xorg}
 
 		err := readProperties(confFile, func(key string, value string) {
-			switch key {
+			switch strings.ToUpper(key) {
 			case confCommand:
 				d.exec = sanitizeValue(value, "")
 			case confEnvironment:
@@ -144,10 +147,10 @@ func loadUserDesktop(homeDir string) (*desktop, string) {
 func getDesktop(path string, env enEnvironment) *desktop {
 	d := desktop{env: env, isUser: false, path: path}
 	readProperties(path, func(key string, value string) {
-		switch key {
-		case "Name":
+		switch strings.ToUpper(key) {
+		case desktopName:
 			d.name = value
-		case "Exec":
+		case desktopExec:
 			d.exec = value
 		}
 	})
