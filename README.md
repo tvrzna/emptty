@@ -1,6 +1,8 @@
 # emptty
 Dead simple Display Manager running in CLI as TTY login, that starts Xorg or Wayland.
 
+![](screenshot.png)
+
 ### Configuration
 
 ##### /etc/emptty/conf
