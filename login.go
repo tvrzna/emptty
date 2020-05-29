@@ -115,7 +115,6 @@ func authUser(conf *config) (*sysuser, *pam.Transaction) {
 func defineEnvironment(usr *sysuser, trans *pam.Transaction, conf *config) {
 	envs, _ := trans.GetEnvList()
 	for key, value := range envs {
-		log.Printf("%s=%s", key, value)
 		os.Setenv(key, value)
 	}
 
