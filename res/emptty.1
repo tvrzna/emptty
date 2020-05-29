@@ -1,0 +1,43 @@
+.TH EMPTTY 1 "May 2020" "emptty 0.1.0" emptty
+
+.SH NAME
+emptty \- Dead simple Display Manager running in CLI as TTY login.
+
+.SH SYNOPSIS
+.B emptty [-v] [--version]
+
+.SH DESCRIPTION
+.B emppty
+Simple CLI Display Manager, that allows to select DE/WM after login, use predefined config or allows autologin, if selected user is part of
+.I nopasswdlogin
+group.
+
+.SH OPTIONS
+.IP "\-v, \-\-version"
+Display the version of the program.
+
+.SH CONFIG
+/etc/emptty/conf
+
+.IP TTY_NUMBER
+TTY, where emptty will start.
+.IP DEFAULT_USER
+Preselected user, if AUTOLOGIN is enabled, this user is logged in.
+.IP AUTOLOGIN
+Enables Autologin, if DEFAULT_USER is defined. Possible values are "true" or "false". Default value is false.
+
+.B NOTE:
+to enable autologin DEFAULT_USER must be in group nopasswdlogin, otherwise user will NOT be authorized.
+.IP LANG
+defines locale for all users. Default value is "en_US.UTF-8"
+.IP DBUS_LAUNCH
+Prepends "dbus-launch" before desktop command. Default value is true.
+
+.SH USER CONFIG
+Optional file stored as ${HOME}/.emptty
+.IP ENVIRONMENT
+Selects, which environment should be defined for following command. Possible values are "xorg" and "wayland", "xorg" is default.
+.IP COMMAND
+Defines command to start Desktop Environment/Window Manager. This value does not need to be defined, if .emptty file is presented as shell script (with shebang at the start and execution permissions).
+.IP LANG
+Defines locale for logged user, has higher priority than LANG from global configuration

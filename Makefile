@@ -3,17 +3,20 @@ DISTFILE=emptty
 clean:
 	@echo "Cleaning..."
 	@rm -f ${DISTFILE}
+	@rm -f emptty.1.gz
 	@echo "Done"
 
 build:
 	@echo "Building..."
 	@go build -o ${DISTFILE}
+	@gzip -c res/emptty.1 > emptty.1.gz
 	@echo "Done"
 
 install:
 	@echo "Installing..."
 	@install -DZs ${DISTFILE} -m 755 -t ${DESTDIR}/usr/bin
 	@install -DZ res/pam -m 644 -T ${DESTDIR}/etc/pam.d/${DISTFILE}
+	@install -D emptty.1.gz -t ${DESTDIR}/usr/share/man/man1
 	@echo "Done"
 
 install-config:
@@ -43,6 +46,7 @@ uninstall:
 	@rm -rf ${DESTDIR}/etc/sv/${DISTFILE}
 	@rm -f ${DESTDIR}/usr/lib/systemd/system/${DISTFILE}.service
 	@rm -f ${DESTDIR}/etc/init.d/${DISTFILE}
+	@rm -f ${DESTDIR}/usr/share/man/man1/emptty.1.gz
 	@rm -f ${DESTDIR}/etc/pam.d/emptty
 	@rm -rf ${DESTDIR}/usr/bin/${DISTFILE}
 	@echo "Done"
