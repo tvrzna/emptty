@@ -33,8 +33,8 @@ const (
 )
 
 // Login into graphical environment
-func login() {
-	usr, trans := authUser()
+func login(conf *config) {
+	usr, trans := authUser(conf)
 
 	var d *desktop
 	d, usrLang := loadUserDesktop(usr.homedir)
@@ -47,13 +47,13 @@ func login() {
 		conf.lang = usrLang
 	}
 
-	defineEnvironment(usr, trans)
+	defineEnvironment(usr, trans, conf)
 
 	switch d.env {
 	case Wayland:
-		wayland(usr, d)
+		wayland(usr, d, conf)
 	case Xorg:
-		xorg(usr, d)
+		xorg(usr, d, conf)
 	}
 
 	trans.CloseSession(pam.Silent)
@@ -63,7 +63,7 @@ func login() {
 // If user is successfully authorized, it returns sysuser.
 //
 // If autologin is enabled, it behaves as user has been authorized.
-func authUser() (*sysuser, *pam.Transaction) {
+func authUser(conf *config) (*sysuser, *pam.Transaction) {
 	trans, err := pam.StartFunc("emptty", conf.defaultUser, func(s pam.Style, msg string) (string, error) {
 		switch s {
 		case pam.PromptEchoOff:
@@ -112,7 +112,7 @@ func authUser() (*sysuser, *pam.Transaction) {
 
 // Prepares environment and env variables for authorized user.
 // Defines users Uid and Gid for further syscalls.
-func defineEnvironment(usr *sysuser, trans *pam.Transaction) {
+func defineEnvironment(usr *sysuser, trans *pam.Transaction, conf *config) {
 	envs, _ := trans.GetEnvList()
 	for key, value := range envs {
 		log.Printf("%s=%s", key, value)
@@ -164,13 +164,13 @@ func getUserShell(usr *sysuser) string {
 }
 
 // Prepares and stars Wayland session for authorized user.
-func wayland(usr *sysuser, d *desktop) {
+func wayland(usr *sysuser, d *desktop, conf *config) {
 	// Set environment
 	os.Setenv(envXdgSessionType, "wayland")
 	log.Print("Defined Wayland environment")
 
 	// start Wayland
-	wayland, strExec := prepareGuiCommand(usr, d)
+	wayland, strExec := prepareGuiCommand(usr, d, conf)
 
 	log.Print("Starting " + strExec)
 	err := wayland.Start()
@@ -180,7 +180,7 @@ func wayland(usr *sysuser, d *desktop) {
 }
 
 // Prepares and starts Xorg session for authorized user.
-func xorg(usr *sysuser, d *desktop) {
+func xorg(usr *sysuser, d *desktop, conf *config) {
 	// Set environment
 	os.Setenv(envXdgSessionType, "x11")
 	os.Setenv(envXauthority, os.Getenv(envXdgRuntimeDir)+"/.emptty-xauth")
@@ -222,7 +222,7 @@ func xorg(usr *sysuser, d *desktop) {
 	log.Print("Started Xorg")
 
 	// start xinit
-	xinit, strExec := prepareGuiCommand(usr, d)
+	xinit, strExec := prepareGuiCommand(usr, d, conf)
 	log.Print("Starting " + strExec)
 	err = xinit.Start()
 	if err != nil {
@@ -242,7 +242,7 @@ func xorg(usr *sysuser, d *desktop) {
 }
 
 // Prepares command for starting GUI
-func prepareGuiCommand(usr *sysuser, d *desktop) (*exec.Cmd, string) {
+func prepareGuiCommand(usr *sysuser, d *desktop, conf *config) (*exec.Cmd, string) {
 	strExec := getStrExec(d)
 
 	if conf.dbusLaunch && !strings.Contains(strExec, "dbus-launch") {

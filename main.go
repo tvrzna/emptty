@@ -9,16 +9,14 @@ const motd = `┌─┐┌┬┐┌─┐┌┬┐┌┬┐┬ ┬
 ├┤ │││├─┘ │  │ └┬┘
 └─┘┴ ┴┴   ┴  ┴  ┴   ` + version
 
-var conf *config
-
 func main() {
 	handleArgs()
 
 	fmt.Printf("%s\n\n", motd)
 
-	conf = loadConfig()
+	conf := loadConfig()
 
 	switchTTY(conf.tty)
 
-	login()
+	login(conf)
 }
