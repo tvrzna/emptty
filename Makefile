@@ -2,21 +2,23 @@ DISTFILE=emptty
 
 clean:
 	@echo "Cleaning..."
-	@rm -f ${DISTFILE}
-	@rm -f emptty.1.gz
+	@rm -f dist/${DISTFILE}
+	@rm -f dist/emptty.1.gz
+	@rm -rf dist
 	@echo "Done"
 
 build:
 	@echo "Building..."
-	@go build -o ${DISTFILE}
-	@gzip -c res/emptty.1 > emptty.1.gz
+	@mkdir -p dist
+	@go build -o dist/${DISTFILE}
+	@gzip -c res/emptty.1 > dist/emptty.1.gz
 	@echo "Done"
 
 install:
 	@echo "Installing..."
-	@install -DZs ${DISTFILE} -m 755 -t ${DESTDIR}/usr/bin
+	@install -DZs dist/${DISTFILE} -m 755 -t ${DESTDIR}/usr/bin
 	@install -DZ res/pam -m 644 -T ${DESTDIR}/etc/pam.d/${DISTFILE}
-	@install -D emptty.1.gz -t ${DESTDIR}/usr/share/man/man1
+	@install -D dist/emptty.1.gz -t ${DESTDIR}/usr/share/man/man1
 	@echo "Done"
 
 install-config:
