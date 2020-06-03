@@ -75,7 +75,7 @@ func parseTTY(tty string, defaultValue string) int {
 	return int(val)
 }
 
-// Parse boolean values
+// Parse boolean values.
 func parseBool(autologin string, defaultValue string) bool {
 	val, err := strconv.ParseBool(sanitizeValue(autologin, defaultValue))
 	if err != nil {

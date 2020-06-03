@@ -26,7 +26,7 @@ const (
 	pathWaylandSessions = "/usr/share/wayland-sessions/"
 )
 
-// desktop defines structure for display environments and window managers
+// desktop defines structure for display environments and window managers.
 type desktop struct {
 	name   string
 	exec   string
@@ -35,7 +35,7 @@ type desktop struct {
 	path   string
 }
 
-// lastSession defines structure for last used session on user login
+// lastSession defines structure for last used session on user login.
 type lastSession struct {
 	uid  int
 	exec string
@@ -100,7 +100,7 @@ func listAllDesktops() []*desktop {
 	return result
 }
 
-// List desktops, that could be found on defined path
+// List desktops, that could be found on defined path.
 func listDesktops(path string, env enEnvironment) []*desktop {
 	var result []*desktop
 
@@ -118,7 +118,7 @@ func listDesktops(path string, env enEnvironment) []*desktop {
 	return result
 }
 
-// Parses user-specified configuration from file and returns it as desktop structure
+// Parses user-specified configuration from file and returns it as desktop structure.
 func loadUserDesktop(homeDir string) (*desktop, string) {
 	confFile := homeDir + "/.emptty"
 
@@ -143,7 +143,7 @@ func loadUserDesktop(homeDir string) (*desktop, string) {
 	return nil, lang
 }
 
-// Inits desktop object from .desktop fiel on defined path
+// Inits desktop object from .desktop fiel on defined path.
 func getDesktop(path string, env enEnvironment) *desktop {
 	d := desktop{env: env, isUser: false, path: path}
 	readProperties(path, func(key string, value string) {
@@ -244,7 +244,7 @@ func parseEnv(env string, defaultValue string) enEnvironment {
 	return Xorg
 }
 
-// Stringify enEnvironment value
+// Stringify enEnvironment value.
 func stringifyEnv(env enEnvironment) string {
 	switch env {
 	case Xorg:

@@ -42,22 +42,22 @@ func getSysuser(usr *user.User) *sysuser {
 	return &result
 }
 
-// returns uid as uint32
+// returns uid as uint32.
 func (u *sysuser) uidu32() uint32 {
 	return uint32(u.uid)
 }
 
-// returns gid as uint32
+// returns gid as uint32.
 func (u *sysuser) gidu32() uint32 {
 	return uint32(u.gid)
 }
 
-// returns uid as string
+// returns uid as string.
 func (u *sysuser) strUid() string {
 	return strconv.Itoa(u.uid)
 }
 
-// returns gid as string
+// returns gid as string.
 func (u *sysuser) strGid() string {
 	return strconv.Itoa(u.gid)
 }

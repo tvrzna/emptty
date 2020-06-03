@@ -153,7 +153,7 @@ func defineEnvironment(usr *sysuser, trans *pam.Transaction, conf *config) {
 	os.Chdir(os.Getenv(envPwd))
 }
 
-// Reads default shell of authorized user
+// Reads default shell of authorized user.
 func getUserShell(usr *sysuser) string {
 	out, err := exec.Command("/usr/bin/getent", "passwd", usr.strUid()).Output()
 	handleErr(err)
@@ -240,7 +240,7 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	log.Print("Cleaned up xauthority")
 }
 
-// Prepares command for starting GUI
+// Prepares command for starting GUI.
 func prepareGuiCommand(usr *sysuser, d *desktop, conf *config) (*exec.Cmd, string) {
 	strExec := getStrExec(d)
 
@@ -263,6 +263,7 @@ func prepareGuiCommand(usr *sysuser, d *desktop, conf *config) (*exec.Cmd, strin
 	return cmd, strExec
 }
 
+// Gets exec path from desktop.
 func getStrExec(d *desktop) string {
 	if d.exec != "" {
 		return d.exec
