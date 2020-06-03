@@ -32,7 +32,6 @@ install-runit:
 	@install -DZ res/runit-finish -m 755 -T ${DESTDIR}/etc/sv/${DISTFILE}/finish
 	@echo "Done"
 
-
 install-systemd:
 	@echo "Installing systemd service..."
 	@install -DZ res/systemd-service -m 755 -T ${DESTDIR}/usr/lib/systemd/system/${DISTFILE}.service
