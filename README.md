@@ -47,3 +47,7 @@ Optional configuration file, that could be also handled as shell script. If is n
 - `make install-runit` to install runit service
 - `make install-openrc` to install openrc service
 - `make install-systemd` to install systemd service.
+- `make uninstall` to remove emptty from your system
+
+## Known issues
+- Not working PulseAudio/Alsa, if user is not part of `audio` group.

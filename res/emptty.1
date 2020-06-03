@@ -1,4 +1,4 @@
-.TH EMPTTY 1 "May 2020" "emptty 0.1.0" emptty
+.TH EMPTTY 1 "June 2020" "emptty 0.1.0" emptty
 
 .SH NAME
 emptty \- Dead simple Display Manager running in CLI as TTY login.
@@ -41,3 +41,8 @@ Selects, which environment should be defined for following command. Possible val
 Defines command to start Desktop Environment/Window Manager. This value does not need to be defined, if .emptty file is presented as shell script (with shebang at the start and execution permissions).
 .IP LANG
 Defines locale for logged user, has higher priority than LANG from global configuration
+
+.SH KNOWN ISSUES
+- Not working PulseAudio/Alsa, if user is not part of
+.I audio
+group.
