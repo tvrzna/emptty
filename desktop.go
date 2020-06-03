@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -46,7 +47,7 @@ type lastSession struct {
 func selectDesktop(uid int) *desktop {
 	desktops := listAllDesktops()
 	if len(desktops) == 0 {
-		log.Fatal("Not found any installed desktop.")
+		handleErr(errors.New("Not found any installed desktop."))
 	}
 
 	lastSessions := loadLastSessions()
