@@ -212,7 +212,7 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 
 	// start X
 	log.Print("Starting Xorg")
-	xorg := exec.Command("/usr/bin/Xorg", os.Getenv(envDisplay))
+	xorg := exec.Command("/usr/bin/Xorg", "vt"+strconv.Itoa(conf.tty), os.Getenv(envDisplay))
 	xorg.Env = append(os.Environ())
 	xorg.Start()
 	if xorg.Process == nil {
@@ -226,6 +226,7 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	err = xinit.Start()
 	if err != nil {
 		xorg.Process.Signal(os.Interrupt)
+		xorg.Wait()
 		handleErr(err)
 	}
 	xinit.Wait()
@@ -233,6 +234,7 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 
 	// Stop Xorg
 	xorg.Process.Signal(os.Interrupt)
+	xorg.Wait()
 	log.Print("Interrupted Xorg")
 
 	// Remove auth
