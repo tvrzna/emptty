@@ -17,13 +17,21 @@ build:
 install:
 	@echo "Installing..."
 	@install -DZs dist/${DISTFILE} -m 755 -t ${DESTDIR}/usr/bin
-	@install -DZ res/pam -m 644 -T ${DESTDIR}/etc/pam.d/${DISTFILE}
-	@install -D dist/emptty.1.gz -t ${DESTDIR}/usr/share/man/man1
 	@echo "Done"
 
 install-config:
 	@echo "Installing config..."
 	@install -DZ res/conf -m 755 -T ${DESTDIR}/etc/${DISTFILE}/conf
+	@echo "Done"
+
+install-manual:
+	@echo "Installing manual..."
+	@install -D dist/emptty.1.gz -t ${DESTDIR}/usr/share/man/man1
+	@echo "Done"
+
+install-pam:
+	@echo "Installing pam file..."
+	@install -DZ res/pam -m 644 -T ${DESTDIR}/etc/pam.d/${DISTFILE}
 	@echo "Done"
 
 install-runit:
