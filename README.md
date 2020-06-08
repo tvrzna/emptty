@@ -19,6 +19,9 @@ __NOTE:__ to enable autologin DEFAULT_USER must be in group nopasswdlogin, other
 
 `DBUS_LAUNCH` Prepends "dbus-launch" before desktop command. Default value is true.
 
+##### /etc/emptty/motd
+Custom file, that prints your own MOTD. Reading this file supports colors (e.g. `\x1b[31m` or `\033[32m`).
+
 ##### ${HOME}/.emptty
 Optional configuration file, that could be also handled as shell script. If is not presented, emptty shows selection of installed desktops.
 
