@@ -45,11 +45,18 @@ Optional configuration file, that could be also handled as shell script. If is n
 
 ## Build & install
 - `make clean` to cleanup already built binary.
-- `make install` to install binary and pam module.
+- `make build` to build binary and gzip man page.
+---
+- `make install` to install binary.
+- `make install-pam` to install pam module.
+- `make install-manual` to install man page.
+- `make install-all` to install binary, pam module and man page.
+---
 - `make install-config` to create default conf file in /etc/emptty/.
 - `make install-runit` to install runit service
 - `make install-openrc` to install openrc service
 - `make install-systemd` to install systemd service.
+---
 - `make uninstall` to remove emptty from your system
 
 ## Known issues

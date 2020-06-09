@@ -34,6 +34,8 @@ install-pam:
 	@install -DZ res/pam -m 644 -T ${DESTDIR}/etc/pam.d/${DISTFILE}
 	@echo "Done"
 
+install-all: install install-manual install-pam
+
 install-runit:
 	@echo "Installing runit service..."
 	@install -DZ res/runit-run -m 755 -T ${DESTDIR}/etc/sv/${DISTFILE}/run
