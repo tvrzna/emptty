@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"os/signal"
 	"os/user"
 	"strconv"
 	"strings"
@@ -170,6 +171,7 @@ func wayland(usr *sysuser, d *desktop, conf *config) {
 
 	// start Wayland
 	wayland, strExec := prepareGuiCommand(usr, d, conf)
+	registerInterruptHandler(wayland)
 
 	log.Print("Starting " + strExec)
 	err := wayland.Start()
@@ -222,6 +224,7 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 
 	// start xinit
 	xinit, strExec := prepareGuiCommand(usr, d, conf)
+	registerInterruptHandler(xorg, xinit)
 	log.Print("Starting " + strExec)
 	err = xinit.Start()
 	if err != nil {
@@ -282,4 +285,22 @@ func getFreeXDisplay() int {
 		}
 	}
 	return 0
+}
+
+// Registers interrupt handler, that interrupts all mentioned Cmds.
+func registerInterruptHandler(cmds ...*exec.Cmd) {
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGKILL)
+	go handleInterrupt(c, cmds...)
+}
+
+// Catch interrupt signal chan and interrupts all mentioned Cmds.
+func handleInterrupt(c chan os.Signal, cmds ...*exec.Cmd) {
+	<-c
+	log.Print("Catched interrupt signal")
+	for _, cmd := range cmds {
+		cmd.Process.Signal(os.Interrupt)
+		cmd.Wait()
+	}
+	os.Exit(1)
 }
