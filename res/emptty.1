@@ -1,4 +1,4 @@
-.TH EMPTTY 1 "June 2020" "emptty 0.1.0" emptty
+.TH EMPTTY 1 "June 2020" "emptty 0.2.0" emptty
 
 .SH NAME
 emptty \- Dead simple Display Manager running in CLI as TTY login.
@@ -32,6 +32,15 @@ to enable autologin DEFAULT_USER must be in group nopasswdlogin, otherwise user 
 defines locale for all users. Default value is "en_US.UTF-8"
 .IP DBUS_LAUNCH
 Prepends "dbus-launch" before desktop command. Default value is true.
+
+.SH CUSTOM MOTD
+Optional file stored as /etc/emptty/motd
+
+Custom file, that prints your own MOTD. Reading this file supports colors (e.g.
+.I \\\x1b[31m
+or
+.I \\\033[32m
+)
 
 .SH USER CONFIG
 Optional file stored as ${HOME}/.emptty
