@@ -1,16 +1,16 @@
 #!/bin/sh
 
 # TTY, where emptty will start.
-export TTY_NUMBER=7
+TTY_NUMBER=7
 
 # Preselected user, if AUTOLOGIN is enabled, this user is logged in.
-#export DEFAULT_USER=user
+#DEFAULT_USER=user
 
 # Enables Autologin, if DEFAULT_USER is defined. Possible values are "true" or "false".
-export AUTOLOGIN=false
+AUTOLOGIN=false
 
 # Default LANG, if user does not have set own in init script.
-#export LANG=en_US.UTF-8
+#LANG=en_US.UTF-8
 
 # Starts desktop with calling "dbus-launch".
-export DBUS_LAUNCH=true
+DBUS_LAUNCH=true
