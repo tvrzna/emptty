@@ -12,7 +12,8 @@ import (
 )
 
 const (
-	pathLogFile = "/var/log/emptty"
+	pathLogFile    = "/var/log/emptty"
+	pathLogFileOld = "/var/log/emptty.old"
 )
 
 // propertyFunc defines method to be invoked during readProperties method for each record.
@@ -83,6 +84,11 @@ func handleArgs() {
 
 // Initialize logger to file defined by pathLogFile.
 func initLogger() {
+	if fileExists(pathLogFile) {
+		os.Remove(pathLogFileOld)
+		os.Rename(pathLogFile, pathLogFileOld)
+	}
+
 	f, err := os.OpenFile(pathLogFile, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0644)
 	if err == nil {
 		log.SetOutput(f)
