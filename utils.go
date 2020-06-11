@@ -11,6 +11,10 @@ import (
 	"strings"
 )
 
+const (
+	pathLogFile = "/var/log/emptty"
+)
+
 // propertyFunc defines method to be invoked during readProperties method for each record.
 type propertyFunc func(key string, value string)
 
@@ -59,6 +63,7 @@ func switchTTY(ttyNumber int) {
 func handleErr(err error) {
 	if err != nil {
 		log.Print(err)
+		fmt.Printf("Error: %s\n", err)
 		fmt.Printf("\nPress Enter to continue...")
 		bufio.NewReader(os.Stdin).ReadString('\n')
 		os.Exit(1)
@@ -73,5 +78,13 @@ func handleArgs() {
 			fmt.Printf("emptty %s\nhttps://github.com/tvrzna/emptty\n\nReleased under the MIT License.\n\n", version)
 			os.Exit(0)
 		}
+	}
+}
+
+// Initialize logger to file defined by pathLogFile.
+func initLogger() {
+	f, err := os.OpenFile(pathLogFile, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0644)
+	if err == nil {
+		log.SetOutput(f)
 	}
 }
