@@ -11,6 +11,7 @@ type enEnvironment int
 
 const (
 	confTTYnumber   = "TTY_NUMBER"
+	confSwitchTTY   = "SWITCH_TTY"
 	confDefaultUser = "DEFAULT_USER"
 	confAutologin   = "AUTOLOGIN"
 	confLang        = "LANG"
@@ -24,19 +25,22 @@ type config struct {
 	defaultUser string
 	autologin   bool
 	tty         int
+	switchTTY   bool
 	lang        string
 	dbusLaunch  bool
 }
 
 // LoadConfig handles loading of application configuration.
 func loadConfig() *config {
-	c := config{tty: 0, defaultUser: "", autologin: false, lang: "en_US.UTF-8", dbusLaunch: true}
+	c := config{tty: 0, switchTTY: true, defaultUser: "", autologin: false, lang: "en_US.UTF-8", dbusLaunch: true}
 
 	if fileExists(pathConfigFile) {
 		err := readProperties(pathConfigFile, func(key string, value string) {
 			switch strings.ToUpper(key) {
 			case confTTYnumber:
 				c.tty = parseTTY(value, "0")
+			case confSwitchTTY:
+				c.switchTTY = parseBool(value, "true")
 			case confDefaultUser:
 				c.defaultUser = parseDefaultUser(value, "")
 			case confAutologin:
@@ -51,6 +55,7 @@ func loadConfig() *config {
 	}
 
 	os.Unsetenv(confTTYnumber)
+	os.Unsetenv(confSwitchTTY)
 	os.Unsetenv(confDefaultUser)
 	os.Unsetenv(confAutologin)
 	os.Unsetenv(confDbusLaunch)
@@ -68,8 +73,8 @@ func parseTTY(tty string, defaultValue string) int {
 }
 
 // Parse boolean values.
-func parseBool(autologin string, defaultValue string) bool {
-	val, err := strconv.ParseBool(sanitizeValue(autologin, defaultValue))
+func parseBool(strBool string, defaultValue string) bool {
+	val, err := strconv.ParseBool(sanitizeValue(strBool, defaultValue))
 	if err != nil {
 		return false
 	}

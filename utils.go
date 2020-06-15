@@ -52,10 +52,10 @@ func fileExists(path string) bool {
 	return err == nil
 }
 
-// Perform switch to defined TTY.
-func switchTTY(ttyNumber int) {
-	if ttyNumber > 0 {
-		ttyCmd := exec.Command("/usr/bin/chvt", strconv.Itoa(ttyNumber))
+// Perform switch to defined TTY, if switchTTY is true and tty is greater than 0.
+func switchTTY(conf *config) {
+	if conf.switchTTY && conf.tty > 0 {
+		ttyCmd := exec.Command("/usr/bin/chvt", strconv.Itoa(conf.tty))
 		ttyCmd.Run()
 	}
 }

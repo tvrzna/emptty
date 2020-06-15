@@ -8,6 +8,6 @@ func main() {
 	printMotd()
 
 	conf := loadConfig()
-	switchTTY(conf.tty)
+	switchTTY(conf)
 	login(conf)
 }
