@@ -16,8 +16,9 @@ const (
 	confEnvironment = "ENVIRONMENT"
 	confCommand     = "COMMAND"
 
-	desktopExec = "EXEC"
-	desktopName = "NAME"
+	desktopExec        = "EXEC"
+	desktopName        = "NAME"
+	desktopEnvironment = "ENVIRONMENT"
 
 	constEnvXorg    = "xorg"
 	constEnvWayland = "wayland"
@@ -25,6 +26,17 @@ const (
 	pathLastSessions    = "/etc/emptty/last-sessions"
 	pathXorgSessions    = "/usr/share/xsessions/"
 	pathWaylandSessions = "/usr/share/wayland-sessions/"
+	pathCustomSessions  = "/etc/emptty/custom-sessions/"
+)
+
+const (
+	// Xorg represents Xorg environment
+	Xorg enEnvironment = iota + 1
+
+	// Wayland represents Wayland environment
+	Wayland
+
+	Custom
 )
 
 // desktop defines structure for display environments and window managers.
@@ -98,6 +110,12 @@ func listAllDesktops() []*desktop {
 		result = append(result, waylandDesktops...)
 	}
 
+	// load custom desktops
+	customDesktops := listDesktops(pathCustomSessions, Custom)
+	if customDesktops != nil && len(customDesktops) > 0 {
+		result = append(result, customDesktops...)
+	}
+
 	return result
 }
 
@@ -117,6 +135,26 @@ func listDesktops(path string, env enEnvironment) []*desktop {
 	}
 
 	return result
+}
+
+// Inits desktop object from .desktop file on defined path.
+func getDesktop(path string, env enEnvironment) *desktop {
+	d := desktop{env: env, isUser: false, path: path}
+	if env == Custom {
+		d.env = Xorg
+	}
+
+	readProperties(path, func(key string, value string) {
+		switch strings.ToUpper(key) {
+		case desktopName:
+			d.name = value
+		case desktopExec:
+			d.exec = value
+		case desktopEnvironment:
+			d.env = parseEnv(value, constEnvXorg)
+		}
+	})
+	return &d
 }
 
 // Parses user-specified configuration from file and returns it as desktop structure.
@@ -142,20 +180,6 @@ func loadUserDesktop(homeDir string) (*desktop, string) {
 	}
 
 	return nil, lang
-}
-
-// Inits desktop object from .desktop fiel on defined path.
-func getDesktop(path string, env enEnvironment) *desktop {
-	d := desktop{env: env, isUser: false, path: path}
-	readProperties(path, func(key string, value string) {
-		switch strings.ToUpper(key) {
-		case desktopName:
-			d.name = value
-		case desktopExec:
-			d.exec = value
-		}
-	})
-	return &d
 }
 
 // Gets index of last used desktop.

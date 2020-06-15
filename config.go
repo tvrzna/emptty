@@ -10,14 +10,6 @@ import (
 type enEnvironment int
 
 const (
-	// Xorg represents Xorg environment
-	Xorg enEnvironment = iota + 1
-
-	// Wayland represents Wayland environment
-	Wayland
-)
-
-const (
 	confTTYnumber   = "TTY_NUMBER"
 	confDefaultUser = "DEFAULT_USER"
 	confAutologin   = "AUTOLOGIN"

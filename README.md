@@ -31,6 +31,15 @@ Optional configuration file, that could be also handled as shell script. If is n
 
 `LANG` Defines locale for logged user, has higher priority than LANG from global configuration
 
+##### /etc/emptty/custom-sessions/
+Optional folder for custom sessions, that could be available system-wide, but do not have .desktop file stored on standard paths for Xorg or Wayland sessions. Expected suffix of each file is ".desktop".
+
+`Name` Defines name of Desktop Environment/Window Manager.
+
+`Exec` Defines command to start Desktop Environment/Window Manager.
+
+`Environment` Selects, which environment should be defined for following command. Possible values are "xorg" and "wayland", "xorg" is default.
+
 ### Build dependencies
 - go
 - gcc
