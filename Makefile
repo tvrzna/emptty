@@ -39,7 +39,6 @@ install-all: install install-manual install-pam
 install-runit:
 	@echo "Installing runit service..."
 	@install -DZ res/runit-run -m 755 -T ${DESTDIR}/etc/sv/${DISTFILE}/run
-	@install -DZ res/runit-finish -m 755 -T ${DESTDIR}/etc/sv/${DISTFILE}/finish
 	@echo "Done"
 
 install-systemd:
