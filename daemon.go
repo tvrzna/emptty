@@ -26,6 +26,9 @@ func startDaemon() {
 	os.Stderr = fTTY
 	os.Stdin = fTTY
 
+	fmt.Println()
+	printIssue()
+
 	switchTTY(conf)
 
 	showLoginScreen(conf)
