@@ -12,6 +12,8 @@ Default startup configuration. On each change it requires to restart emptty.
 
 `SWITCH_TTY` Enables switching to defined TTY number. Default is true.
 
+`PRINT_ISSUE` Enables printing of /etc/issue in daemon mode.
+
 `DEFAULT_USER` Preselected user, if AUTOLOGIN is enabled, this user is logged in.
 
 `AUTOLOGIN` Enables Autologin, if DEFAULT_USER is defined. Possible values are "true" or "false". Default value is false.

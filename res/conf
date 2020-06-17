@@ -4,7 +4,10 @@
 TTY_NUMBER=7
 
 # Enables switching to defined TTY number.
-#SWITCH_TTY=true
+SWITCH_TTY=true
+
+# Enables printing of /etc/issue in daemon mode.
+PRINT_ISSUE=true
 
 # Preselected user, if AUTOLOGIN is enabled, this user is logged in.
 #DEFAULT_USER=user
