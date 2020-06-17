@@ -6,9 +6,6 @@ import (
 	"strings"
 )
 
-// enEnvironment defines possible Environments.
-type enEnvironment int
-
 const (
 	confTTYnumber   = "TTY_NUMBER"
 	confSwitchTTY   = "SWITCH_TTY"

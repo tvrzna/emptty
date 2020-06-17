@@ -29,6 +29,9 @@ const (
 	pathCustomSessions  = "/etc/emptty/custom-sessions/"
 )
 
+// enEnvironment defines possible Environments.
+type enEnvironment int
+
 const (
 	// Xorg represents Xorg environment
 	Xorg enEnvironment = iota + 1
