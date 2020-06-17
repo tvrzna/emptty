@@ -93,3 +93,8 @@ func sanitizeValue(value string, defaultValue string) string {
 	}
 	return strings.TrimSpace(value)
 }
+
+// Returns TTY number converted to string
+func (c *config) strTTY() string {
+	return strconv.Itoa(c.tty)
+}

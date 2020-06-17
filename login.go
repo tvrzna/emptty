@@ -101,7 +101,7 @@ func authUser(conf *config) (*sysuser, *pam.Transaction) {
 	handleErr(err)
 	log.Print("Authenticate OK")
 
-	trans.SetItem(pam.Tty, "tty"+strconv.Itoa(conf.tty))
+	trans.SetItem(pam.Tty, "tty"+conf.strTTY())
 
 	trans.OpenSession(pam.Silent)
 
@@ -216,7 +216,7 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 
 	// start X
 	log.Print("Starting Xorg")
-	xorg := exec.Command("/usr/bin/Xorg", "vt"+strconv.Itoa(conf.tty), os.Getenv(envDisplay))
+	xorg := exec.Command("/usr/bin/Xorg", "vt"+conf.strTTY(), os.Getenv(envDisplay))
 	xorg.Stdout = log.Writer()
 	xorg.Stderr = log.Writer()
 	xorg.Env = append(os.Environ())
