@@ -1,9 +1,7 @@
 #!/usr/bin/openrc-run
-[ -r /etc/emptty/conf ] && . /etc/emptty/conf
-
 supervisor=supervise-daemon
 description="emptty Display Manager"
-command=/usr/bin/agetty
-command_args="-nl /usr/bin/emptty 38400 tty${TTY_NUMBER} linux"
+command=/usr/bin/emptty
+command_args="-d"
 pidfile="/run/${RC_SVCNAME}.pid"
 respawn_period=${respawn_period-60}

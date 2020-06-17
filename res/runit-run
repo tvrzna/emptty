@@ -1,5 +1,2 @@
 #!/bin/sh
-TTY_NUMBER=7
-[ -r /etc/emptty/conf ] && . /etc/emptty/conf
-
-exec setsid agetty -nl /usr/bin/emptty 38400 tty${TTY_NUMBER} linux
+exec setsid /usr/bin/emptty -d
