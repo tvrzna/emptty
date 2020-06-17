@@ -4,7 +4,7 @@
 emptty \- Dead simple Display Manager running in CLI as TTY login.
 
 .SH SYNOPSIS
-.B emptty [-v] [--version]
+.B emptty [-v] [--version] [-d] [--daemon]
 
 .SH DESCRIPTION
 .B emppty
@@ -15,6 +15,9 @@ group.
 .SH OPTIONS
 .IP "\-v, \-\-version"
 Display the version of the program.
+
+.IP "\-d, \-\-daemon"
+Starts emptty as daemon, that does not require agetty.
 
 .SH CONFIG
 /etc/emptty/conf

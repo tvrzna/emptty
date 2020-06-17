@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
-	"strconv"
 	"strings"
 )
 
@@ -52,14 +50,6 @@ func fileExists(path string) bool {
 	return err == nil
 }
 
-// Perform switch to defined TTY, if switchTTY is true and tty is greater than 0.
-func switchTTY(conf *config) {
-	if conf.switchTTY && conf.tty > 0 {
-		ttyCmd := exec.Command("/usr/bin/chvt", strconv.Itoa(conf.tty))
-		ttyCmd.Run()
-	}
-}
-
 // If error is not nil, otherwise it prints error, waits for user input and then exits the program.
 func handleErr(err error) {
 	if err != nil {
@@ -77,6 +67,9 @@ func handleArgs() {
 		switch arg {
 		case "-v", "--version":
 			fmt.Printf("emptty %s\nhttps://github.com/tvrzna/emptty\n\nReleased under the MIT License.\n\n", version)
+			os.Exit(0)
+		case "-d", "--daemon":
+			startDaemon()
 			os.Exit(0)
 		}
 	}
