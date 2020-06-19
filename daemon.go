@@ -88,7 +88,9 @@ func printIssue() {
 				}
 			}
 
-			fmt.Print(issue)
+			fmt.Print(revertColorEscaping(issue))
+			// Clear to default
+			fmt.Print("\x1b[0m\n")
 		}
 	}
 }
