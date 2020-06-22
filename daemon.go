@@ -68,8 +68,8 @@ func switchTTY(conf *config) {
 func printIssue() {
 	if fileExists(pathIssue) {
 		bIssue, err := ioutil.ReadFile(pathIssue)
-		issue := string(bIssue)
 		if err == nil {
+			issue := string(bIssue)
 			vars := []issueVariable{
 				issueVariable{"\\d", []string{"/usr/bin/date"}},
 				issueVariable{"\\l", []string{"/usr/bin/ps", "-p", strconv.Itoa(os.Getpid()), "-o", "tty", "--no-headers"}},
@@ -82,15 +82,16 @@ func printIssue() {
 
 			for _, variable := range vars {
 				if strings.Contains(issue, variable.value) {
-					output, _ := exec.Command(variable.command[0], variable.command[1:]...).Output()
+					output, err := exec.Command(variable.command[0], variable.command[1:]...).Output()
 
-					issue = strings.ReplaceAll(issue, variable.value, strings.TrimSpace(string(output)))
+					if err == nil {
+						issue = strings.ReplaceAll(issue, variable.value, strings.TrimSpace(string(output)))
+					}
 				}
 			}
 
 			fmt.Print(revertColorEscaping(issue))
-			// Clear to default
-			fmt.Print("\x1b[0m\n")
+			resetColors()
 		}
 	}
 }

@@ -28,9 +28,7 @@ func printMotd() {
 		for scan.Scan() {
 			fmt.Println(revertColorEscaping(scan.Text()))
 		}
-		// Clear to default
-		fmt.Print("\x1b[0m\n")
-		return
+		resetColors()
 	} else {
 		printDefaultMotd()
 	}
@@ -49,4 +47,9 @@ func revertColorEscaping(value string) string {
 		return result
 	}
 	return value
+}
+
+// Resets colors to default.
+func resetColors() {
+	fmt.Print("\x1b[0m\n")
 }
