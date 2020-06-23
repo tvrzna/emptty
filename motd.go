@@ -23,6 +23,7 @@ func printMotd() {
 		defer file.Close()
 		if err != nil {
 			printDefaultMotd()
+			return
 		}
 		scan := bufio.NewScanner(file)
 		for scan.Scan() {
