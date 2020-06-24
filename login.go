@@ -222,7 +222,7 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	xorg.Env = append(os.Environ())
 	xorg.Start()
 	if xorg.Process == nil {
-		handleErr(errors.New("Xorg is not running"))
+		handleStrErr("Xorg is not running")
 	}
 	log.Print("Started Xorg")
 

@@ -35,7 +35,7 @@ func loadConfig() *config {
 
 	if fileExists(pathConfigFile) {
 		err := readProperties(pathConfigFile, func(key string, value string) {
-			switch strings.ToUpper(key) {
+			switch key {
 			case confTTYnumber:
 				c.tty = parseTTY(value, "0")
 			case confSwitchTTY:
@@ -43,7 +43,7 @@ func loadConfig() *config {
 			case confPrintIssue:
 				c.printIssue = parseBool(value, "true")
 			case confDefaultUser:
-				c.defaultUser = parseDefaultUser(value, "")
+				c.defaultUser = sanitizeValue(value, "")
 			case confAutologin:
 				c.autologin = parseBool(value, "false")
 			case confLang:
@@ -81,11 +81,6 @@ func parseBool(strBool string, defaultValue string) bool {
 		return false
 	}
 	return val
-}
-
-// Parse default user.
-func parseDefaultUser(defaultUser string, defaultValue string) string {
-	return sanitizeValue(defaultUser, defaultValue)
 }
 
 // Sanitize value.

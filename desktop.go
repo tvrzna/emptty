@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -62,7 +61,7 @@ type lastSession struct {
 func selectDesktop(uid int) *desktop {
 	desktops := listAllDesktops()
 	if len(desktops) == 0 {
-		handleErr(errors.New("Not found any installed desktop."))
+		handleStrErr("Not found any installed desktop.")
 	}
 
 	lastSessions := loadLastSessions()
@@ -148,7 +147,7 @@ func getDesktop(path string, env enEnvironment) *desktop {
 	}
 
 	readProperties(path, func(key string, value string) {
-		switch strings.ToUpper(key) {
+		switch key {
 		case desktopName:
 			d.name = value
 		case desktopExec:
@@ -169,7 +168,7 @@ func loadUserDesktop(homeDir string) (*desktop, string) {
 		d := desktop{isUser: true, path: confFile, env: Xorg}
 
 		err := readProperties(confFile, func(key string, value string) {
-			switch strings.ToUpper(key) {
+			switch key {
 			case confCommand:
 				d.exec = sanitizeValue(value, "")
 			case confEnvironment:

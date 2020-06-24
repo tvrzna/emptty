@@ -36,7 +36,7 @@ func readProperties(filePath string, method propertyFunc) error {
 			if strings.Index(value, "#") >= 0 {
 				value = value[:strings.Index(value, "#")]
 			}
-			key = strings.TrimSpace(key)
+			key = strings.ToUpper(strings.TrimSpace(key))
 			value = strings.TrimSpace(value)
 			method(key, value)
 		}
@@ -48,6 +48,13 @@ func readProperties(filePath string, method propertyFunc) error {
 func fileExists(path string) bool {
 	_, err := os.Stat(path)
 	return err == nil
+}
+
+// Handles error passed as string and calls handleErr function.
+func handleStrErr(err string) {
+	if err != "" {
+		handleErr(errors.New(err))
+	}
 }
 
 // If error is not nil, otherwise it prints error, waits for user input and then exits the program.
