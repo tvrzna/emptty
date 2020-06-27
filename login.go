@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/bgentry/speakeasy"
 	"github.com/msteinert/pam"
@@ -186,10 +187,12 @@ func wayland(usr *sysuser, d *desktop, conf *config) {
 
 // Prepares and starts Xorg session for authorized user.
 func xorg(usr *sysuser, d *desktop, conf *config) {
+	freeDisplay := strconv.Itoa(getFreeXDisplay())
+
 	// Set environment
 	os.Setenv(envXdgSessionType, "x11")
 	os.Setenv(envXauthority, os.Getenv(envXdgRuntimeDir)+"/.emptty-xauth")
-	os.Setenv(envDisplay, ":"+strconv.Itoa(getFreeXDisplay()))
+	os.Setenv(envDisplay, ":"+freeDisplay)
 	log.Print("Defined Xorg environment")
 
 	// create xauth
@@ -227,6 +230,14 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 		handleStrErr("Xorg is not running")
 	}
 	log.Print("Started Xorg")
+
+	for i := 0; i < 50; i++ {
+		if fileExists("/tmp/.X11-unix/X" + freeDisplay) {
+			break
+		} else {
+			time.Sleep(10 * time.Millisecond)
+		}
+	}
 
 	// start xinit
 	xinit, strExec := prepareGuiCommand(usr, d, conf)
