@@ -58,6 +58,7 @@ Optional folder for custom sessions, that could be available system-wide, but do
 - mcookie (required for xorg)
 - wayland (optional)
 
+---
 - `make clean` to cleanup already built binary.
 - `make build` to build binary and gzip man page.
 ---
@@ -72,5 +73,6 @@ Optional folder for custom sessions, that could be available system-wide, but do
 - `make install-systemd` to install systemd service.
 ---
 - `make uninstall` to remove emptty from your system
+---
 
 ArchLinux users can install `emptty` using `yay -S emptty-git` or any other AUR helper
