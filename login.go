@@ -18,6 +18,7 @@ import (
 )
 
 const (
+	envXdgConfigHome   = "XDG_CONFIG_HOME"
 	envXdgRuntimeDir   = "XDG_RUNTIME_DIR"
 	envXdgSessionId    = "XDG_SESSION_ID"
 	envXdgSessionType  = "XDG_SESSION_TYPE"
@@ -123,6 +124,7 @@ func defineEnvironment(usr *sysuser, trans *pam.Transaction, conf *config) {
 	os.Setenv(envPwd, usr.homedir)
 	os.Setenv(envUser, usr.username)
 	os.Setenv(envLogname, usr.username)
+	os.Setenv(envXdgConfigHome, usr.homedir+"/.config")
 	os.Setenv(envXdgRuntimeDir, "/run/user/"+usr.strUid())
 	os.Setenv(envXdgSeat, "seat0")
 	os.Setenv(envXdgSessionClass, "user")
