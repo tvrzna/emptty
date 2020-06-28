@@ -3,9 +3,9 @@ Dead simple Display Manager running in CLI as TTY login, that starts Xorg or Way
 
 ![](screenshot.png)
 
-### Configuration
+## Configuration
 
-##### /etc/emptty/conf
+#### /etc/emptty/conf
 Default startup configuration. On each change it requires to restart emptty.
 
 `TTY_NUMBER` TTY, where emptty will start.
@@ -23,10 +23,10 @@ __NOTE:__ to enable autologin DEFAULT_USER must be in group nopasswdlogin, other
 
 `DBUS_LAUNCH` Prepends "dbus-launch" before desktop command. Default value is true.
 
-##### /etc/emptty/motd
+#### /etc/emptty/motd
 Custom file, that prints your own MOTD. Reading this file supports colors (e.g. `\x1b[31m` or `\033[32m`).
 
-##### ${HOME}/.emptty
+#### ${HOME}/.emptty
 Optional configuration file, that could be also handled as shell script. If is not presented, emptty shows selection of installed desktops.
 
 `ENVIRONMENT` Selects, which environment should be defined for following command. Possible values are "xorg" and "wayland", "xorg" is default.
@@ -35,7 +35,7 @@ Optional configuration file, that could be also handled as shell script. If is n
 
 `LANG` Defines locale for logged user, has higher priority than LANG from global configuration
 
-##### /etc/emptty/custom-sessions/
+#### /etc/emptty/custom-sessions/
 Optional folder for custom sessions, that could be available system-wide, but do not have .desktop file stored on standard paths for Xorg or Wayland sessions. Expected suffix of each file is ".desktop".
 
 `Name` Defines name of Desktop Environment/Window Manager.
@@ -43,6 +43,8 @@ Optional folder for custom sessions, that could be available system-wide, but do
 `Exec` Defines command to start Desktop Environment/Window Manager.
 
 `Environment` Selects, which environment should be defined for following command. Possible values are "xorg" and "wayland", "xorg" is default.
+
+## Build & install
 
 ### Build dependencies
 - go
@@ -56,7 +58,7 @@ Optional folder for custom sessions, that could be available system-wide, but do
 - mcookie (required for xorg)
 - wayland (optional)
 
-## Build & install
+---
 - `make clean` to cleanup already built binary.
 - `make build` to build binary and gzip man page.
 ---
@@ -71,3 +73,6 @@ Optional folder for custom sessions, that could be available system-wide, but do
 - `make install-systemd` to install systemd service.
 ---
 - `make uninstall` to remove emptty from your system
+---
+
+ArchLinux users can install `emptty` using `yay -S emptty-git` or any other AUR helper
