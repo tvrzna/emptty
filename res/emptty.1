@@ -38,7 +38,9 @@ to enable autologin DEFAULT_USER must be in group nopasswdlogin, otherwise user 
 .IP LANG
 defines locale for all users. Default value is "en_US.UTF-8"
 .IP DBUS_LAUNCH
-Prepends "dbus-launch" before desktop command. Default value is true.
+Prepends "dbus-launch" before desktop command. Default value is true.  If
+.I .emptty
+is handled as script, this config is overriden to false.
 
 .SH CUSTOM MOTD
 Optional file stored as /etc/emptty/motd

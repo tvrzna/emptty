@@ -266,9 +266,9 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 
 // Prepares command for starting GUI.
 func prepareGuiCommand(usr *sysuser, d *desktop, conf *config) (*exec.Cmd, string) {
-	strExec := getStrExec(d)
+	strExec, allowDbusLaunch := getStrExec(d)
 
-	if conf.dbusLaunch && !strings.Contains(strExec, "dbus-launch") {
+	if conf.dbusLaunch && !strings.Contains(strExec, "dbus-launch") && allowDbusLaunch {
 		strExec = "dbus-launch " + strExec
 	}
 
@@ -287,12 +287,12 @@ func prepareGuiCommand(usr *sysuser, d *desktop, conf *config) (*exec.Cmd, strin
 	return cmd, strExec
 }
 
-// Gets exec path from desktop.
-func getStrExec(d *desktop) string {
+// Gets exec path from desktop and returns true, if command allows dbus-launch.
+func getStrExec(d *desktop) (string, bool) {
 	if d.exec != "" {
-		return d.exec
+		return d.exec, true
 	}
-	return d.path
+	return d.path, false
 }
 
 // Finds free display for spawning Xorg instance.
