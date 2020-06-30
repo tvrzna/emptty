@@ -23,11 +23,14 @@ __NOTE:__ to enable autologin DEFAULT_USER must be in group nopasswdlogin, other
 
 `DBUS_LAUNCH` Prepends "dbus-launch" before desktop command. Default value is true. If `.emptty` is handled as script, this config is overriden to false.
 
+`XINITRC_LAUNCH` Starts Xorg desktop with calling "\~/.xinitrc" script, if is true, file exists and selected WM/DE is Xorg session, it overrides DBUS_LAUNCH. If `.emptty` is handled as script, this config is overriden to false.
+
 #### /etc/emptty/motd
 Custom file, that prints your own MOTD. Reading this file supports colors (e.g. `\x1b[31m` or `\033[32m`).
 
 #### ${HOME}/.emptty
 Optional configuration file, that could be also handled as shell script. If is not presented, emptty shows selection of installed desktops.
+See [samples](SAMPLES.md#emptty-as-config)
 
 `ENVIRONMENT` Selects, which environment should be defined for following command. Possible values are "xorg" and "wayland", "xorg" is default.
 
@@ -37,12 +40,16 @@ Optional configuration file, that could be also handled as shell script. If is n
 
 #### /etc/emptty/custom-sessions/
 Optional folder for custom sessions, that could be available system-wide, but do not have .desktop file stored on standard paths for Xorg or Wayland sessions. Expected suffix of each file is ".desktop".
+See [samples](SAMPLES.md#custom-sessions)
 
 `Name` Defines name of Desktop Environment/Window Manager.
 
 `Exec` Defines command to start Desktop Environment/Window Manager.
 
 `Environment` Selects, which environment should be defined for following command. Possible values are "xorg" and "wayland", "xorg" is default.
+
+#### ${HOME}./xinitrc
+If config `XINITRC_LAUNCH` is set to true, it enables possibility to use .xinitrc script. See [samples](SAMPLES.md#xinitrc)
 
 ## Build & install
 
