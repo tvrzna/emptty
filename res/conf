@@ -20,3 +20,6 @@ AUTOLOGIN=false
 
 # Starts desktop with calling "dbus-launch".
 DBUS_LAUNCH=true
+
+# Starts Xorg desktop with calling "~/.xinitrc" script, if is true, file exists and selected WM/DE is Xorg session, it overrides DBUS_LAUNCH.
+XINITRC_LAUNCH=false

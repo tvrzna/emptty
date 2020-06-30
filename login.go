@@ -266,9 +266,14 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 
 // Prepares command for starting GUI.
 func prepareGuiCommand(usr *sysuser, d *desktop, conf *config) (*exec.Cmd, string) {
-	strExec, allowDbusLaunch := getStrExec(d)
+	strExec, allowStartupPrefix := getStrExec(d)
 
-	if conf.dbusLaunch && !strings.Contains(strExec, "dbus-launch") && allowDbusLaunch {
+	if d.env == Xorg && conf.xinitrcLaunch && allowStartupPrefix && !strings.Contains(strExec, ".xinitrc") && fileExists(usr.homedir+"/.xinitrc") {
+		allowStartupPrefix = false
+		strExec = usr.homedir + "/.xinitrc " + strExec
+	}
+
+	if conf.dbusLaunch && !strings.Contains(strExec, "dbus-launch") && allowStartupPrefix {
 		strExec = "dbus-launch " + strExec
 	}
 

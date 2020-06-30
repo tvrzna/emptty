@@ -7,26 +7,28 @@ import (
 )
 
 const (
-	confTTYnumber   = "TTY_NUMBER"
-	confSwitchTTY   = "SWITCH_TTY"
-	confPrintIssue  = "PRINT_ISSUE"
-	confDefaultUser = "DEFAULT_USER"
-	confAutologin   = "AUTOLOGIN"
-	confLang        = "LANG"
-	confDbusLaunch  = "DBUS_LAUNCH"
+	confTTYnumber     = "TTY_NUMBER"
+	confSwitchTTY     = "SWITCH_TTY"
+	confPrintIssue    = "PRINT_ISSUE"
+	confDefaultUser   = "DEFAULT_USER"
+	confAutologin     = "AUTOLOGIN"
+	confLang          = "LANG"
+	confDbusLaunch    = "DBUS_LAUNCH"
+	confXinitrcLaunch = "XINITRC_LAUNCH"
 
 	pathConfigFile = "/etc/emptty/conf"
 )
 
 // config defines structure of application configuration.
 type config struct {
-	defaultUser string
-	autologin   bool
-	tty         int
-	switchTTY   bool
-	printIssue  bool
-	lang        string
-	dbusLaunch  bool
+	defaultUser   string
+	autologin     bool
+	tty           int
+	switchTTY     bool
+	printIssue    bool
+	lang          string
+	dbusLaunch    bool
+	xinitrcLaunch bool
 }
 
 // LoadConfig handles loading of application configuration.
@@ -50,6 +52,8 @@ func loadConfig() *config {
 				c.lang = sanitizeValue(value, "en_US.UTF-8")
 			case confDbusLaunch:
 				c.dbusLaunch = parseBool(value, "true")
+			case confXinitrcLaunch:
+				c.xinitrcLaunch = parseBool(value, "false")
 			}
 		})
 		handleErr(err)
