@@ -14,7 +14,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/bgentry/speakeasy"
 	"github.com/msteinert/pam"
 )
 
@@ -77,7 +76,8 @@ func authUser(conf *config) (*sysuser, *pam.Transaction) {
 				hostname, _ := os.Hostname()
 				fmt.Printf("%s login: %s\n", hostname, conf.defaultUser)
 			}
-			return speakeasy.Ask("Password: ")
+			fmt.Print("Password: ")
+			return readPassword()
 		case pam.PromptEchoOn:
 			if conf.autologin {
 				break
