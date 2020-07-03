@@ -1,5 +1,5 @@
 # emptty
-Dead simple Display Manager running in CLI as TTY login, that starts Xorg or Wayland.
+Dead simple CLI Display Manager on TTY
 
 ![](screenshot.png)
 
