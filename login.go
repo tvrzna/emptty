@@ -14,7 +14,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/bgentry/speakeasy"
 	"github.com/msteinert/pam"
 )
 
@@ -77,7 +76,8 @@ func authUser(conf *config) (*sysuser, *pam.Transaction) {
 				hostname, _ := os.Hostname()
 				fmt.Printf("%s login: %s\n", hostname, conf.defaultUser)
 			}
-			return speakeasy.Ask("Password: ")
+			fmt.Print("Password: ")
+			return readPassword()
 		case pam.PromptEchoOn:
 			if conf.autologin {
 				break
@@ -266,9 +266,14 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 
 // Prepares command for starting GUI.
 func prepareGuiCommand(usr *sysuser, d *desktop, conf *config) (*exec.Cmd, string) {
-	strExec := getStrExec(d)
+	strExec, allowStartupPrefix := getStrExec(d)
 
-	if conf.dbusLaunch && !strings.Contains(strExec, "dbus-launch") {
+	if d.env == Xorg && conf.xinitrcLaunch && allowStartupPrefix && !strings.Contains(strExec, ".xinitrc") && fileExists(usr.homedir+"/.xinitrc") {
+		allowStartupPrefix = false
+		strExec = usr.homedir + "/.xinitrc " + strExec
+	}
+
+	if conf.dbusLaunch && !strings.Contains(strExec, "dbus-launch") && allowStartupPrefix {
 		strExec = "dbus-launch " + strExec
 	}
 
@@ -287,12 +292,12 @@ func prepareGuiCommand(usr *sysuser, d *desktop, conf *config) (*exec.Cmd, strin
 	return cmd, strExec
 }
 
-// Gets exec path from desktop.
-func getStrExec(d *desktop) string {
+// Gets exec path from desktop and returns true, if command allows dbus-launch.
+func getStrExec(d *desktop) (string, bool) {
 	if d.exec != "" {
-		return d.exec
+		return d.exec, true
 	}
-	return d.path
+	return d.path, false
 }
 
 // Finds free display for spawning Xorg instance.

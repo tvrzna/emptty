@@ -1,7 +1,7 @@
-.TH EMPTTY 1 "June 2020" "emptty 0.2.0" emptty
+.TH EMPTTY 1 "July 2020" "emptty 0.2.2" emptty
 
 .SH NAME
-emptty \- Dead simple Display Manager running in CLI as TTY login.
+emptty \- Dead simple CLI Display Manager on TTY
 
 .SH SYNOPSIS
 .B emptty [-v] [--version] [-d] [--daemon]
@@ -34,11 +34,21 @@ Preselected user, if AUTOLOGIN is enabled, this user is logged in.
 Enables Autologin, if DEFAULT_USER is defined. Possible values are "true" or "false". Default value is false.
 
 .B NOTE:
-to enable autologin DEFAULT_USER must be in group nopasswdlogin, otherwise user will NOT be authorized.
+to enable autologin DEFAULT_USER must be in group
+.I nopasswdlogin
+, otherwise user will NOT be authorized.
 .IP LANG
 defines locale for all users. Default value is "en_US.UTF-8"
 .IP DBUS_LAUNCH
-Prepends "dbus-launch" before desktop command. Default value is true.
+Prepends "dbus-launch" before desktop command. Default value is true. If
+.I .emptty
+is handled as script, this config is overriden to false.
+.IP XINITRC_LAUNCH
+Starts Xorg desktop with calling
+.I ~/.xinitrc
+script, if is true, file exists and selected WM/DE is Xorg session, it overrides DBUS_LAUNCH. If
+.I .emptty
+is handled as script, this config is overriden to false.
 
 .SH CUSTOM MOTD
 Optional file stored as /etc/emptty/motd
