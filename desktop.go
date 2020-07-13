@@ -58,7 +58,7 @@ type lastSession struct {
 }
 
 // Allows to select desktop, which could be selected.
-func selectDesktop(uid int) *desktop {
+func selectDesktop(uid int, conf *config) *desktop {
 	desktops := listAllDesktops()
 	if len(desktops) == 0 {
 		handleStrErr("Not found any installed desktop.")
@@ -70,7 +70,11 @@ func selectDesktop(uid int) *desktop {
 		fmt.Printf("\n")
 		for i, v := range desktops {
 			if i > 0 {
-				fmt.Print(", ")
+				if conf.verticalSelection {
+					fmt.Print("\n")
+				} else {
+					fmt.Print(", ")
+				}
 			}
 			fmt.Printf("[%d] %s", i, v.name)
 		}

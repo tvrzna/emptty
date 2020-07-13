@@ -7,28 +7,30 @@ import (
 )
 
 const (
-	confTTYnumber     = "TTY_NUMBER"
-	confSwitchTTY     = "SWITCH_TTY"
-	confPrintIssue    = "PRINT_ISSUE"
-	confDefaultUser   = "DEFAULT_USER"
-	confAutologin     = "AUTOLOGIN"
-	confLang          = "LANG"
-	confDbusLaunch    = "DBUS_LAUNCH"
-	confXinitrcLaunch = "XINITRC_LAUNCH"
+	confTTYnumber         = "TTY_NUMBER"
+	confSwitchTTY         = "SWITCH_TTY"
+	confPrintIssue        = "PRINT_ISSUE"
+	confDefaultUser       = "DEFAULT_USER"
+	confAutologin         = "AUTOLOGIN"
+	confLang              = "LANG"
+	confDbusLaunch        = "DBUS_LAUNCH"
+	confXinitrcLaunch     = "XINITRC_LAUNCH"
+	confVerticalSelection = "VERTICAL_SELECTION"
 
 	pathConfigFile = "/etc/emptty/conf"
 )
 
 // config defines structure of application configuration.
 type config struct {
-	defaultUser   string
-	autologin     bool
-	tty           int
-	switchTTY     bool
-	printIssue    bool
-	lang          string
-	dbusLaunch    bool
-	xinitrcLaunch bool
+	defaultUser       string
+	autologin         bool
+	tty               int
+	switchTTY         bool
+	printIssue        bool
+	lang              string
+	dbusLaunch        bool
+	xinitrcLaunch     bool
+	verticalSelection bool
 }
 
 // LoadConfig handles loading of application configuration.
@@ -54,6 +56,8 @@ func loadConfig() *config {
 				c.dbusLaunch = parseBool(value, "true")
 			case confXinitrcLaunch:
 				c.xinitrcLaunch = parseBool(value, "false")
+			case confVerticalSelection:
+				c.verticalSelection = parseBool(value, "false")
 			}
 		})
 		handleErr(err)
@@ -65,6 +69,7 @@ func loadConfig() *config {
 	os.Unsetenv(confDefaultUser)
 	os.Unsetenv(confAutologin)
 	os.Unsetenv(confDbusLaunch)
+	os.Unsetenv(confVerticalSelection)
 
 	return &c
 }

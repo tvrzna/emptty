@@ -42,7 +42,7 @@ func login(conf *config) {
 	d, usrLang := loadUserDesktop(usr.homedir)
 
 	if d == nil {
-		d = selectDesktop(usr.uid)
+		d = selectDesktop(usr.uid, conf)
 	}
 
 	if usrLang != "" {
