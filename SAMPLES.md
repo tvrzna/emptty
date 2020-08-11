@@ -1,7 +1,7 @@
 # emptty - Samples
 
-## \~/.emptty as config
-In your home folder you have to create `.emptty` file. If `environment` is not defined, it assumes xorg.
+## \~/.config/emptty or \~/.emptty as config
+In your .config folder you have to create 'emptty' file or in your home folder you have to create `.emptty` file. If `environment` is not defined, it assumes xorg.
 
 #### Xorg session
 ```
@@ -15,8 +15,8 @@ command=/usr/bin/sway
 environment=wayland
 ```
 
-## \~/.emptty as script
-In your home folder you have to create `.emptty` file. This file needs to have execution permission (`chmod +x ~/.emptty`).
+## \~/.config/emptty or \~/.emptty as script
+In your .config folder you have to create 'emptty' file or in your home folder you have to create `.emptty` file. This file needs to have execution permission (`chmod +x ~/.config/emptty` or `chmod +x ~/.emptty`).
 ```
 #!/bin/sh
 environment=xorg

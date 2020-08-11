@@ -1,4 +1,4 @@
-.TH EMPTTY 1 "July 2020" "emptty 0.2.2" emptty
+.TH EMPTTY 1 "August 2020" "emptty 0.2.2" emptty
 
 .SH NAME
 emptty \- Dead simple CLI Display Manager on TTY
@@ -62,7 +62,9 @@ or
 )
 
 .SH USER CONFIG
-Optional file stored as ${HOME}/.emptty
+Optional file stored as ${HOME}/.config/emptty or ${HOME}/.emptty
+
+Configuration file stored as ${HOME}/.config/emptty has higher priority on loading.
 .IP ENVIRONMENT
 Selects, which environment should be defined for following command. Possible values are "xorg" and "wayland", "xorg" is default.
 .IP COMMAND

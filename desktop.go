@@ -165,24 +165,27 @@ func getDesktop(path string, env enEnvironment) *desktop {
 
 // Parses user-specified configuration from file and returns it as desktop structure.
 func loadUserDesktop(homeDir string) (*desktop, string) {
-	confFile := homeDir + "/.emptty"
+	homeDirConf := homeDir + "/.emptty"
+	confDirConf := homeDir + "/.config/emptty"
 
 	var lang string
-	if fileExists(confFile) {
-		d := desktop{isUser: true, path: confFile, env: Xorg}
+	for _, confFile := range []string{confDirConf, homeDirConf} {
+		if fileExists(confFile) {
+			d := desktop{isUser: true, path: confFile, env: Xorg}
 
-		err := readProperties(confFile, func(key string, value string) {
-			switch key {
-			case confCommand:
-				d.exec = sanitizeValue(value, "")
-			case confEnvironment:
-				d.env = parseEnv(value, constEnvXorg)
-			case confLang:
-				lang = value
-			}
-		})
-		handleErr(err)
-		return &d, lang
+			err := readProperties(confFile, func(key string, value string) {
+				switch key {
+				case confCommand:
+					d.exec = sanitizeValue(value, "")
+				case confEnvironment:
+					d.env = parseEnv(value, constEnvXorg)
+				case confLang:
+					lang = value
+				}
+			})
+			handleErr(err)
+			return &d, lang
+		}
 	}
 
 	return nil, lang

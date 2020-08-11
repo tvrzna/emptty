@@ -32,8 +32,9 @@ __NOTE:__ to enable autologin DEFAULT_USER must be in group nopasswdlogin, other
 #### /etc/emptty/motd
 Custom file, that prints your own MOTD. Reading this file supports colors (e.g. `\x1b[31m` or `\033[32m`).
 
-#### ${HOME}/.emptty
+#### ${HOME}/.config/emptty or ${HOME}/.emptty
 Optional configuration file, that could be also handled as shell script. If is not presented, emptty shows selection of installed desktops.
+Configuration file stored as `${HOME}/.config/emptty` has higher priority on loading.
 See [samples](SAMPLES.md#emptty-as-config)
 
 `ENVIRONMENT` Selects, which environment should be defined for following command. Possible values are "xorg" and "wayland", "xorg" is default.
