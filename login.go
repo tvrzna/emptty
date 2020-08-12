@@ -268,7 +268,10 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 func prepareGuiCommand(usr *sysuser, d *desktop, conf *config) (*exec.Cmd, string) {
 	strExec, allowStartupPrefix := getStrExec(d)
 
+	startScript := false
+
 	if d.env == Xorg && conf.xinitrcLaunch && allowStartupPrefix && !strings.Contains(strExec, ".xinitrc") && fileExists(usr.homedir+"/.xinitrc") {
+		startScript = true
 		allowStartupPrefix = false
 		strExec = usr.homedir + "/.xinitrc " + strExec
 	}
@@ -281,7 +284,11 @@ func prepareGuiCommand(usr *sysuser, d *desktop, conf *config) (*exec.Cmd, strin
 
 	var cmd *exec.Cmd
 	if len(arrExec) > 1 {
-		cmd = exec.Command(arrExec[0], arrExec...)
+		if startScript {
+			cmd = exec.Command("/bin/sh", arrExec...)
+		} else {
+			cmd = exec.Command(arrExec[0], arrExec...)
+		}
 	} else {
 		cmd = exec.Command(arrExec[0])
 	}
