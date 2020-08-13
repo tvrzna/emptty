@@ -12,7 +12,6 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
-	"time"
 
 	"github.com/msteinert/pam"
 )
@@ -174,7 +173,7 @@ func wayland(usr *sysuser, d *desktop, conf *config) {
 
 	// start Wayland
 	wayland, strExec := prepareGuiCommand(usr, d, conf)
-	registerInterruptHandler(wayland)
+	registerInterruptHandler(nil, wayland)
 
 	log.Print("Starting " + strExec)
 	wayland.Stdout = log.Writer()
@@ -231,17 +230,13 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	}
 	log.Print("Started Xorg")
 
-	for i := 0; i < 50; i++ {
-		if fileExists("/tmp/.X11-unix/X" + freeDisplay) {
-			break
-		} else {
-			time.Sleep(10 * time.Millisecond)
-		}
-	}
+	disp := &xdisplay{}
+	handleErr(disp.openXDisplay())
+	defer disp.openXDisplay()
 
 	// start xinit
 	xinit, strExec := prepareGuiCommand(usr, d, conf)
-	registerInterruptHandler(xorg, xinit)
+	registerInterruptHandler(disp, xorg, xinit)
 	log.Print("Starting " + strExec)
 	xinit.Stdout = log.Writer()
 	xinit.Stderr = log.Writer()
@@ -319,19 +314,22 @@ func getFreeXDisplay() int {
 }
 
 // Registers interrupt handler, that interrupts all mentioned Cmds.
-func registerInterruptHandler(cmds ...*exec.Cmd) {
+func registerInterruptHandler(disp *xdisplay, cmds ...*exec.Cmd) {
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGKILL)
-	go handleInterrupt(c, cmds...)
+	go handleInterrupt(c, disp, cmds...)
 }
 
 // Catch interrupt signal chan and interrupts all mentioned Cmds.
-func handleInterrupt(c chan os.Signal, cmds ...*exec.Cmd) {
+func handleInterrupt(c chan os.Signal, disp *xdisplay, cmds ...*exec.Cmd) {
 	<-c
 	log.Print("Catched interrupt signal")
 	for _, cmd := range cmds {
 		cmd.Process.Signal(os.Interrupt)
 		cmd.Wait()
+	}
+	if disp != nil {
+		disp.closeXDisplay()
 	}
 	os.Exit(1)
 }

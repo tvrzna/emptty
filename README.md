@@ -62,9 +62,11 @@ If config `XINITRC_LAUNCH` is set to true, it enables possibility to use .xinitr
 - go
 - gcc
 - pam-devel
+- xlib-devel
 
 ### Dependencies
 - pam
+- xlib
 - xorg / xorg-server (optional)
 - xauth / xorg-xauth (required for xorg)
 - mcookie (required for xorg)
