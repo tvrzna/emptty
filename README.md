@@ -3,6 +3,8 @@ Dead simple CLI Display Manager on TTY
 
 ![](screenshot.png)
 
+[![Packaging status](https://repology.org/badge/vertical-allrepos/emptty.svg)](https://repology.org/project/emptty/versions)
+
 ## Configuration
 
 #### /etc/emptty/conf
@@ -25,11 +27,14 @@ __NOTE:__ to enable autologin DEFAULT_USER must be in group nopasswdlogin, other
 
 `XINITRC_LAUNCH` Starts Xorg desktop with calling "\~/.xinitrc" script, if is true, file exists and selected WM/DE is Xorg session, it overrides DBUS_LAUNCH. If `.emptty` is handled as script, this config is overriden to false.
 
+`VERTICAL_SELECTION` Prints available WM/DE each on new line instead of printing on single line.
+
 #### /etc/emptty/motd
 Custom file, that prints your own MOTD. Reading this file supports colors (e.g. `\x1b[31m` or `\033[32m`).
 
-#### ${HOME}/.emptty
+#### ${HOME}/.config/emptty or ${HOME}/.emptty
 Optional configuration file, that could be also handled as shell script. If is not presented, emptty shows selection of installed desktops.
+Configuration file stored as `${HOME}/.config/emptty` has higher priority on loading.
 See [samples](SAMPLES.md#emptty-as-config)
 
 `ENVIRONMENT` Selects, which environment should be defined for following command. Possible values are "xorg" and "wayland", "xorg" is default.
@@ -57,9 +62,11 @@ If config `XINITRC_LAUNCH` is set to true, it enables possibility to use .xinitr
 - go
 - gcc
 - pam-devel
+- libx11-devel (libx11)
 
 ### Dependencies
 - pam
+- libx11
 - xorg / xorg-server (optional)
 - xauth / xorg-xauth (required for xorg)
 - mcookie (required for xorg)

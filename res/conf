@@ -23,3 +23,6 @@ DBUS_LAUNCH=true
 
 # Starts Xorg desktop with calling "~/.xinitrc" script, if is true, file exists and selected WM/DE is Xorg session, it overrides DBUS_LAUNCH.
 XINITRC_LAUNCH=false
+
+# Prints available WM/DE each on new line instead of printing on single line.
+VERTICAL_SELECTION=false

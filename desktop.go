@@ -58,7 +58,7 @@ type lastSession struct {
 }
 
 // Allows to select desktop, which could be selected.
-func selectDesktop(uid int) *desktop {
+func selectDesktop(uid int, conf *config) *desktop {
 	desktops := listAllDesktops()
 	if len(desktops) == 0 {
 		handleStrErr("Not found any installed desktop.")
@@ -70,7 +70,11 @@ func selectDesktop(uid int) *desktop {
 		fmt.Printf("\n")
 		for i, v := range desktops {
 			if i > 0 {
-				fmt.Print(", ")
+				if conf.verticalSelection {
+					fmt.Print("\n")
+				} else {
+					fmt.Print(", ")
+				}
 			}
 			fmt.Printf("[%d] %s", i, v.name)
 		}
@@ -161,24 +165,27 @@ func getDesktop(path string, env enEnvironment) *desktop {
 
 // Parses user-specified configuration from file and returns it as desktop structure.
 func loadUserDesktop(homeDir string) (*desktop, string) {
-	confFile := homeDir + "/.emptty"
+	homeDirConf := homeDir + "/.emptty"
+	confDirConf := homeDir + "/.config/emptty"
 
 	var lang string
-	if fileExists(confFile) {
-		d := desktop{isUser: true, path: confFile, env: Xorg}
+	for _, confFile := range []string{confDirConf, homeDirConf} {
+		if fileExists(confFile) {
+			d := desktop{isUser: true, path: confFile, env: Xorg}
 
-		err := readProperties(confFile, func(key string, value string) {
-			switch key {
-			case confCommand:
-				d.exec = sanitizeValue(value, "")
-			case confEnvironment:
-				d.env = parseEnv(value, constEnvXorg)
-			case confLang:
-				lang = value
-			}
-		})
-		handleErr(err)
-		return &d, lang
+			err := readProperties(confFile, func(key string, value string) {
+				switch key {
+				case confCommand:
+					d.exec = sanitizeValue(value, "")
+				case confEnvironment:
+					d.env = parseEnv(value, constEnvXorg)
+				case confLang:
+					lang = value
+				}
+			})
+			handleErr(err)
+			return &d, lang
+		}
 	}
 
 	return nil, lang

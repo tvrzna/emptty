@@ -1,2 +1,4 @@
+github.com/bgentry/speakeasy v0.1.0 h1:ByYyxL9InA1OWqxJqqp2A5pYHUrCiAL6K3J+LKSsQkY=
+github.com/bgentry/speakeasy v0.1.0/go.mod h1:+zsyZBPWlz7T6j88CTgSN5bM796AkVf0kBD4zp0CCIs=
 github.com/msteinert/pam v0.0.0-20190215180659-f29b9f28d6f9 h1:ZivaaKmjs9q90zi6I4gTLW6tbVGtlBjellr3hMYaly0=
 github.com/msteinert/pam v0.0.0-20190215180659-f29b9f28d6f9/go.mod h1:np1wUFZ6tyoke22qDJZY40URn9Ae51gX7ljIWXN5TJs=
