@@ -1,4 +1,4 @@
-.TH EMPTTY 1 "August 2020" "emptty 0.2.3" emptty
+.TH EMPTTY 1 "September 2020" "emptty 0.2.3" emptty
 
 .SH NAME
 emptty \- Dead simple CLI Display Manager on TTY
@@ -37,6 +37,8 @@ Enables Autologin, if DEFAULT_USER is defined. Possible values are "true" or "fa
 to enable autologin DEFAULT_USER must be in group
 .I nopasswdlogin
 , otherwise user will NOT be authorized.
+.IP AUTOLOGIN_SESSION
+The default session used, if Autologin is enabled. If session is not found in list of session, it proceeds to manual selection.
 .IP LANG
 defines locale for all users. Default value is "en_US.UTF-8"
 .IP DBUS_LAUNCH

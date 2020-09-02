@@ -12,6 +12,7 @@ const (
 	confPrintIssue        = "PRINT_ISSUE"
 	confDefaultUser       = "DEFAULT_USER"
 	confAutologin         = "AUTOLOGIN"
+	confAutologinSession  = "AUTOLOGIN_SESSION"
 	confLang              = "LANG"
 	confDbusLaunch        = "DBUS_LAUNCH"
 	confXinitrcLaunch     = "XINITRC_LAUNCH"
@@ -24,6 +25,7 @@ const (
 type config struct {
 	defaultUser       string
 	autologin         bool
+	autologinSession  string
 	tty               int
 	switchTTY         bool
 	printIssue        bool
@@ -35,7 +37,7 @@ type config struct {
 
 // LoadConfig handles loading of application configuration.
 func loadConfig() *config {
-	c := config{tty: 0, switchTTY: true, printIssue: true, defaultUser: "", autologin: false, lang: "en_US.UTF-8", dbusLaunch: true}
+	c := config{tty: 0, switchTTY: true, printIssue: true, defaultUser: "", autologin: false, autologinSession: "", lang: "en_US.UTF-8", dbusLaunch: true}
 
 	if fileExists(pathConfigFile) {
 		err := readProperties(pathConfigFile, func(key string, value string) {
@@ -50,6 +52,8 @@ func loadConfig() *config {
 				c.defaultUser = sanitizeValue(value, "")
 			case confAutologin:
 				c.autologin = parseBool(value, "false")
+			case confAutologinSession:
+				c.autologinSession = sanitizeValue(value, "")
 			case confLang:
 				c.lang = sanitizeValue(value, "en_US.UTF-8")
 			case confDbusLaunch:
@@ -68,6 +72,7 @@ func loadConfig() *config {
 	os.Unsetenv(confPrintIssue)
 	os.Unsetenv(confDefaultUser)
 	os.Unsetenv(confAutologin)
+	os.Unsetenv(confAutologinSession)
 	os.Unsetenv(confDbusLaunch)
 	os.Unsetenv(confVerticalSelection)
 

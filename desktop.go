@@ -66,6 +66,15 @@ func selectDesktop(uid int, conf *config) *desktop {
 
 	lastSessions := loadLastSessions()
 
+	if conf.autologin && conf.autologinSession != "" {
+		for _, d := range desktops {
+			if strings.HasSuffix(d.exec, conf.autologinSession) {
+				setLastSession(uid, d, lastSessions)
+				return d
+			}
+		}
+	}
+
 	for true {
 		fmt.Printf("\n")
 		for i, v := range desktops {
