@@ -39,7 +39,7 @@ func setTerminalEcho(fd []uintptr, status bool) error {
 	if !status {
 		flag = "-"
 	}
-	_, err := syscall.ForkExec("/usr/bin/stty", []string{"stty", flag + "echo"}, &syscall.ProcAttr{Dir: "", Files: fd})
+	_, err := syscall.ForkExec("/bin/stty", []string{"stty", flag + "echo"}, &syscall.ProcAttr{Dir: "", Files: fd})
 	return err
 }
 
