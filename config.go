@@ -3,7 +3,6 @@ package main
 import (
 	"os"
 	"strconv"
-	"strings"
 )
 
 const (
@@ -95,14 +94,6 @@ func parseBool(strBool string, defaultValue string) bool {
 		return false
 	}
 	return val
-}
-
-// Sanitize value.
-func sanitizeValue(value string, defaultValue string) string {
-	if value == "" {
-		return defaultValue
-	}
-	return strings.TrimSpace(value)
 }
 
 // Returns TTY number converted to string

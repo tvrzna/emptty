@@ -22,7 +22,8 @@ const (
 	constEnvXorg    = "xorg"
 	constEnvWayland = "wayland"
 
-	pathLastSessions      = "/etc/emptty/last-sessions"
+	pathLastSession       = "/.cache/emptty/last-session"
+	pathLastSessionsInEtc = "/etc/emptty/last-sessions"
 	pathXorgSessions      = "/usr/share/xsessions/"
 	pathWaylandSessions   = "/usr/share/wayland-sessions/"
 	pathCustomSessions    = "/etc/emptty/custom-sessions/"
@@ -65,12 +66,14 @@ func selectDesktop(usr *sysuser, conf *config) *desktop {
 		handleStrErr("Not found any installed desktop.")
 	}
 
-	lastSessions := loadLastSessions()
+	lastDesktop := getLastDesktop(usr, desktops)
 
 	if conf.autologin && conf.autologinSession != "" {
 		for _, d := range desktops {
 			if strings.HasSuffix(d.exec, conf.autologinSession) {
-				setLastSession(usr.uid, d, lastSessions)
+				if isLastDesktopForSave(usr, desktops[lastDesktop], d) {
+					setUserLastSession(usr, d)
+				}
 				return d
 			}
 		}
@@ -88,7 +91,6 @@ func selectDesktop(usr *sysuser, conf *config) *desktop {
 			}
 			fmt.Printf("[%d] %s", i, v.name)
 		}
-		lastDesktop := getLastDesktop(usr.uid, desktops, lastSessions)
 		fmt.Printf("\nSelect [%d]: ", lastDesktop)
 
 		selection, _ := bufio.NewReader(os.Stdin).ReadString('\n')
@@ -103,7 +105,9 @@ func selectDesktop(usr *sysuser, conf *config) *desktop {
 		}
 		if int(id) < len(desktops) {
 			d := desktops[id]
-			setLastSession(usr.uid, d, lastSessions)
+			if isLastDesktopForSave(usr, desktops[lastDesktop], d) {
+				setUserLastSession(usr, d)
+			}
 			return d
 		}
 	}
@@ -208,8 +212,8 @@ func loadUserDesktop(homeDir string) (*desktop, string) {
 }
 
 // Gets index of last used desktop.
-func getLastDesktop(uid int, desktops []*desktop, lastSessions []*lastSession) int {
-	l := getLastSession(uid, lastSessions)
+func getLastDesktop(usr *sysuser, desktops []*desktop) int {
+	l := getUserLastSession(usr)
 	if l != nil {
 		for i, d := range desktops {
 			if d.exec == l.exec && d.env == l.env {
@@ -220,6 +224,49 @@ func getLastDesktop(uid int, desktops []*desktop, lastSessions []*lastSession) i
 	return 0
 }
 
+// Gets user last session stored in his own home directory.
+func getUserLastSession(usr *sysuser) *lastSession {
+	path := usr.homedir + pathLastSession
+	if fileExists(path) {
+		content, err := ioutil.ReadFile(path)
+		if err == nil {
+			l := lastSession{}
+
+			strContent := strings.TrimSpace(string(content))
+
+			arrContent := strings.Split(strContent, ";")
+			l.exec = strings.TrimSpace(arrContent[0])
+			l.env = parseEnv(arrContent[1], constEnvXorg)
+
+			return &l
+		}
+	}
+	return getLastSession(usr.uid, loadLastSessions())
+}
+
+// Sets Last session for declared sysuser and saves it into user's home directory.
+func setUserLastSession(usr *sysuser, d *desktop) {
+	path := usr.homedir + pathLastSession
+	data := fmt.Sprintf("%s;%s\n", d.exec, stringifyEnv(d.env))
+	err := mkDirsForFile(path, 0744, usr)
+	if err != nil {
+		log.Print(err)
+	}
+	err = ioutil.WriteFile(path, []byte(data), 0600)
+	if err == nil {
+		err = os.Chown(path, usr.uid, usr.gid)
+	}
+	if err != nil {
+		log.Print(err)
+	}
+}
+
+// Checks, if user last session file already exists.
+func isLastDesktopForSave(usr *sysuser, lastDesktop *desktop, currentDesktop *desktop) bool {
+	return !fileExists(usr.homedir+pathLastSession) || lastDesktop.exec != currentDesktop.exec || lastDesktop.env != currentDesktop.env
+}
+
+// Deprecated: last session is now stored in user's home directory
 // Gets Last Session of declared uid.
 func getLastSession(uid int, lastSessions []*lastSession) *lastSession {
 	if lastSessions != nil {
@@ -232,25 +279,12 @@ func getLastSession(uid int, lastSessions []*lastSession) *lastSession {
 	return nil
 }
 
-// Sets Last session for declared uid and saves all to file.
-func setLastSession(uid int, d *desktop, lastSessions []*lastSession) {
-	session := getLastSession(uid, lastSessions)
-
-	if session == nil {
-		lastSessions = append(lastSessions, &lastSession{uid: uid, exec: d.exec, env: d.env})
-	} else {
-		session.exec = d.exec
-		session.env = d.env
-	}
-
-	saveLastSessions(lastSessions)
-}
-
+// Deprecated: last session is now stored in user's home directory
 // Load all last sessions from file.
 func loadLastSessions() []*lastSession {
 	var result []*lastSession
-	if fileExists(pathLastSessions) {
-		readProperties(pathLastSessions, func(key string, value string) {
+	if fileExists(pathLastSessionsInEtc) {
+		readProperties(pathLastSessionsInEtc, func(key string, value string) {
 			l := lastSession{}
 
 			uid, err := strconv.ParseInt(key, 10, 32)
@@ -267,20 +301,6 @@ func loadLastSessions() []*lastSession {
 		})
 	}
 	return result
-}
-
-// Save all last sessions to file.
-func saveLastSessions(lastSessions []*lastSession) {
-	var arr []string
-	for _, s := range lastSessions {
-		arr = append(arr, fmt.Sprintf("%d=%s;%s", s.uid, s.exec, stringifyEnv(s.env)))
-	}
-	resultStr := strings.Join(arr, "\n")
-
-	err := ioutil.WriteFile(pathLastSessions, []byte(resultStr), 0600)
-	if err != nil {
-		log.Print(err)
-	}
 }
 
 // Parse input env and selects corresponding environment.

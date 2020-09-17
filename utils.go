@@ -94,3 +94,33 @@ func initLogger() {
 		log.SetOutput(f)
 	}
 }
+
+// Sanitize value.
+func sanitizeValue(value string, defaultValue string) string {
+	if value == "" {
+		return defaultValue
+	}
+	return strings.TrimSpace(value)
+}
+
+// Makes directories up to last part of path (to make sure to not make dir, that is named as result file)
+func mkDirsForFile(path string, perm os.FileMode, usr *sysuser) error {
+	if !fileExists(path) && path != "" {
+		arrPath := strings.Split(path, "/")
+		for i, _ := range arrPath {
+			if i < len(arrPath)-1 {
+				newPath := strings.Join(arrPath[:i+1], "/")
+				if newPath != "" && !fileExists(newPath) {
+					err := os.Mkdir(newPath, perm)
+					if err == nil {
+						err = os.Chown(newPath, usr.uid, usr.gid)
+					}
+					if err != nil {
+						return err
+					}
+				}
+			}
+		}
+	}
+	return nil
+}
