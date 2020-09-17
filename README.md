@@ -45,8 +45,8 @@ See [samples](SAMPLES.md#emptty-as-config)
 
 `LANG` Defines locale for logged user, has higher priority than LANG from global configuration
 
-#### /etc/emptty/custom-sessions/
-Optional folder for custom sessions, that could be available system-wide, but do not have .desktop file stored on standard paths for Xorg or Wayland sessions. Expected suffix of each file is ".desktop".
+#### /etc/emptty/custom-sessions/ or ${HOME}/.config/emptty-custom-sessions/
+Optional folders for custom sessions, that could be available system-wide (in case of `/etc/emptty/custom-sessions/`) or user-specific (in case of `${HOME}/.config/emptty-custom-sessions/`), but do not have .desktop file stored on standard paths for Xorg or Wayland sessions. Expected suffix of each file is ".desktop".
 See [samples](SAMPLES.md#custom-sessions)
 
 `Name` Defines name of Desktop Environment/Window Manager.

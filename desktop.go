@@ -22,10 +22,11 @@ const (
 	constEnvXorg    = "xorg"
 	constEnvWayland = "wayland"
 
-	pathLastSessions    = "/etc/emptty/last-sessions"
-	pathXorgSessions    = "/usr/share/xsessions/"
-	pathWaylandSessions = "/usr/share/wayland-sessions/"
-	pathCustomSessions  = "/etc/emptty/custom-sessions/"
+	pathLastSessions      = "/etc/emptty/last-sessions"
+	pathXorgSessions      = "/usr/share/xsessions/"
+	pathWaylandSessions   = "/usr/share/wayland-sessions/"
+	pathCustomSessions    = "/etc/emptty/custom-sessions/"
+	pathUserCustomSession = "/.config/emptty-custom-sessions/"
 )
 
 // enEnvironment defines possible Environments.
@@ -58,8 +59,8 @@ type lastSession struct {
 }
 
 // Allows to select desktop, which could be selected.
-func selectDesktop(uid int, conf *config) *desktop {
-	desktops := listAllDesktops()
+func selectDesktop(usr *sysuser, conf *config) *desktop {
+	desktops := listAllDesktops(usr)
 	if len(desktops) == 0 {
 		handleStrErr("Not found any installed desktop.")
 	}
@@ -69,7 +70,7 @@ func selectDesktop(uid int, conf *config) *desktop {
 	if conf.autologin && conf.autologinSession != "" {
 		for _, d := range desktops {
 			if strings.HasSuffix(d.exec, conf.autologinSession) {
-				setLastSession(uid, d, lastSessions)
+				setLastSession(usr.uid, d, lastSessions)
 				return d
 			}
 		}
@@ -87,7 +88,7 @@ func selectDesktop(uid int, conf *config) *desktop {
 			}
 			fmt.Printf("[%d] %s", i, v.name)
 		}
-		lastDesktop := getLastDesktop(uid, desktops, lastSessions)
+		lastDesktop := getLastDesktop(usr.uid, desktops, lastSessions)
 		fmt.Printf("\nSelect [%d]: ", lastDesktop)
 
 		selection, _ := bufio.NewReader(os.Stdin).ReadString('\n')
@@ -102,7 +103,7 @@ func selectDesktop(uid int, conf *config) *desktop {
 		}
 		if int(id) < len(desktops) {
 			d := desktops[id]
-			setLastSession(uid, d, lastSessions)
+			setLastSession(usr.uid, d, lastSessions)
 			return d
 		}
 	}
@@ -110,7 +111,7 @@ func selectDesktop(uid int, conf *config) *desktop {
 }
 
 // List all installed desktops and return their exec commands.
-func listAllDesktops() []*desktop {
+func listAllDesktops(usr *sysuser) []*desktop {
 	var result []*desktop
 
 	// load Xorg desktops
@@ -129,6 +130,12 @@ func listAllDesktops() []*desktop {
 	customDesktops := listDesktops(pathCustomSessions, Custom)
 	if customDesktops != nil && len(customDesktops) > 0 {
 		result = append(result, customDesktops...)
+	}
+
+	// load custom user desktops
+	customUserDesktops := listDesktops(usr.homedir+pathUserCustomSession, Custom)
+	if customUserDesktops != nil && len(customUserDesktops) > 0 {
+		result = append(result, customUserDesktops...)
 	}
 
 	return result

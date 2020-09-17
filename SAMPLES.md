@@ -39,14 +39,22 @@ exec dbus-launch $@
 
 
 ## Custom sessions
+
+#### User-specific
+Create folder custom-sessions as super user
+```
+$ mkdir -p ~/.config/emptty-custom-sessions/
+```
+
+#### System-wide
 Create folder custom-sessions as super user
 ```
 $ sudo mkdir -p /etc/emptty/custom-sessions
 ```
 
-In that folder you can paste your desktop files. If `environment` is not defined, it assumes xorg.
+In these folders you can paste your desktop files. If `environment` is not defined, it assumes xorg.
 
-#### Xorg session
+### Xorg session
 sowm.desktop
 
 ```
@@ -56,7 +64,7 @@ Environment=xorg
 ```
 
 
-#### Wayland session
+### Wayland session
 sway.desktop
 
 ```
