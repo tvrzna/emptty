@@ -16,8 +16,22 @@ const (
 	confDbusLaunch        = "DBUS_LAUNCH"
 	confXinitrcLaunch     = "XINITRC_LAUNCH"
 	confVerticalSelection = "VERTICAL_SELECTION"
+	confLogging           = "LOGGING"
 
 	pathConfigFile = "/etc/emptty/conf"
+
+	constLogDefault   = "default"
+	constLogAppending = "appending"
+	constLogDisabled  = "disabled"
+)
+
+// enLogging defines possible option how to handle configuration.
+type enLogging int
+
+const (
+	Default enLogging = iota + 1
+	Appending
+	Disabled
 )
 
 // config defines structure of application configuration.
@@ -32,11 +46,12 @@ type config struct {
 	dbusLaunch        bool
 	xinitrcLaunch     bool
 	verticalSelection bool
+	logging           enLogging
 }
 
 // LoadConfig handles loading of application configuration.
 func loadConfig() *config {
-	c := config{tty: 0, switchTTY: true, printIssue: true, defaultUser: "", autologin: false, autologinSession: "", lang: "en_US.UTF-8", dbusLaunch: true}
+	c := config{tty: 0, switchTTY: true, printIssue: true, defaultUser: "", autologin: false, autologinSession: "", lang: "en_US.UTF-8", dbusLaunch: true, logging: Default}
 
 	if fileExists(pathConfigFile) {
 		err := readProperties(pathConfigFile, func(key string, value string) {
@@ -61,6 +76,8 @@ func loadConfig() *config {
 				c.xinitrcLaunch = parseBool(value, "false")
 			case confVerticalSelection:
 				c.verticalSelection = parseBool(value, "false")
+			case confLogging:
+				c.logging = parseLogging(value, constLogDefault)
 			}
 		})
 		handleErr(err)
@@ -74,6 +91,7 @@ func loadConfig() *config {
 	os.Unsetenv(confAutologinSession)
 	os.Unsetenv(confDbusLaunch)
 	os.Unsetenv(confVerticalSelection)
+	os.Unsetenv(confLogging)
 
 	return &c
 }
@@ -94,6 +112,20 @@ func parseBool(strBool string, defaultValue string) bool {
 		return false
 	}
 	return val
+}
+
+// Parse logging option
+func parseLogging(strLogging string, defaultValue string) enLogging {
+	val := sanitizeValue(strLogging, defaultValue)
+	switch val {
+	case constLogDisabled:
+		return Disabled
+	case constLogAppending:
+		return Appending
+	case constLogDefault:
+		return Default
+	}
+	return Default
 }
 
 // Returns TTY number converted to string

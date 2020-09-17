@@ -29,3 +29,6 @@ XINITRC_LAUNCH=false
 
 # Prints available WM/DE each on new line instead of printing on single line.
 VERTICAL_SELECTION=false
+
+# Defines the way, how is logging handled. Possible values are "default", "appending" or "disabled".
+#LOGGING=default

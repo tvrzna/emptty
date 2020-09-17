@@ -31,6 +31,8 @@ __NOTE:__ to enable autologin DEFAULT_USER must be in group nopasswdlogin, other
 
 `VERTICAL_SELECTION` Prints available WM/DE each on new line instead of printing on single line.
 
+`LOGGING` Defines the way, how is logging handled. Possible values are "default", "appending" or "disabled". Default value is "default".
+
 #### /etc/emptty/motd
 Custom file, that prints your own MOTD. Reading this file supports colors (e.g. `\x1b[31m` or `\033[32m`).
 
@@ -57,6 +59,24 @@ See [samples](SAMPLES.md#custom-sessions)
 
 #### ${HOME}./xinitrc
 If config `XINITRC_LAUNCH` is set to true, it enables possibility to use .xinitrc script. See [samples](SAMPLES.md#xinitrc)
+
+## Logging
+As it is mentioned in configuration, there are three options to handle logging of emptty. The logs contains not just logs from emptty, but also from Xorg (if used) and user's WM/DE.
+
+#### default
+This option provides simple solution, when current instance of `emptty` logs into `/var/log/emptty` and the previous version is stored as `/var/log/emptty.old`.
+
+__NOTE:__ Current instance always move previous log into old file, if `emptty` crashes and is started again, previous log is in `/var/log/emptty.old`.
+
+#### appending
+This option provides functionality that logs everything into `/var/log/emptty` and does not handle log rotation by itself. It leaves the option for user to handle it himself (e.g. with logrotate).
+
+__NOTE:__ Appending without roration could cause large log file, be sure that log file is rotated.
+
+#### disabled
+This option points all log into `/dev/null`, so no log is available.
+
+__NOTE:__ If any issue starts to appear and you want to report it, ensure you do not use this option.
 
 ## Build & install
 
