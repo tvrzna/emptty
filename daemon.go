@@ -71,13 +71,13 @@ func printIssue() {
 		if err == nil {
 			issue := string(bIssue)
 			vars := []issueVariable{
-				issueVariable{"\\d", []string{"/usr/bin/date"}},
-				issueVariable{"\\l", []string{"/usr/bin/ps", "-p", strconv.Itoa(os.Getpid()), "-o", "tty", "--no-headers"}},
+				issueVariable{"\\d", []string{"/bin/date"}},
+				issueVariable{"\\l", []string{"/bin/ps", "-p", strconv.Itoa(os.Getpid()), "-o", "tty", "--no-headers"}},
 				issueVariable{"\\m", []string{"/usr/bin/uname", "-m"}},
 				issueVariable{"\\n", []string{"/usr/bin/uname", "-n"}},
 				issueVariable{"\\r", []string{"/usr/bin/uname", "-r"}},
 				issueVariable{"\\s", []string{"/usr/bin/uname", "-s"}},
-				issueVariable{"\\t", []string{"/usr/bin/date", "+\\%T"}},
+				issueVariable{"\\t", []string{"/bin/date", "+%T"}},
 			}
 
 			for _, variable := range vars {
