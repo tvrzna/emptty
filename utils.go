@@ -10,9 +10,9 @@ import (
 )
 
 const (
-	pathLogFileNull = "/dev/null"
-	pathLogFile     = "/var/log/emptty"
-	pathLogFileOld  = "/var/log/emptty.old"
+	pathLogFileNull      = "/dev/null"
+	pathLogFile          = "/var/log/emptty"
+	pathLogFileOldSuffix = ".old"
 )
 
 // propertyFunc defines method to be invoked during readProperties method for each record.
@@ -86,11 +86,14 @@ func handleArgs() {
 // Initialize logger to file defined by pathLogFile.
 func initLogger(conf *config) {
 	logFilePath := pathLogFile
+	if conf.loggingFile != "" {
+		logFilePath = conf.loggingFile
+	}
 
 	if conf.logging == Default {
-		if fileExists(pathLogFile) {
-			os.Remove(pathLogFileOld)
-			os.Rename(pathLogFile, pathLogFileOld)
+		if fileExists(logFilePath) {
+			os.Remove(logFilePath + pathLogFileOldSuffix)
+			os.Rename(logFilePath, logFilePath+pathLogFileOldSuffix)
 		}
 	} else if conf.logging == Disabled {
 		logFilePath = pathLogFileNull

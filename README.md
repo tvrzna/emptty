@@ -35,6 +35,9 @@ __NOTE:__ to enable autologin DEFAULT_USER must be in group nopasswdlogin, other
 
 `XORG_ARGS` Arguments passed to Xorg server.
 
+`LOGGING_FILE` Overrides path of log file. Default value is `/var/log/emptty`.
+__NOTE:__ It expects existence of directories to defined logging file.
+
 #### /etc/emptty/motd
 Custom file, that prints your own MOTD. Reading this file supports colors (e.g. `\x1b[31m` or `\033[32m`).
 
@@ -64,6 +67,7 @@ If config `XINITRC_LAUNCH` is set to true, it enables possibility to use .xinitr
 
 ## Logging
 As it is mentioned in configuration, there are three options to handle logging of emptty. The logs contains not just logs from emptty, but also from Xorg (if used) and user's WM/DE.
+Described log location could differ according configuration `LOGGING_FILE`, that is stored in `/etc/emptty/conf`.
 
 #### default
 This option provides simple solution, when current instance of `emptty` logs into `/var/log/emptty` and the previous version is stored as `/var/log/emptty.old`.

@@ -18,6 +18,7 @@ const (
 	confVerticalSelection = "VERTICAL_SELECTION"
 	confLogging           = "LOGGING"
 	confXorgArgs          = "XORG_ARGS"
+	confLoggingFile       = "LOGGING_FILE"
 
 	pathConfigFile = "/etc/emptty/conf"
 
@@ -49,6 +50,7 @@ type config struct {
 	verticalSelection bool
 	logging           enLogging
 	xorgArgs          string
+	loggingFile       string
 }
 
 // LoadConfig handles loading of application configuration.
@@ -64,6 +66,7 @@ func loadConfig() *config {
 		dbusLaunch:       true,
 		logging:          Default,
 		xorgArgs:         "",
+		loggingFile:      "",
 	}
 
 	if fileExists(pathConfigFile) {
@@ -91,8 +94,8 @@ func loadConfig() *config {
 				c.verticalSelection = parseBool(value, "false")
 			case confLogging:
 				c.logging = parseLogging(value, constLogDefault)
-			case confXorgArgs:
-				c.xorgArgs = sanitizeValue(value, "")
+			case confLoggingFile:
+				c.loggingFile = sanitizeValue(value, "")
 			}
 		})
 		handleErr(err)
@@ -108,6 +111,7 @@ func loadConfig() *config {
 	os.Unsetenv(confVerticalSelection)
 	os.Unsetenv(confLogging)
 	os.Unsetenv(confXorgArgs)
+	os.Unsetenv(confLoggingFile)
 
 	return &c
 }

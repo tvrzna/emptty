@@ -35,3 +35,6 @@ VERTICAL_SELECTION=false
 
 # Arguments passed to Xorg server.
 #XORG_ARGS=
+
+# Overrides path of log file
+#LOGGING_FILE=/var/log/emptty
