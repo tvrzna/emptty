@@ -220,7 +220,15 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 
 	// start X
 	log.Print("Starting Xorg")
-	xorg := exec.Command("/usr/bin/Xorg", "vt"+conf.strTTY(), os.Getenv(envDisplay))
+
+	xorgArgs := []string{"vt" + conf.strTTY(), os.Getenv(envDisplay)}
+
+	if conf.xorgArgs != "" {
+		arrXorgArgs := strings.Split(conf.xorgArgs, " ")
+		xorgArgs = append(xorgArgs, arrXorgArgs...)
+	}
+
+	xorg := exec.Command("/usr/bin/Xorg", xorgArgs...)
 	xorg.Stdout = log.Writer()
 	xorg.Stderr = log.Writer()
 	xorg.Env = append(os.Environ())

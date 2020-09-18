@@ -32,3 +32,6 @@ VERTICAL_SELECTION=false
 
 # Defines the way, how is logging handled. Possible values are "default", "appending" or "disabled".
 #LOGGING=default
+
+# Arguments passed to Xorg server.
+#XORG_ARGS=

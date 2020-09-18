@@ -33,6 +33,8 @@ __NOTE:__ to enable autologin DEFAULT_USER must be in group nopasswdlogin, other
 
 `LOGGING` Defines the way, how is logging handled. Possible values are "default", "appending" or "disabled". Default value is "default".
 
+`XORG_ARGS` Arguments passed to Xorg server.
+
 #### /etc/emptty/motd
 Custom file, that prints your own MOTD. Reading this file supports colors (e.g. `\x1b[31m` or `\033[32m`).
 

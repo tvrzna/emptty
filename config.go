@@ -17,6 +17,7 @@ const (
 	confXinitrcLaunch     = "XINITRC_LAUNCH"
 	confVerticalSelection = "VERTICAL_SELECTION"
 	confLogging           = "LOGGING"
+	confXorgArgs          = "XORG_ARGS"
 
 	pathConfigFile = "/etc/emptty/conf"
 
@@ -47,11 +48,23 @@ type config struct {
 	xinitrcLaunch     bool
 	verticalSelection bool
 	logging           enLogging
+	xorgArgs          string
 }
 
 // LoadConfig handles loading of application configuration.
 func loadConfig() *config {
-	c := config{tty: 0, switchTTY: true, printIssue: true, defaultUser: "", autologin: false, autologinSession: "", lang: "en_US.UTF-8", dbusLaunch: true, logging: Default}
+	c := config{
+		tty:              0,
+		switchTTY:        true,
+		printIssue:       true,
+		defaultUser:      "",
+		autologin:        false,
+		autologinSession: "",
+		lang:             "en_US.UTF-8",
+		dbusLaunch:       true,
+		logging:          Default,
+		xorgArgs:         "",
+	}
 
 	if fileExists(pathConfigFile) {
 		err := readProperties(pathConfigFile, func(key string, value string) {
@@ -78,6 +91,8 @@ func loadConfig() *config {
 				c.verticalSelection = parseBool(value, "false")
 			case confLogging:
 				c.logging = parseLogging(value, constLogDefault)
+			case confXorgArgs:
+				c.xorgArgs = sanitizeValue(value, "")
 			}
 		})
 		handleErr(err)
@@ -92,6 +107,7 @@ func loadConfig() *config {
 	os.Unsetenv(confDbusLaunch)
 	os.Unsetenv(confVerticalSelection)
 	os.Unsetenv(confLogging)
+	os.Unsetenv(confXorgArgs)
 
 	return &c
 }
