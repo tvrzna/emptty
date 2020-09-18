@@ -176,8 +176,6 @@ func wayland(usr *sysuser, d *desktop, conf *config) {
 	registerInterruptHandler(nil, wayland)
 
 	log.Print("Starting " + strExec)
-	wayland.Stdout = log.Writer()
-	wayland.Stderr = log.Writer()
 	err := wayland.Start()
 	handleErr(err)
 	wayland.Wait()
@@ -229,8 +227,6 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	}
 
 	xorg := exec.Command("/usr/bin/Xorg", xorgArgs...)
-	xorg.Stdout = log.Writer()
-	xorg.Stderr = log.Writer()
 	xorg.Env = append(os.Environ())
 	xorg.Start()
 	if xorg.Process == nil {
@@ -246,8 +242,6 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	xinit, strExec := prepareGuiCommand(usr, d, conf)
 	registerInterruptHandler(disp, xorg, xinit)
 	log.Print("Starting " + strExec)
-	xinit.Stdout = log.Writer()
-	xinit.Stderr = log.Writer()
 	err = xinit.Start()
 	if err != nil {
 		xorg.Process.Signal(os.Interrupt)
