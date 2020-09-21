@@ -94,6 +94,8 @@ func loadConfig() *config {
 				c.verticalSelection = parseBool(value, "false")
 			case confLogging:
 				c.logging = parseLogging(value, constLogDefault)
+			case confXorgArgs:
+				c.xorgArgs = sanitizeValue(value, "")
 			case confLoggingFile:
 				c.loggingFile = sanitizeValue(value, "")
 			}
