@@ -1,4 +1,4 @@
-#!/usr/bin/openrc-run
+#!/sbin/openrc-run
 supervisor=supervise-daemon
 description="emptty Display Manager"
 command=/usr/bin/emptty
