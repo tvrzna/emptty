@@ -38,8 +38,14 @@ __NOTE:__ to enable autologin DEFAULT_USER must be in group nopasswdlogin, other
 `LOGGING_FILE` Overrides path of log file. Default value is `/var/log/emptty`.
 __NOTE:__ It expects existence of directories to defined logging file.
 
+`DYNAMIC_MOTD` Allows to use /etc/emptty/motd-gen.sh script to generate custom MOTD. Possible values are "true" or "false". Default value is false.
+__NOTE:__ Be sure, that /etc/emptty/motd-gen.sh has correct content and permissions (e.g. 744), the script is started as default user; in daemon mode it means `root`.
+
+#### /etc/emptty/motd-gen.sh
+If `DYNAMIC_MOTD` is set to `true`, this file exists and is executable for its owner, the result is printed as your own MOTD. Be very careful with this script!
+
 #### /etc/emptty/motd
-Custom file, that prints your own MOTD. Reading this file supports colors (e.g. `\x1b[31m` or `\033[32m`).
+Custom file, that prints your own MOTD. Reading this file supports colors (e.g. `\x1b[31m` or `\033[32m`). Is skipped, if `DYNAMIC_MOTD` is defined and `/etc/emptty/motd-gen.sh` is executable.
 
 #### ${HOME}/.config/emptty or ${HOME}/.emptty
 Optional configuration file, that could be also handled as shell script. If is not presented, emptty shows selection of installed desktops.
@@ -114,6 +120,7 @@ __NOTE:__ If any issue starts to appear and you want to report it, ensure you do
 - `make install-runit` to install runit service
 - `make install-openrc` to install openrc service
 - `make install-systemd` to install systemd service.
+- `make install-motd-gen` to create default motd-gen.sh in /etc/emptty/.
 ---
 - `make uninstall` to remove emptty from your system
 ---

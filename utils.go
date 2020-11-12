@@ -51,6 +51,12 @@ func fileExists(path string) bool {
 	return err == nil
 }
 
+// Checks, if file on path exists and is executable.
+func fileIsExecutable(path string) bool {
+	stat, err := os.Stat(path)
+	return err == nil && (stat.Mode()&0100 == 0100)
+}
+
 // Handles error passed as string and calls handleErr function.
 func handleStrErr(err string) {
 	if err != "" {

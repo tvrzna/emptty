@@ -3,7 +3,9 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
+	"os/exec"
 	"strings"
 )
 
@@ -12,16 +14,28 @@ const (
 ├┤ │││├─┘ │  │ └┬┘
 └─┘┴ ┴┴   ┴  ┴  ┴   ` + version
 
-	pathMotd  = "/etc/emptty/motd"
-	pathIssue = "/etc/issue"
+	pathDynamicMotd = "/etc/emptty/motd-gen.sh"
+	pathMotd        = "/etc/emptty/motd"
+	pathIssue       = "/etc/issue"
 )
 
-// Prints motd, if pathMotd exists, prints it; otherwise it prints default motd.
-func printMotd() {
-	if fileExists(pathMotd) {
+// Prints dynamic motd, if configured; otherwise prints motd, if pathMotd exists; otherwise it prints default motd.
+func printMotd(conf *config) {
+	if conf.dynamicMotd && fileIsExecutable(pathDynamicMotd) {
+		cmd := exec.Command(pathDynamicMotd)
+		dynamicMotd, err := cmd.Output()
+		if err != nil {
+			log.Print(err)
+			printDefaultMotd()
+			return
+		}
+		fmt.Print(revertColorEscaping(string(dynamicMotd)))
+		resetColors()
+	} else if fileExists(pathMotd) {
 		file, err := os.Open(pathMotd)
 		defer file.Close()
 		if err != nil {
+			log.Print(err)
 			printDefaultMotd()
 			return
 		}

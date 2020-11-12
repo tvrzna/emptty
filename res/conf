@@ -38,3 +38,6 @@ VERTICAL_SELECTION=false
 
 # Overrides path of log file
 #LOGGING_FILE=/var/log/emptty
+
+# Allows to use /etc/emptty/motd-gen.sh script to generate custom MOTD.
+#DYNAMIC_MOTD=false

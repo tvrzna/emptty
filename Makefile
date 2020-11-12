@@ -29,6 +29,11 @@ install-manual:
 	@install -D dist/emptty.1.gz -t ${DESTDIR}/usr/share/man/man1
 	@echo "Done"
 
+install-motd-gen:
+	@echo "Installing motd-gen.sh..."
+	@install -DZ res/motd-gen.sh -m 744 -t ${DESTDIR}/etc/${DISTFILE}/
+	@echo "Done"
+
 install-pam:
 	@echo "Installing pam file..."
 	@install -DZ res/pam -m 644 -T ${DESTDIR}/etc/pam.d/${DISTFILE}

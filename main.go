@@ -12,7 +12,7 @@ func main() {
 func showLoginScreen(conf *config) {
 	initLogger(conf)
 
-	printMotd()
+	printMotd(conf)
 
 	login(conf)
 }

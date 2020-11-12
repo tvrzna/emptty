@@ -1,4 +1,4 @@
-.TH EMPTTY 1 "September 2020" "emptty 0.3.0" emptty
+.TH EMPTTY 1 "November 2020" "emptty 0.3.0" emptty
 
 .SH NAME
 emptty \- Dead simple CLI Display Manager on TTY
@@ -63,6 +63,20 @@ Overrides path of log file. Default value is
 
 .B NOTE:
 It expects existence of directories to defined logging file.
+
+.IP DYNAMIC_MOTD
+Allows to use /etc/emptty/motd-gen.sh script to generate custom MOTD. Possible values are "true" or "false". Default value is false.
+
+.B NOTE:
+Be sure, that /etc/emptty/motd-gen.sh has correct content and permissions (e.g. 744), the script is started as default user; in daemon mode it means
+.I root
+
+.SH DYNAMIC MOTD
+Optional file stored as /etc/emptty/motd-gen.sh
+
+If
+.IDYNAMIC_MOTD
+is set to true, this file exists and is executable for its owner, the result is printed as your own MOTD. Be very careful with this script!
 
 .SH CUSTOM MOTD
 Optional file stored as /etc/emptty/motd

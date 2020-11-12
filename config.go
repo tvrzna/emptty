@@ -19,6 +19,7 @@ const (
 	confLogging           = "LOGGING"
 	confXorgArgs          = "XORG_ARGS"
 	confLoggingFile       = "LOGGING_FILE"
+	confDynamicMotd       = "DYNAMIC_MOTD"
 
 	pathConfigFile = "/etc/emptty/conf"
 
@@ -51,6 +52,7 @@ type config struct {
 	logging           enLogging
 	xorgArgs          string
 	loggingFile       string
+	dynamicMotd       bool
 }
 
 // LoadConfig handles loading of application configuration.
@@ -67,6 +69,7 @@ func loadConfig() *config {
 		logging:          Default,
 		xorgArgs:         "",
 		loggingFile:      "",
+		dynamicMotd:      false,
 	}
 
 	if fileExists(pathConfigFile) {
@@ -98,6 +101,8 @@ func loadConfig() *config {
 				c.xorgArgs = sanitizeValue(value, "")
 			case confLoggingFile:
 				c.loggingFile = sanitizeValue(value, "")
+			case confDynamicMotd:
+				c.dynamicMotd = parseBool(value, "false")
 			}
 		})
 		handleErr(err)
@@ -110,10 +115,12 @@ func loadConfig() *config {
 	os.Unsetenv(confAutologin)
 	os.Unsetenv(confAutologinSession)
 	os.Unsetenv(confDbusLaunch)
+	os.Unsetenv(confXinitrcLaunch)
 	os.Unsetenv(confVerticalSelection)
 	os.Unsetenv(confLogging)
 	os.Unsetenv(confXorgArgs)
 	os.Unsetenv(confLoggingFile)
+	os.Unsetenv(confDynamicMotd)
 
 	return &c
 }
