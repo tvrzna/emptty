@@ -90,6 +90,10 @@ func printIssue() {
 				}
 			}
 
+			if issue[len(issue)-2:] == "\n\n" {
+				issue = issue[:len(issue)-1]
+			}
+
 			fmt.Print(revertColorEscaping(issue))
 			resetColors()
 		}
