@@ -41,6 +41,10 @@ __NOTE:__ It expects existence of directories to defined logging file.
 `DYNAMIC_MOTD` Allows to use /etc/emptty/motd-gen.sh script to generate custom MOTD. Possible values are "true" or "false". Default value is false.
 __NOTE:__ Be sure, that /etc/emptty/motd-gen.sh has correct content and permissions (e.g. 744), the script is started as default user; in daemon mode it means `root`.
 
+`FG_COLOR` Foreground color, available only in daemon mode. List of colors is listed below.
+
+`BG_COLOR` Background color, available only in daemon mode. List of colors is listed below.
+
 #### /etc/emptty/motd-gen.sh
 If `DYNAMIC_MOTD` is set to `true`, this file exists and is executable for its owner, the result is printed as your own MOTD. Be very careful with this script!
 
@@ -70,6 +74,30 @@ See [samples](SAMPLES.md#custom-sessions)
 
 #### ${HOME}./xinitrc
 If config `XINITRC_LAUNCH` is set to true, it enables possibility to use .xinitrc script. See [samples](SAMPLES.md#xinitrc)
+
+#### Colors
+Please, be aware that `LIGHT_` colors could be unavailable as background color.
+<details>
+  <summary>List of colors</summary>
+  <ul>
+	<li>BLACK</li>
+	<li>RED</li>
+	<li>GREEN</li>
+	<li>YELLOW</li>
+	<li>BLUE</li>
+	<li>PURPLE</li>
+	<li>CYAN</li>
+	<li>WHITE</li>
+	<li>LIGHT_BLACK</li>
+	<li>LIGHT_RED</li>
+	<li>LIGHT_GREEN</li>
+	<li>LIGHT_YELLOW</li>
+	<li>LIGHT_BLUE</li>
+	<li>LIGHT_PURPLE</li>
+	<li>LIGHT_CYAN</li>
+	<li>LIGHT_WHITE</li>
+ <ul>
+</details>
 
 ## Logging
 As it is mentioned in configuration, there are three options to handle logging of emptty. The logs contains not just logs from emptty, but also from Xorg (if used) and user's WM/DE.

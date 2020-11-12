@@ -20,6 +20,8 @@ const (
 	confXorgArgs          = "XORG_ARGS"
 	confLoggingFile       = "LOGGING_FILE"
 	confDynamicMotd       = "DYNAMIC_MOTD"
+	confFgColor           = "FG_COLOR"
+	confBgColor           = "BG_COLOR"
 
 	pathConfigFile = "/etc/emptty/conf"
 
@@ -39,6 +41,7 @@ const (
 
 // config defines structure of application configuration.
 type config struct {
+	daemonMode        bool
 	defaultUser       string
 	autologin         bool
 	autologinSession  string
@@ -53,11 +56,14 @@ type config struct {
 	xorgArgs          string
 	loggingFile       string
 	dynamicMotd       bool
+	fgColor           string
+	bgColor           string
 }
 
 // LoadConfig handles loading of application configuration.
 func loadConfig() *config {
 	c := config{
+		daemonMode:       false,
 		tty:              0,
 		switchTTY:        true,
 		printIssue:       true,
@@ -70,6 +76,8 @@ func loadConfig() *config {
 		xorgArgs:         "",
 		loggingFile:      "",
 		dynamicMotd:      false,
+		fgColor:          "",
+		bgColor:          "",
 	}
 
 	if fileExists(pathConfigFile) {
@@ -103,6 +111,10 @@ func loadConfig() *config {
 				c.loggingFile = sanitizeValue(value, "")
 			case confDynamicMotd:
 				c.dynamicMotd = parseBool(value, "false")
+			case confFgColor:
+				c.fgColor = convertColor(sanitizeValue(value, ""), true)
+			case confBgColor:
+				c.bgColor = convertColor(sanitizeValue(value, ""), false)
 			}
 		})
 		handleErr(err)
@@ -121,6 +133,8 @@ func loadConfig() *config {
 	os.Unsetenv(confXorgArgs)
 	os.Unsetenv(confLoggingFile)
 	os.Unsetenv(confDynamicMotd)
+	os.Unsetenv(confFgColor)
+	os.Unsetenv(confBgColor)
 
 	return &c
 }

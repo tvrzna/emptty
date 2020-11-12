@@ -23,6 +23,7 @@ type issueVariable struct {
 // Starts emptty as daemon spawning emptty on defined TTY
 func startDaemon() {
 	conf := loadConfig()
+	conf.daemonMode = true
 
 	fTTY, err := os.OpenFile("/dev/tty"+conf.strTTY(), os.O_RDWR, 0700)
 	if err != nil {
@@ -35,15 +36,20 @@ func startDaemon() {
 	os.Stderr = fTTY
 	os.Stdin = fTTY
 
+	setColors(conf.fgColor, conf.bgColor)
+	clearScreen(fTTY)
+
 	fmt.Println()
 	if conf.printIssue {
 		printIssue()
+		setColors(conf.fgColor, conf.bgColor)
 	}
 
 	switchTTY(conf)
 
 	showLoginScreen(conf)
 
+	resetColors()
 	clearScreen(fTTY)
 }
 
@@ -95,7 +101,6 @@ func printIssue() {
 			}
 
 			fmt.Print(revertColorEscaping(issue))
-			resetColors()
 		}
 	}
 }

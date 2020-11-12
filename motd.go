@@ -30,7 +30,11 @@ func printMotd(conf *config) {
 			return
 		}
 		fmt.Print(revertColorEscaping(string(dynamicMotd)))
-		resetColors()
+		if conf.daemonMode {
+			setColors(conf.fgColor, conf.bgColor)
+		} else {
+			resetColors()
+		}
 	} else if fileExists(pathMotd) {
 		file, err := os.Open(pathMotd)
 		defer file.Close()
@@ -43,7 +47,11 @@ func printMotd(conf *config) {
 		for scan.Scan() {
 			fmt.Println(revertColorEscaping(scan.Text()))
 		}
-		resetColors()
+		if conf.daemonMode {
+			setColors(conf.fgColor, conf.bgColor)
+		} else {
+			resetColors()
+		}
 	} else {
 		printDefaultMotd()
 	}
@@ -64,7 +72,27 @@ func revertColorEscaping(value string) string {
 	return value
 }
 
+// Sets defined colors.
+func setColors(fg string, bg string) {
+	color := ""
+
+	if fg != "" {
+		color += fg
+	}
+	if fg != "" && bg != "" {
+		color += ";"
+	}
+	if bg != "" {
+		color += bg
+	}
+
+	if fg == "" && bg == "" {
+		color = "0"
+	}
+	fmt.Print("\x1b[0;" + color + "m\n")
+}
+
 // Resets colors to default.
 func resetColors() {
-	fmt.Print("\x1b[0m\n")
+	setColors("", "")
 }

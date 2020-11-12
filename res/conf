@@ -41,3 +41,9 @@ VERTICAL_SELECTION=false
 
 # Allows to use /etc/emptty/motd-gen.sh script to generate custom MOTD.
 #DYNAMIC_MOTD=false
+
+# Foreground color, available only in daemon mode.
+#FG_COLOR=LIGHT_BLACK
+
+# Background color, available only in daemon mode.
+#BG_COLOR=BLACK

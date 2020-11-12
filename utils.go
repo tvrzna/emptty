@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -139,4 +140,46 @@ func mkDirsForFile(path string, perm os.FileMode, usr *sysuser) error {
 		}
 	}
 	return nil
+}
+
+// Converts color by name into ANSI color number.
+func convertColor(name string, isForeground bool) string {
+	colorName := strings.ToUpper(name)
+	isLight := strings.HasPrefix(colorName, "LIGHT_")
+	colorName = strings.Replace(colorName, "LIGHT_", "", -1)
+	colorNumber := 0
+
+	switch colorName {
+	case "":
+		colorNumber = 0
+	case "BLACK":
+		colorNumber = 30
+	case "RED":
+		colorNumber = 31
+	case "GREEN":
+		colorNumber = 32
+	case "YELLOW":
+		colorNumber = 33
+	case "BLUE":
+		colorNumber = 34
+	case "MAGENTA":
+		colorNumber = 35
+	case "CYAN":
+		colorNumber = 36
+	case "WHITE":
+		colorNumber = 37
+	default:
+		return ""
+	}
+
+	if colorNumber > 0 {
+		if !isForeground {
+			colorNumber += 10
+		}
+		if isLight {
+			colorNumber += 60
+		}
+	}
+
+	return strconv.Itoa(colorNumber)
 }

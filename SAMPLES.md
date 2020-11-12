@@ -37,7 +37,6 @@ xmodmap ~/.Xmodmap
 exec dbus-launch $@
 ```
 
-
 ## Custom sessions
 
 #### User-specific

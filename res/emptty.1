@@ -71,6 +71,12 @@ Allows to use /etc/emptty/motd-gen.sh script to generate custom MOTD. Possible v
 Be sure, that /etc/emptty/motd-gen.sh has correct content and permissions (e.g. 744), the script is started as default user; in daemon mode it means
 .I root
 
+.IP FG_COLOR
+Foreground color, available only in daemon mode. List of colors is listed below.
+
+.IP BG_COLOR
+Background color, available only in daemon mode. List of colors is listed below.
+
 .SH DYNAMIC MOTD
 Optional file stored as /etc/emptty/motd-gen.sh
 
@@ -143,3 +149,12 @@ This option points all log into
 
 .B NOTE:
 If any issue starts to appear and you want to report it, ensure you do not use this option.
+
+.SH COLORS
+Please, be aware that
+.I LIGHT_
+colors could be unavailable as background color.
+
+BLACK, RED, GREEN, YELLOW, BLUE, PURPLE, CYAN, WHITE
+
+LIGHT_BLACK, LIGHT_RED, LIGHT_GREEN, LIGHT_YELLOW, LIGHT_BLUE, LIGHT_PURPLE, LIGHT_CYAN, LIGHT_WHITE
