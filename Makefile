@@ -21,7 +21,7 @@ install:
 
 install-config:
 	@echo "Installing config..."
-	@install -DZ res/conf -m 755 -T ${DESTDIR}/etc/${DISTFILE}/conf
+	@install -DZ res/conf -m 644 -T ${DESTDIR}/etc/${DISTFILE}/conf
 	@echo "Done"
 
 install-manual:
@@ -53,7 +53,7 @@ install-runit:
 
 install-systemd:
 	@echo "Installing systemd service..."
-	@install -DZ res/systemd-service -m 755 -T ${DESTDIR}/usr/lib/systemd/system/${DISTFILE}.service
+	@install -DZ res/systemd-service -m 644 -T ${DESTDIR}/usr/lib/systemd/system/${DISTFILE}.service
 	@echo "Done"
 
 install-openrc:

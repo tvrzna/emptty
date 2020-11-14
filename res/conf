@@ -1,5 +1,3 @@
-#!/bin/sh
-
 # TTY, where emptty will start.
 TTY_NUMBER=7
 
