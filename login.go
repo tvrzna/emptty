@@ -236,7 +236,7 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 
 	disp := &xdisplay{}
 	handleErr(disp.openXDisplay())
-	defer disp.openXDisplay()
+	defer disp.closeXDisplay()
 
 	// start xinit
 	xinit, strExec := prepareGuiCommand(usr, d, conf)
