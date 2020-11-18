@@ -178,8 +178,17 @@ func wayland(usr *sysuser, d *desktop, conf *config) {
 	log.Print("Starting " + strExec)
 	err := wayland.Start()
 	handleErr(err)
+
+	// make utmp entry
+	utmpEntry := addUtmpEntry(usr.username, wayland.Process.Pid, conf.strTTY())
+	log.Print("Added utmp entry")
+
 	wayland.Wait()
 	log.Print(strExec + " finished")
+
+	// end utmp entry
+	endUtmpEntry(utmpEntry)
+	log.Print("Ended utmp entry")
 }
 
 // Prepares and starts Xorg session for authorized user.
@@ -238,6 +247,10 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	handleErr(disp.openXDisplay())
 	defer disp.closeXDisplay()
 
+	// make utmp entry
+	utmpEntry := addUtmpEntry(usr.username, xorg.Process.Pid, conf.strTTY())
+	log.Print("Added utmp entry")
+
 	// start xinit
 	xinit, strExec := prepareGuiCommand(usr, d, conf)
 	registerInterruptHandler(disp, xorg, xinit)
@@ -248,6 +261,7 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 		xorg.Wait()
 		handleErr(err)
 	}
+
 	xinit.Wait()
 	log.Print(strExec + " finished")
 
@@ -259,6 +273,10 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	// Remove auth
 	os.Remove(os.Getenv(envXauthority))
 	log.Print("Cleaned up xauthority")
+
+	// End utmp entry
+	endUtmpEntry(utmpEntry)
+	log.Print("Ended utmp entry")
 }
 
 // Prepares command for starting GUI.
