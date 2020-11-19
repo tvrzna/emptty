@@ -141,18 +141,6 @@ func defineEnvironment(usr *sysuser, trans *pam.Transaction, conf *config) {
 	// Set owner of XDG folder
 	os.Chown(os.Getenv(envXdgRuntimeDir), usr.uid, usr.gid)
 
-	err = syscall.Setfsuid(usr.uid)
-	handleErr(err)
-	log.Print("Defined uid")
-
-	err = syscall.Setfsgid(usr.gid)
-	handleErr(err)
-	log.Print("Defined gid")
-
-	err = syscall.Setgroups(usr.gids)
-	handleErr(err)
-	log.Print("Defined gids")
-
 	os.Chdir(os.Getenv(envPwd))
 }
 
@@ -204,7 +192,8 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	// create xauth
 	os.Remove(os.Getenv(envXauthority))
 	xauthority, err := os.Create(os.Getenv(envXauthority))
-	defer xauthority.Close()
+	os.Chown(os.Getenv(envXauthority), usr.uid, usr.gid)
+	xauthority.Close()
 	handleErr(err)
 	log.Print("Created xauthority file")
 
@@ -215,7 +204,7 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	handleErr(err)
 	log.Print("Generated mcookie")
 
-	// create xauth
+	// generate xauth
 	cmd = exec.Command("/usr/bin/xauth", "add", os.Getenv(envDisplay), ".", string(mcookie))
 	cmd.Env = append(os.Environ())
 	cmd.SysProcAttr = &syscall.SysProcAttr{}

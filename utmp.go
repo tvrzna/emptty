@@ -1,6 +1,6 @@
 package main
 
-// #include <stdlib.h>
+// #include <paths.h>
 // #include <utmp.h>
 // #include <utmpx.h>
 import "C"
@@ -24,9 +24,10 @@ func addUtmpEntry(username string, pid int, ttyNo string) *C.struct_utmpx {
 		utmp.ut_id = strToC4Char(ttyNo)
 	}
 	utmp.ut_tv.tv_sec = C.int(int(time.Now().Unix()))
+	utmp.ut_tv.tv_usec = 0
 	utmp.ut_user = strToC32Char(username)
 	utmp.ut_host = strToC256Char(xdisplay)
-
+	utmp.ut_addr_v6 = [4]C.int{}
 	putUtmpEntry(utmp)
 
 	return utmp
@@ -62,16 +63,21 @@ func updwtmpx(utmpx *C.struct_utmpx) {
 	utmp.ut_tv.tv_usec = utmpx.ut_tv.tv_usec
 	utmp.ut_user = utmpx.ut_user
 	utmp.ut_host = utmpx.ut_host
+	utmp.ut_addr_v6 = utmpx.ut_addr_v6
 
-	C.updwtmp(C.CString("/var/log/wtmp"), utmp)
+	C.updwtmp(C.CString(C._PATH_WTMP), utmp)
 }
 
 // Converts string to [4]C.char
 func strToC4Char(data string) [4]C.char {
 	result := [4]C.char{}
 
-	for i := 0; i < len(data) && i < 4; i++ {
-		result[i] = C.char(data[i])
+	for i := 0; i < 4; i++ {
+		if i < len(data) {
+			result[i] = C.char(data[i])
+		} else {
+			result[i] = 0
+		}
 	}
 	return result
 }
@@ -80,8 +86,12 @@ func strToC4Char(data string) [4]C.char {
 func strToC32Char(data string) [32]C.char {
 	result := [32]C.char{}
 
-	for i := 0; i < len(data) && i < 32; i++ {
-		result[i] = C.char(data[i])
+	for i := 0; i < 32; i++ {
+		if i < len(data) {
+			result[i] = C.char(data[i])
+		} else {
+			result[i] = 0
+		}
 	}
 	return result
 }
@@ -90,8 +100,12 @@ func strToC32Char(data string) [32]C.char {
 func strToC256Char(data string) [256]C.char {
 	result := [256]C.char{}
 
-	for i := 0; i < len(data) && i < 256; i++ {
-		result[i] = C.char(data[i])
+	for i := 0; i < 256; i++ {
+		if i < len(data) {
+			result[i] = C.char(data[i])
+		} else {
+			result[i] = 0
+		}
 	}
 	return result
 }
