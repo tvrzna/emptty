@@ -7,7 +7,6 @@ import "C"
 import (
 	"log"
 	"os"
-	"time"
 )
 
 // Adds UTMPx entry as user process
@@ -23,11 +22,9 @@ func addUtmpEntry(username string, pid int, ttyNo string) *C.struct_utmpx {
 	} else {
 		utmp.ut_id = strToC4Char(ttyNo)
 	}
-	utmp.ut_tv.tv_sec = C.int(int(time.Now().Unix()))
-	utmp.ut_tv.tv_usec = 0
+	putTimeToUtmpEntry(utmp)
 	utmp.ut_user = strToC32Char(username)
 	utmp.ut_host = strToC256Char(xdisplay)
-	utmp.ut_addr_v6 = [4]C.int{}
 	putUtmpEntry(utmp)
 
 	return utmp
@@ -36,7 +33,7 @@ func addUtmpEntry(username string, pid int, ttyNo string) *C.struct_utmpx {
 // End UTMPx entry by marking as dead process
 func endUtmpEntry(utmp *C.struct_utmpx) {
 	utmp.ut_type = C.DEAD_PROCESS
-	utmp.ut_tv.tv_sec = C.int(int(time.Now().Unix()))
+	putTimeToUtmpEntry(utmp)
 
 	putUtmpEntry(utmp)
 }
