@@ -1,16 +1,16 @@
 DISTFILE=emptty
 
-SRCS = main.go
-SRCS+= config.go
-SRCS+= daemon.go
-SRCS+= desktop.go
-SRCS+= login.go
-SRCS+= motd.go
-SRCS+= password.go
-SRCS+= sysuser.go
-SRCS+= utils.go
-SRCS+= utmp.go
-SRCS+= xlib.go
+SRCS = src/main.go
+SRCS+= src/config.go
+SRCS+= src/daemon.go
+SRCS+= src/desktop.go
+SRCS+= src/login.go
+SRCS+= src/motd.go
+SRCS+= src/password.go
+SRCS+= src/sysuser.go
+SRCS+= src/utils.go
+SRCS+= src/utmp.go
+SRCS+= src/xlib.go
 
 clean:
 	@echo "Cleaning..."
@@ -22,14 +22,14 @@ clean:
 build:
 	@echo "Building..."
 	@mkdir -p dist
-	@go build -o dist/${DISTFILE} ${SRCS} utmp_glibc.go
+	@go build -o dist/${DISTFILE} ${SRCS} src/utmp_glibc.go
 	@gzip -c res/emptty.1 > dist/emptty.1.gz
 	@echo "Done"
 
 build-musl:
 	@echo "Building..."
 	@mkdir -p dist
-	@go build -o dist/${DISTFILE} ${SRCS} utmp_musl.go
+	@go build -o dist/${DISTFILE} ${SRCS} src/utmp_musl.go
 	@gzip -c res/emptty.1 > dist/emptty.1.gz
 	@echo "Done"
 
