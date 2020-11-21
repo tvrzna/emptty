@@ -1,19 +1,14 @@
 package main
 
 import (
-	"bufio"
-	"errors"
 	"fmt"
 	"log"
 	"os"
 	"os/exec"
 	"os/signal"
-	"os/user"
 	"strconv"
 	"strings"
 	"syscall"
-
-	"github.com/msteinert/pam"
 )
 
 const (
@@ -35,7 +30,7 @@ const (
 
 // Login into graphical environment
 func login(conf *config) {
-	usr, trans := authUser(conf)
+	usr := authUser(conf)
 
 	var d *desktop
 	d, usrLang := loadUserDesktop(usr.homedir)
@@ -48,7 +43,7 @@ func login(conf *config) {
 		conf.lang = usrLang
 	}
 
-	defineEnvironment(usr, trans, conf)
+	defineEnvironment(usr, conf)
 
 	switch d.env {
 	case Wayland:
@@ -57,68 +52,13 @@ func login(conf *config) {
 		xorg(usr, d, conf)
 	}
 
-	trans.CloseSession(pam.Silent)
-}
-
-// Handle PAM authentication of user.
-// If user is successfully authorized, it returns sysuser.
-//
-// If autologin is enabled, it behaves as user has been authorized.
-func authUser(conf *config) (*sysuser, *pam.Transaction) {
-	trans, err := pam.StartFunc("emptty", conf.defaultUser, func(s pam.Style, msg string) (string, error) {
-		switch s {
-		case pam.PromptEchoOff:
-			if conf.autologin {
-				break
-			}
-			if conf.defaultUser != "" {
-				hostname, _ := os.Hostname()
-				fmt.Printf("%s login: %s\n", hostname, conf.defaultUser)
-			}
-			fmt.Print("Password: ")
-			return readPassword()
-		case pam.PromptEchoOn:
-			if conf.autologin {
-				break
-			}
-			hostname, _ := os.Hostname()
-			fmt.Printf("%s login: ", hostname)
-			input, err := bufio.NewReader(os.Stdin).ReadString('\n')
-			if err != nil {
-				return "", err
-			}
-			return input[:len(input)-1], nil
-		case pam.ErrorMsg:
-			log.Print(msg)
-			return "", nil
-		case pam.TextInfo:
-			fmt.Println(msg)
-			return "", nil
-		}
-		return "", errors.New("Unrecognized message style")
-	})
-
-	err = trans.Authenticate(pam.Silent)
-	handleErr(err)
-	log.Print("Authenticate OK")
-
-	trans.SetItem(pam.Tty, "tty"+conf.strTTY())
-
-	trans.OpenSession(pam.Silent)
-
-	pamUsr, _ := trans.GetItem(pam.User)
-	usr, _ := user.Lookup(pamUsr)
-
-	return getSysuser(usr), trans
+	closeAuth()
 }
 
 // Prepares environment and env variables for authorized user.
 // Defines users Uid and Gid for further syscalls.
-func defineEnvironment(usr *sysuser, trans *pam.Transaction, conf *config) {
-	envs, _ := trans.GetEnvList()
-	for key, value := range envs {
-		os.Setenv(key, value)
-	}
+func defineEnvironment(usr *sysuser, conf *config) {
+	defineSpecificEnvVariables()
 
 	os.Setenv(envHome, usr.homedir)
 	os.Setenv(envPwd, usr.homedir)

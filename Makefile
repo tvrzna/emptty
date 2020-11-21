@@ -14,6 +14,13 @@ build:
 	@gzip -c res/emptty.1 > dist/emptty.1.gz
 	@echo "Done"
 
+build-nopam:
+	@echo "Building NOPAM..."
+	@mkdir -p dist
+	@go build -tags nopam -o dist/${DISTFILE} ./src
+	@gzip -c res/emptty.1 > dist/emptty.1.gz
+	@echo "Done"
+
 install:
 	@echo "Installing..."
 	@install -DZs dist/${DISTFILE} -m 755 -t ${DESTDIR}/usr/bin

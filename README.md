@@ -123,11 +123,11 @@ __NOTE:__ If any issue starts to appear and you want to report it, ensure you do
 ### Build dependencies
 - go
 - gcc
-- pam-devel
+- pam-devel (only if `make build-nopam` is not used)
 - libx11-devel (libx11)
 
 ### Dependencies
-- pam
+- pam (only if `make build-nopam` is not used)
 - libx11
 - xorg / xorg-server (optional)
 - xauth / xorg-xauth (required for xorg)
@@ -137,10 +137,11 @@ __NOTE:__ If any issue starts to appear and you want to report it, ensure you do
 ---
 - `make clean` to cleanup already built binary.
 - `make build` to build binary and gzip man page.
+- `make build-nopam` to build binary and gzip man page without PAM dependency.
 ---
 - `make install` to install binary.
-- `make install-pam` to install pam module.
-- `make install-pam-debian` to install pam module for Debian.
+- `make install-pam` to install pam module. Not required, if `nopam` version is built.
+- `make install-pam-debian` to install pam module for Debian. Not required, if `nopam` version is built.
 - `make install-manual` to install man page.
 - `make install-all` to install binary, pam module and man page.
 ---
