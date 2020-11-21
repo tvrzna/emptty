@@ -136,8 +136,7 @@ __NOTE:__ If any issue starts to appear and you want to report it, ensure you do
 
 ---
 - `make clean` to cleanup already built binary.
-- `make build` to build binary with gblic and gzip man page.
-- `make build-musl` to build binary with musl and gzip man page.
+- `make build` to build binary and gzip man page.
 ---
 - `make install` to install binary.
 - `make install-pam` to install pam module.

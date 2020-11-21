@@ -1,12 +1,33 @@
 package main
 
-// #include <paths.h>
-// #include <utmp.h>
-// #include <utmpx.h>
+/*
+#include <stdlib.h>
+#include <string.h>
+#include <sys/time.h>
+#include <utmpx.h>
+
+void putTimeToUtmpEntry(struct utmpx * utmp) {
+	struct timeval tv;
+	gettimeofday (&tv, NULL);
+	utmp->ut_tv.tv_sec = tv.tv_sec;
+	utmp->ut_tv.tv_usec = tv.tv_usec;
+}
+
+void prepareUtmpEntry(struct utmpx * utmp, int pid, char* id, char* line, char* username, char* host) {
+	utmp->ut_pid = pid;
+	strncpy (utmp->ut_id, id, sizeof (utmp->ut_id));
+	strncpy (utmp->ut_line, line, sizeof (utmp->ut_line));
+	strncpy (utmp->ut_user, username, sizeof (utmp->ut_user));
+	strncpy (utmp->ut_host, host, sizeof (utmp->ut_host));
+
+	putTimeToUtmpEntry(utmp);
+}
+*/
 import "C"
 import (
 	"log"
 	"os"
+	"unsafe"
 )
 
 // Adds UTMPx entry as user process
@@ -14,17 +35,25 @@ func addUtmpEntry(username string, pid int, ttyNo string) *C.struct_utmpx {
 	utmp := &C.struct_utmpx{}
 	xdisplay := os.Getenv(envDisplay)
 
-	utmp.ut_type = C.USER_PROCESS
-	utmp.ut_pid = C.int(pid)
-	utmp.ut_line = strToC32Char("tty" + ttyNo)
-	if xdisplay != "" {
-		utmp.ut_id = strToC4Char(xdisplay)
-	} else {
-		utmp.ut_id = strToC4Char(ttyNo)
+	id := xdisplay
+	if id == "" {
+		id = ttyNo
 	}
-	putTimeToUtmpEntry(utmp)
-	utmp.ut_user = strToC32Char(username)
-	utmp.ut_host = strToC256Char(xdisplay)
+
+	ut_pid := C.int(pid)
+	ut_id := C.CString(id)
+	ut_line := C.CString("tty" + ttyNo)
+	ut_user := C.CString(username)
+	ut_host := C.CString(xdisplay)
+
+	utmp.ut_type = C.USER_PROCESS
+	C.prepareUtmpEntry(utmp, ut_pid, ut_id, ut_line, ut_user, ut_host)
+
+	C.free(unsafe.Pointer(ut_id))
+	C.free(unsafe.Pointer(ut_line))
+	C.free(unsafe.Pointer(ut_user))
+	C.free(unsafe.Pointer(ut_host))
+
 	putUtmpEntry(utmp)
 
 	return utmp
@@ -33,7 +62,7 @@ func addUtmpEntry(username string, pid int, ttyNo string) *C.struct_utmpx {
 // End UTMPx entry by marking as dead process
 func endUtmpEntry(utmp *C.struct_utmpx) {
 	utmp.ut_type = C.DEAD_PROCESS
-	putTimeToUtmpEntry(utmp)
+	C.putTimeToUtmpEntry(utmp)
 
 	putUtmpEntry(utmp)
 }
@@ -47,62 +76,4 @@ func putUtmpEntry(utmp *C.struct_utmpx) {
 	C.endutxent()
 
 	updwtmpx(utmp)
-}
-
-// Puts UTMP entry into wtmp file
-func updwtmpx(utmpx *C.struct_utmpx) {
-	utmp := &C.struct_utmp{}
-	utmp.ut_type = utmpx.ut_type
-	utmp.ut_pid = utmpx.ut_pid
-	utmp.ut_line = utmpx.ut_line
-	utmp.ut_id = utmpx.ut_id
-	utmp.ut_tv.tv_sec = utmpx.ut_tv.tv_sec
-	utmp.ut_tv.tv_usec = utmpx.ut_tv.tv_usec
-	utmp.ut_user = utmpx.ut_user
-	utmp.ut_host = utmpx.ut_host
-	utmp.ut_addr_v6 = utmpx.ut_addr_v6
-
-	C.updwtmp(C.CString(C._PATH_WTMP), utmp)
-}
-
-// Converts string to [4]C.char
-func strToC4Char(data string) [4]C.char {
-	result := [4]C.char{}
-
-	for i := 0; i < 4; i++ {
-		if i < len(data) {
-			result[i] = C.char(data[i])
-		} else {
-			result[i] = 0
-		}
-	}
-	return result
-}
-
-// Converts string to [32]C.char
-func strToC32Char(data string) [32]C.char {
-	result := [32]C.char{}
-
-	for i := 0; i < 32; i++ {
-		if i < len(data) {
-			result[i] = C.char(data[i])
-		} else {
-			result[i] = 0
-		}
-	}
-	return result
-}
-
-// Converts string to [256]C.char
-func strToC256Char(data string) [256]C.char {
-	result := [256]C.char{}
-
-	for i := 0; i < 256; i++ {
-		if i < len(data) {
-			result[i] = C.char(data[i])
-		} else {
-			result[i] = 0
-		}
-	}
-	return result
 }
