@@ -1,3 +1,5 @@
+// +build !noxlib
+
 package main
 
 // #cgo LDFLAGS: -lX11
