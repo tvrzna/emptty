@@ -1,6 +1,6 @@
 // +build !openbsd
 
-package main
+package src
 
 /*
 #include <stdlib.h>

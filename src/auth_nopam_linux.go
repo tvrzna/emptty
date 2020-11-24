@@ -1,6 +1,6 @@
 // +build nopam
 
-package main
+package src
 
 // #include <crypt.h>
 // #include <shadow.h>

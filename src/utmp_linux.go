@@ -1,4 +1,4 @@
-package main
+package src
 
 // #include <paths.h>
 // #include <utmp.h>

@@ -1,6 +1,6 @@
 // +build noxlib
 
-package main
+package src
 
 import (
 	"os"

@@ -1,6 +1,6 @@
 // +build !noxlib
 
-package main
+package src
 
 // #cgo LDFLAGS: -lX11
 // #include <stdlib.h>

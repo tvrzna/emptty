@@ -1,4 +1,4 @@
-package main
+package src
 
 // Adds UTMP entry as user process
 func addUtmpEntry(username string, pid int, ttyNo string) bool {

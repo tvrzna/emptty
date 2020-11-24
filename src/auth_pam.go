@@ -1,6 +1,6 @@
 // +build !nopam
 
-package main
+package src
 
 import (
 	"bufio"

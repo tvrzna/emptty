@@ -1,4 +1,4 @@
-package main
+package src
 
 import (
 	"bufio"
@@ -73,20 +73,6 @@ func handleErr(err error) {
 		fmt.Printf("\nPress Enter to continue...")
 		bufio.NewReader(os.Stdin).ReadString('\n')
 		os.Exit(1)
-	}
-}
-
-// Handles passed arguments.
-func handleArgs() {
-	for _, arg := range os.Args {
-		switch arg {
-		case "-v", "--version":
-			fmt.Printf("emptty %s\nhttps://github.com/tvrzna/emptty\n\nReleased under the MIT License.\n\n", version)
-			os.Exit(0)
-		case "-d", "--daemon":
-			startDaemon()
-			os.Exit(0)
-		}
 	}
 }
 

@@ -1,6 +1,6 @@
 // +build nopam
 
-package main
+package src
 
 // #include <sys/types.h>
 // #include <login_cap.h>

@@ -1,4 +1,4 @@
-package main
+package src
 
 // #include <utmpx.h>
 import "C"
