@@ -1,5 +1,9 @@
 DISTFILE=emptty
 
+ifdef TAGS
+	TAGS_ARGS = -tags ${TAGS}
+endif
+
 clean:
 	@echo "Cleaning..."
 	@rm -f dist/${DISTFILE}
@@ -8,9 +12,9 @@ clean:
 	@echo "Done"
 
 build:
-	@echo "Building..."
+	@echo "Building${TAGS_ARGS}..."
 	@mkdir -p dist
-	@go build -o dist/${DISTFILE}
+	@go build ${TAGS_ARGS} -o dist/${DISTFILE}
 	@gzip -c res/emptty.1 > dist/emptty.1.gz
 	@echo "Done"
 
