@@ -265,7 +265,7 @@ func getFreeXDisplay() int {
 // Registers interrupt handler, that interrupts all mentioned Cmds.
 func registerInterruptHandler(disp *xdisplay, cmds ...*exec.Cmd) {
 	c := make(chan os.Signal)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGKILL)
+	signal.Notify(c, os.Interrupt, syscall.SIGHUP, syscall.SIGINT, syscall.SIGKILL, syscall.SIGQUIT, syscall.SIGTERM)
 	go handleInterrupt(c, disp, cmds...)
 }
 
