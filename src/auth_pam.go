@@ -20,7 +20,9 @@ var trans *pam.Transaction
 //
 // If autologin is enabled, it behaves as user has been authorized.
 func authUser(conf *config) *sysuser {
-	trans, err := pam.StartFunc("emptty", conf.defaultUser, func(s pam.Style, msg string) (string, error) {
+	var err error
+
+	trans, err = pam.StartFunc("emptty", conf.defaultUser, func(s pam.Style, msg string) (string, error) {
 		switch s {
 		case pam.PromptEchoOff:
 			if conf.autologin {
