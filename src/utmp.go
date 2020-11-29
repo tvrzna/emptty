@@ -1,3 +1,4 @@
+// +build !noutmp
 // +build !openbsd
 
 package src

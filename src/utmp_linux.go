@@ -1,3 +1,5 @@
+// +build !noutmp
+
 package src
 
 // #include <paths.h>
