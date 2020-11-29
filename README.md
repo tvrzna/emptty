@@ -134,6 +134,8 @@ __NOTE:__ If any issue starts to appear and you want to report it, ensure you do
 - mcookie (required for xorg)
 - wayland (optional)
 
+
+### Commands
 ---
 - `make clean` to cleanup already built binary.
 - `make build` to build binary and gzip man page.
@@ -149,9 +151,23 @@ __NOTE:__ If any issue starts to appear and you want to report it, ensure you do
 - `make install-runit` to install runit service
 - `make install-openrc` to install openrc service
 - `make install-systemd` to install systemd service.
-- `make install-motd-gen` to create default motd-gen.sh in /etc/emptty/.
+- `make install-motd-gen` to create default motd-gen.sh in /etc/emptty/
 ---
 - `make uninstall` to remove emptty from your system
 ---
 
-ArchLinux users can install `emptty` using `yay -S emptty-git` or any other AUR helper
+### Build tags
+Different distros could handle libc dependencies in different ways and `emptty` have direct references to these libc functions. For these cases there are Build tags to disable incompatible functionality or just to avoid some unwanted dependency.
+The usage during build is really simple, just add parameter and optional tags split with ",".
+```
+$ make build TAGS=tag1,tag2
+```
+
+#### nopam
+This tag disables dependency on PAM. In Linux it switch to basic authentication with `shadow`. For OpenBSD there is simple `bsd_auth` authentication.
+
+#### noxlib
+This tag disables dependency on libx11, could be useful, if only Waylend desktop is expected to be used.
+
+#### noutmp
+This tag disables dependency on UTMP/UTMPX. Its implementation is different by each libc/distro, this provides ability to build if incompatibility occurs.
