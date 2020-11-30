@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-const version = "0.3.0"
+const version = "0.4.0"
 
 // Shows login screen
 func showLoginScreen(conf *config) {
