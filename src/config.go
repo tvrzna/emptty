@@ -1,7 +1,6 @@
 package src
 
 import (
-	"os"
 	"strconv"
 )
 
@@ -119,22 +118,6 @@ func loadConfig() *config {
 		})
 		handleErr(err)
 	}
-
-	os.Unsetenv(confTTYnumber)
-	os.Unsetenv(confSwitchTTY)
-	os.Unsetenv(confPrintIssue)
-	os.Unsetenv(confDefaultUser)
-	os.Unsetenv(confAutologin)
-	os.Unsetenv(confAutologinSession)
-	os.Unsetenv(confDbusLaunch)
-	os.Unsetenv(confXinitrcLaunch)
-	os.Unsetenv(confVerticalSelection)
-	os.Unsetenv(confLogging)
-	os.Unsetenv(confXorgArgs)
-	os.Unsetenv(confLoggingFile)
-	os.Unsetenv(confDynamicMotd)
-	os.Unsetenv(confFgColor)
-	os.Unsetenv(confBgColor)
 
 	return &c
 }
