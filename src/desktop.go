@@ -231,18 +231,20 @@ func getUserLastSession(usr *sysuser) *lastSession {
 	if fileExists(path) {
 		content, err := ioutil.ReadFile(path)
 		if err == nil {
-			l := lastSession{}
-
 			strContent := strings.TrimSpace(string(content))
 
 			arrContent := strings.Split(strContent, ";")
-			l.exec = strings.TrimSpace(arrContent[0])
-			l.env = parseEnv(arrContent[1], constEnvXorg)
-
-			return &l
+			if len(arrContent) > 0 {
+				l := lastSession{}
+				l.exec = strings.TrimSpace(arrContent[0])
+				if len(arrContent) > 1 {
+					l.env = parseEnv(arrContent[1], constEnvXorg)
+					return &l
+				}
+			}
 		}
 	}
-	return getLastSession(usr.uid, loadLastSessions())
+	return nil
 }
 
 // Sets Last session for declared sysuser and saves it into user's home directory.
