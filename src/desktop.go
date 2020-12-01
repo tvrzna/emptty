@@ -24,7 +24,6 @@ const (
 	constEnvWayland = "wayland"
 
 	pathLastSession       = "/.cache/emptty/last-session"
-	pathLastSessionsInEtc = "/etc/emptty/last-sessions"
 	pathXorgSessions      = "/usr/share/xsessions/"
 	pathWaylandSessions   = "/usr/share/wayland-sessions/"
 	pathCustomSessions    = "/etc/emptty/custom-sessions/"
@@ -269,43 +268,6 @@ func setUserLastSession(usr *sysuser, d *desktop) {
 // Checks, if user last session file already exists.
 func isLastDesktopForSave(usr *sysuser, lastDesktop *desktop, currentDesktop *desktop) bool {
 	return !fileExists(usr.homedir+pathLastSession) || lastDesktop.exec != currentDesktop.exec || lastDesktop.env != currentDesktop.env
-}
-
-// Deprecated: last session is now stored in user's home directory
-// Gets Last Session of declared uid.
-func getLastSession(uid int, lastSessions []*lastSession) *lastSession {
-	if lastSessions != nil {
-		for _, session := range lastSessions {
-			if session.uid == uid {
-				return session
-			}
-		}
-	}
-	return nil
-}
-
-// Deprecated: last session is now stored in user's home directory
-// Load all last sessions from file.
-func loadLastSessions() []*lastSession {
-	var result []*lastSession
-	if fileExists(pathLastSessionsInEtc) {
-		readProperties(pathLastSessionsInEtc, func(key string, value string) {
-			l := lastSession{}
-
-			uid, err := strconv.ParseInt(key, 10, 32)
-			if err != nil {
-				return
-			}
-			l.uid = int(uid)
-
-			arrValue := strings.Split(value, ";")
-			l.exec = arrValue[0]
-			l.env = parseEnv(arrValue[1], constEnvXorg)
-
-			result = append(result, &l)
-		})
-	}
-	return result
 }
 
 // Parse input env and selects corresponding environment.
