@@ -8,7 +8,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"syscall"
 )
 
 const (
@@ -169,16 +168,4 @@ func convertColor(name string, isForeground bool) string {
 	}
 
 	return strconv.Itoa(colorNumber)
-}
-
-// Sets fsuid, fsgid and fsgroups according sysuser
-func setFsUser(usr *sysuser) {
-	err := syscall.Setfsuid(usr.uid)
-	handleErr(err)
-
-	err = syscall.Setfsgid(usr.gid)
-	handleErr(err)
-
-	err = syscall.Setgroups(usr.gids)
-	handleErr(err)
 }

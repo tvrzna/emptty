@@ -248,6 +248,9 @@ func getUserLastSession(usr *sysuser) *lastSession {
 
 // Sets Last session for declared sysuser and saves it into user's home directory.
 func setUserLastSession(usr *sysuser, d *desktop) {
+	currentUser, _ := user.Current()
+	previousUser := getSysuser(currentUser)
+
 	setFsUser(usr)
 
 	path := usr.homedir + pathLastSession
@@ -261,8 +264,7 @@ func setUserLastSession(usr *sysuser, d *desktop) {
 		log.Print(err)
 	}
 
-	currentUser, _ := user.Current()
-	setFsUser(getSysuser(currentUser))
+	setFsUser(previousUser)
 }
 
 // Checks, if user last session file already exists.
