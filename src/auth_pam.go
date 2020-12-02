@@ -59,6 +59,9 @@ func authUser(conf *config) *sysuser {
 	handleErr(err)
 	log.Print("Authenticate OK")
 
+	err = trans.AcctMgmt(pam.Silent)
+	handleErr(err)
+
 	trans.SetItem(pam.Tty, "tty"+conf.strTTY())
 
 	trans.OpenSession(pam.Silent)
