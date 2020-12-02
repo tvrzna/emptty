@@ -139,17 +139,13 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	log.Print("Created xauthority file")
 
 	// generate mcookie
-	cmd := exec.Command("/usr/bin/mcookie")
-	cmd.Env = append(usr.environ())
+	cmd := cmdAsUser(usr, "/usr/bin/mcookie")
 	mcookie, err := cmd.Output()
 	handleErr(err)
 	log.Print("Generated mcookie")
 
 	// generate xauth
-	cmd = exec.Command("/usr/bin/xauth", "add", usr.getenv(envDisplay), ".", string(mcookie))
-	cmd.Env = append(usr.environ())
-	cmd.SysProcAttr = &syscall.SysProcAttr{}
-	cmd.SysProcAttr.Credential = &syscall.Credential{Uid: usr.uidu32(), Gid: usr.gidu32(), Groups: usr.gidsu32}
+	cmd = cmdAsUser(usr, "/usr/bin/xauth", "add", usr.getenv(envDisplay), ".", string(mcookie))
 	_, err = cmd.Output()
 	handleErr(err)
 
@@ -233,17 +229,15 @@ func prepareGuiCommand(usr *sysuser, d *desktop, conf *config) (*exec.Cmd, strin
 	var cmd *exec.Cmd
 	if len(arrExec) > 1 {
 		if startScript {
-			cmd = exec.Command("/bin/sh", arrExec...)
+
+			cmd = cmdAsUser(usr, "/bin/sh", arrExec...)
 		} else {
-			cmd = exec.Command(arrExec[0], arrExec...)
+			cmd = cmdAsUser(usr, arrExec[0], arrExec...)
 		}
 	} else {
-		cmd = exec.Command(arrExec[0])
+		cmd = cmdAsUser(usr, arrExec[0])
 	}
 
-	cmd.Env = append(usr.environ())
-	cmd.SysProcAttr = &syscall.SysProcAttr{}
-	cmd.SysProcAttr.Credential = &syscall.Credential{Uid: usr.uidu32(), Gid: usr.gidu32(), Groups: usr.gidsu32}
 	return cmd, strExec
 }
 

@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"strconv"
 	"strings"
+	"syscall"
 )
 
 const (
@@ -168,4 +170,13 @@ func convertColor(name string, isForeground bool) string {
 	}
 
 	return strconv.Itoa(colorNumber)
+}
+
+// Prepares *exec.Cmd to be started as sysuser.
+func cmdAsUser(usr *sysuser, name string, arg ...string) *exec.Cmd {
+	cmd := exec.Command(name, arg...)
+	cmd.Env = append(usr.environ())
+	cmd.SysProcAttr = &syscall.SysProcAttr{}
+	cmd.SysProcAttr.Credential = &syscall.Credential{Uid: usr.uidu32(), Gid: usr.gidu32(), Groups: usr.gidsu32}
+	return cmd
 }
