@@ -3,7 +3,7 @@
 package src
 
 // Adds UTMP entry as user process
-func addUtmpEntry(username string, pid int, ttyNo string) bool {
+func addUtmpEntry(username string, pid int, ttyNo string, xdisplay string) bool {
 	// Not implemented yet
 	return false
 }

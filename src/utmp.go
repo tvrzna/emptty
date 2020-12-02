@@ -29,14 +29,12 @@ void prepareUtmpEntry(struct utmpx * utmp, int pid, char* id, char* line, char* 
 import "C"
 import (
 	"log"
-	"os"
 	"unsafe"
 )
 
 // Adds UTMPx entry as user process
-func addUtmpEntry(username string, pid int, ttyNo string) *C.struct_utmpx {
+func addUtmpEntry(username string, pid int, ttyNo string, xdisplay string) *C.struct_utmpx {
 	utmp := &C.struct_utmpx{}
-	xdisplay := os.Getenv(envDisplay)
 
 	id := xdisplay
 	if id == "" {

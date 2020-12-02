@@ -53,6 +53,6 @@ func closeAuth() {
 }
 
 // Defines specific environmental variables defined by PAM
-func defineSpecificEnvVariables() {
+func defineSpecificEnvVariables(usr *sysuser) {
 	// Nothing to do here
 }

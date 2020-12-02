@@ -13,7 +13,8 @@ import (
 )
 
 type xdisplay struct {
-	disp *C.Display
+	disp     *C.Display
+	dispName string
 }
 
 // Opens XDisplay with xlib.
@@ -21,8 +22,10 @@ func (c *xdisplay) openXDisplay() error {
 	if c.disp != nil {
 		return errors.New("X Display is already opened")
 	}
+	displayName := C.CString(c.dispName)
+	defer C.free(unsafe.Pointer(displayName))
 	for i := 0; i < 50; i++ {
-		d := C.XOpenDisplay(nil)
+		d := C.XOpenDisplay(displayName)
 		if d != nil {
 			c.disp = d
 			return nil

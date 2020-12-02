@@ -13,6 +13,7 @@ type sysuser struct {
 	gid      int
 	gids     []int
 	gidsu32  []uint32
+	env      map[string]string
 }
 
 // Loads all necessary info about user into sysuser struct.
@@ -38,6 +39,7 @@ func getSysuser(usr *user.User) *sysuser {
 	result.gid = int(gid)
 	result.gids = gids
 	result.gidsu32 = gidsu32
+	result.env = make(map[string]string)
 
 	return &result
 }
@@ -60,4 +62,23 @@ func (u *sysuser) strUid() string {
 // returns gid as string.
 func (u *sysuser) strGid() string {
 	return strconv.Itoa(u.gid)
+}
+
+// gets user's environmental variable by key.
+func (u *sysuser) getenv(key string) string {
+	return u.env[key]
+}
+
+// sets user's environmental variable.
+func (u *sysuser) setenv(key string, value string) {
+	u.env[key] = value
+}
+
+// returns a copy of environmental variables.
+func (u *sysuser) environ() []string {
+	var result []string
+	for key, value := range u.env {
+		result = append(result, key+"="+value)
+	}
+	return result
 }

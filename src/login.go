@@ -26,6 +26,7 @@ const (
 	envDisplay         = "DISPLAY"
 	envShell           = "SHELL"
 	envLang            = "LANG"
+	envPath            = "PATH"
 )
 
 // Login into graphical environment
@@ -56,30 +57,31 @@ func login(conf *config) {
 // Prepares environment and env variables for authorized user.
 // Defines users Uid and Gid for further syscalls.
 func defineEnvironment(usr *sysuser, conf *config) {
-	defineSpecificEnvVariables()
+	defineSpecificEnvVariables(usr)
 
-	os.Setenv(envHome, usr.homedir)
-	os.Setenv(envPwd, usr.homedir)
-	os.Setenv(envUser, usr.username)
-	os.Setenv(envLogname, usr.username)
-	os.Setenv(envXdgConfigHome, usr.homedir+"/.config")
-	os.Setenv(envXdgRuntimeDir, "/run/user/"+usr.strUid())
-	os.Setenv(envXdgSeat, "seat0")
-	os.Setenv(envXdgSessionClass, "user")
-	os.Setenv(envShell, getUserShell(usr))
-	os.Setenv(envLang, conf.lang)
+	usr.setenv(envHome, usr.homedir)
+	usr.setenv(envPwd, usr.homedir)
+	usr.setenv(envUser, usr.username)
+	usr.setenv(envLogname, usr.username)
+	usr.setenv(envXdgConfigHome, usr.homedir+"/.config")
+	usr.setenv(envXdgRuntimeDir, "/run/user/"+usr.strUid())
+	usr.setenv(envXdgSeat, "seat0")
+	usr.setenv(envXdgSessionClass, "user")
+	usr.setenv(envShell, getUserShell(usr))
+	usr.setenv(envLang, conf.lang)
+	usr.setenv(envPath, os.Getenv(envPath))
 
 	log.Print("Defined Environment")
 
 	// create XDG folder
-	err := os.MkdirAll(os.Getenv(envXdgRuntimeDir), 0700)
+	err := os.MkdirAll(usr.getenv(envXdgRuntimeDir), 0700)
 	handleErr(err)
 	log.Print("Created XDG folder")
 
 	// Set owner of XDG folder
-	os.Chown(os.Getenv(envXdgRuntimeDir), usr.uid, usr.gid)
+	os.Chown(usr.getenv(envXdgRuntimeDir), usr.uid, usr.gid)
 
-	os.Chdir(os.Getenv(envPwd))
+	os.Chdir(usr.getenv(envPwd))
 }
 
 // Reads default shell of authorized user.
@@ -94,19 +96,18 @@ func getUserShell(usr *sysuser) string {
 // Prepares and stars Wayland session for authorized user.
 func wayland(usr *sysuser, d *desktop, conf *config) {
 	// Set environment
-	os.Setenv(envXdgSessionType, "wayland")
+	usr.setenv(envXdgSessionType, "wayland")
 	log.Print("Defined Wayland environment")
 
 	// start Wayland
 	wayland, strExec := prepareGuiCommand(usr, d, conf)
 	registerInterruptHandler(nil, wayland)
-
 	log.Print("Starting " + strExec)
 	err := wayland.Start()
 	handleErr(err)
 
 	// make utmp entry
-	utmpEntry := addUtmpEntry(usr.username, wayland.Process.Pid, conf.strTTY())
+	utmpEntry := addUtmpEntry(usr.username, wayland.Process.Pid, conf.strTTY(), "")
 	log.Print("Added utmp entry")
 
 	wayland.Wait()
@@ -124,29 +125,29 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	freeDisplay := strconv.Itoa(getFreeXDisplay())
 
 	// Set environment
-	os.Setenv(envXdgSessionType, "x11")
-	os.Setenv(envXauthority, os.Getenv(envXdgRuntimeDir)+"/.emptty-xauth")
-	os.Setenv(envDisplay, ":"+freeDisplay)
+	usr.setenv(envXdgSessionType, "x11")
+	usr.setenv(envXauthority, usr.getenv(envXdgRuntimeDir)+"/.emptty-xauth")
+	usr.setenv(envDisplay, ":"+freeDisplay)
 	log.Print("Defined Xorg environment")
 
 	// create xauth
-	os.Remove(os.Getenv(envXauthority))
-	xauthority, err := os.Create(os.Getenv(envXauthority))
-	os.Chown(os.Getenv(envXauthority), usr.uid, usr.gid)
+	os.Remove(usr.getenv(envXauthority))
+	xauthority, err := os.Create(usr.getenv(envXauthority))
+	os.Chown(usr.getenv(envXauthority), usr.uid, usr.gid)
 	xauthority.Close()
 	handleErr(err)
 	log.Print("Created xauthority file")
 
 	// generate mcookie
 	cmd := exec.Command("/usr/bin/mcookie")
-	cmd.Env = append(os.Environ())
+	cmd.Env = append(usr.environ())
 	mcookie, err := cmd.Output()
 	handleErr(err)
 	log.Print("Generated mcookie")
 
 	// generate xauth
-	cmd = exec.Command("/usr/bin/xauth", "add", os.Getenv(envDisplay), ".", string(mcookie))
-	cmd.Env = append(os.Environ())
+	cmd = exec.Command("/usr/bin/xauth", "add", usr.getenv(envDisplay), ".", string(mcookie))
+	cmd.Env = append(usr.environ())
 	cmd.SysProcAttr = &syscall.SysProcAttr{}
 	cmd.SysProcAttr.Credential = &syscall.Credential{Uid: usr.uidu32(), Gid: usr.gidu32(), Groups: usr.gidsu32}
 	_, err = cmd.Output()
@@ -157,7 +158,7 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	// start X
 	log.Print("Starting Xorg")
 
-	xorgArgs := []string{"vt" + conf.strTTY(), os.Getenv(envDisplay)}
+	xorgArgs := []string{"vt" + conf.strTTY(), usr.getenv(envDisplay)}
 
 	if conf.xorgArgs != "" {
 		arrXorgArgs := strings.Split(conf.xorgArgs, " ")
@@ -165,7 +166,7 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	}
 
 	xorg := exec.Command("/usr/bin/Xorg", xorgArgs...)
-	xorg.Env = append(os.Environ())
+	xorg.Env = append(usr.environ())
 	xorg.Start()
 	if xorg.Process == nil {
 		handleStrErr("Xorg is not running")
@@ -173,11 +174,12 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	log.Print("Started Xorg")
 
 	disp := &xdisplay{}
+	disp.dispName = usr.getenv(envDisplay)
 	handleErr(disp.openXDisplay())
 	defer disp.closeXDisplay()
 
 	// make utmp entry
-	utmpEntry := addUtmpEntry(usr.username, xorg.Process.Pid, conf.strTTY())
+	utmpEntry := addUtmpEntry(usr.username, xorg.Process.Pid, conf.strTTY(), usr.getenv(envDisplay))
 	log.Print("Added utmp entry")
 
 	// start xinit
@@ -200,7 +202,7 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	log.Print("Interrupted Xorg")
 
 	// Remove auth
-	os.Remove(os.Getenv(envXauthority))
+	os.Remove(usr.getenv(envXauthority))
 	log.Print("Cleaned up xauthority")
 
 	// End utmp entry
@@ -239,7 +241,7 @@ func prepareGuiCommand(usr *sysuser, d *desktop, conf *config) (*exec.Cmd, strin
 		cmd = exec.Command(arrExec[0])
 	}
 
-	cmd.Env = append(os.Environ())
+	cmd.Env = append(usr.environ())
 	cmd.SysProcAttr = &syscall.SysProcAttr{}
 	cmd.SysProcAttr.Credential = &syscall.Credential{Uid: usr.uidu32(), Gid: usr.gidu32(), Groups: usr.gidsu32}
 	return cmd, strExec

@@ -81,11 +81,11 @@ func closeAuth() {
 }
 
 // Defines specific environmental variables defined by PAM
-func defineSpecificEnvVariables() {
+func defineSpecificEnvVariables(usr *sysuser) {
 	if trans != nil {
 		envs, _ := trans.GetEnvList()
 		for key, value := range envs {
-			os.Setenv(key, value)
+			usr.setenv(key, value)
 		}
 	}
 }
