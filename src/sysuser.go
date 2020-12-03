@@ -3,6 +3,7 @@ package src
 import (
 	"os/user"
 	"strconv"
+	"strings"
 )
 
 // Type sysuser defines default structure of user to easier passing of all values.
@@ -66,12 +67,17 @@ func (u *sysuser) strGid() string {
 
 // gets user's environmental variable by key.
 func (u *sysuser) getenv(key string) string {
+	if strings.TrimSpace(key) == "" {
+		return ""
+	}
 	return u.env[key]
 }
 
 // sets user's environmental variable.
 func (u *sysuser) setenv(key string, value string) {
-	u.env[key] = value
+	if strings.TrimSpace(key) != "" {
+		u.env[strings.TrimSpace(key)] = value
+	}
 }
 
 // returns a copy of environmental variables.
