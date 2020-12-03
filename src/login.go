@@ -77,13 +77,14 @@ func defineEnvironment(usr *sysuser, conf *config) {
 	if !fileExists(usr.getenv(envXdgRuntimeDir)) {
 		err := os.MkdirAll(usr.getenv(envXdgRuntimeDir), 0700)
 		handleErr(err)
+
+		// Set owner of XDG folder
+		os.Chown(usr.getenv(envXdgRuntimeDir), usr.uid, usr.gid)
+
 		log.Print("Created XDG folder")
 	} else {
 		log.Print("XDG folder already exists, no need to create")
 	}
-
-	// Set owner of XDG folder
-	os.Chown(usr.getenv(envXdgRuntimeDir), usr.uid, usr.gid)
 
 	os.Chdir(usr.getenv(envPwd))
 }
