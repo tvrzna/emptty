@@ -128,6 +128,8 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	usr.setenv(envXdgSessionType, "x11")
 	usr.setenv(envXauthority, usr.getenv(envXdgRuntimeDir)+"/.emptty-xauth")
 	usr.setenv(envDisplay, ":"+freeDisplay)
+	os.Setenv(envXauthority, usr.getenv(envXauthority))
+	os.Setenv(envDisplay, usr.getenv(envDisplay))
 	log.Print("Defined Xorg environment")
 
 	// create xauth
@@ -162,7 +164,7 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	}
 
 	xorg := exec.Command("/usr/bin/Xorg", xorgArgs...)
-	xorg.Env = append(usr.environ())
+	xorg.Env = append(os.Environ())
 	xorg.Start()
 	if xorg.Process == nil {
 		handleStrErr("Xorg is not running")
