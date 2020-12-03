@@ -109,7 +109,7 @@ func sanitizeValue(value string, defaultValue string) string {
 }
 
 // Makes directories up to last part of path (to make sure to not make dir, that is named as result file)
-func mkDirsForFile(path string, perm os.FileMode, usr *sysuser) error {
+func mkDirsForFile(path string, perm os.FileMode) error {
 	if !fileExists(path) && path != "" {
 		arrPath := strings.Split(path, "/")
 		for i, _ := range arrPath {
@@ -117,9 +117,6 @@ func mkDirsForFile(path string, perm os.FileMode, usr *sysuser) error {
 				newPath := strings.Join(arrPath[:i+1], "/")
 				if newPath != "" && !fileExists(newPath) {
 					err := os.Mkdir(newPath, perm)
-					if err == nil {
-						err = os.Chown(newPath, usr.uid, usr.gid)
-					}
 					if err != nil {
 						return err
 					}

@@ -255,7 +255,7 @@ func setUserLastSession(usr *sysuser, d *desktop) {
 
 	path := usr.homedir + pathLastSession
 	data := fmt.Sprintf("%s;%s\n", d.exec, stringifyEnv(d.env))
-	err := mkDirsForFile(path, 0744, usr)
+	err := mkDirsForFile(path, 0744)
 	if err != nil {
 		log.Print(err)
 	}
