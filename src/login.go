@@ -134,11 +134,6 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 
 	// create xauth
 	os.Remove(usr.getenv(envXauthority))
-	xauthority, err := os.Create(usr.getenv(envXauthority))
-	os.Chown(usr.getenv(envXauthority), usr.uid, usr.gid)
-	xauthority.Close()
-	handleErr(err)
-	log.Print("Created xauthority file")
 
 	// generate mcookie
 	cmd := cmdAsUser(usr, "/usr/bin/mcookie")
