@@ -3,7 +3,7 @@ Dead simple CLI Display Manager on TTY
 
 ![](screenshot.png)
 
-[![Packaging status](https://repology.org/badge/vertical-allrepos/emptty.svg)](https://repology.org/project/emptty/versions)
+[![Packaging status](https://repology.org/badge/vertical-allrepos/emptty.svg?minversion=0.4.2)](https://repology.org/project/emptty/versions)
 
 ## Configuration
 
