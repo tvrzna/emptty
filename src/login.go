@@ -52,6 +52,8 @@ func login(conf *config) {
 	case Xorg:
 		xorg(usr, d, conf)
 	}
+
+	closeAuth()
 }
 
 // Prepares environment and env variables for authorized user.
@@ -121,8 +123,6 @@ func wayland(usr *sysuser, d *desktop, conf *config) {
 	// end utmp entry
 	endUtmpEntry(utmpEntry)
 	log.Print("Ended utmp entry")
-
-	closeAuth()
 }
 
 // Prepares and starts Xorg session for authorized user.
@@ -205,8 +205,6 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	// End utmp entry
 	endUtmpEntry(utmpEntry)
 	log.Print("Ended utmp entry")
-
-	closeAuth()
 }
 
 // Prepares command for starting GUI.
