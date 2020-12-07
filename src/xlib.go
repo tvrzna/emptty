@@ -35,15 +35,3 @@ func (c *xdisplay) openXDisplay() error {
 	}
 	return errors.New("Could not open X Display")
 }
-
-// Closes XDisplay with xlib
-func (c *xdisplay) closeXDisplay() error {
-	if c.disp == nil {
-		return errors.New("Not connected to any X Display")
-	}
-	if C.XCloseDisplay(c.disp) == 0 {
-		C.free(unsafe.Pointer(c.disp))
-		return nil
-	}
-	return errors.New("Could not close active X Display")
-}

@@ -106,7 +106,7 @@ func wayland(usr *sysuser, d *desktop, conf *config) {
 
 	// start Wayland
 	wayland, strExec := prepareGuiCommand(usr, d, conf)
-	registerInterruptHandler(nil, wayland)
+	registerInterruptHandler(wayland)
 	log.Print("Starting " + strExec)
 	err := wayland.Start()
 	handleErr(err)
@@ -174,7 +174,6 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	disp := &xdisplay{}
 	disp.dispName = usr.getenv(envDisplay)
 	handleErr(disp.openXDisplay())
-	defer disp.closeXDisplay()
 
 	// make utmp entry
 	utmpEntry := addUtmpEntry(usr.username, xorg.Process.Pid, conf.strTTY(), usr.getenv(envDisplay))
@@ -182,7 +181,7 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 
 	// start xinit
 	xinit, strExec := prepareGuiCommand(usr, d, conf)
-	registerInterruptHandler(disp, xorg, xinit)
+	registerInterruptHandler(xinit, xorg)
 	log.Print("Starting " + strExec)
 	err = xinit.Start()
 	if err != nil {
@@ -263,23 +262,18 @@ func getFreeXDisplay() int {
 }
 
 // Registers interrupt handler, that interrupts all mentioned Cmds.
-func registerInterruptHandler(disp *xdisplay, cmds ...*exec.Cmd) {
+func registerInterruptHandler(cmds ...*exec.Cmd) {
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt, syscall.SIGHUP, syscall.SIGINT, syscall.SIGKILL, syscall.SIGQUIT, syscall.SIGTERM)
-	go handleInterrupt(c, disp, cmds...)
+	go handleInterrupt(c, cmds...)
 }
 
 // Catch interrupt signal chan and interrupts all mentioned Cmds.
-func handleInterrupt(c chan os.Signal, disp *xdisplay, cmds ...*exec.Cmd) {
+func handleInterrupt(c chan os.Signal, cmds ...*exec.Cmd) {
 	<-c
 	log.Print("Catched interrupt signal")
 	for _, cmd := range cmds {
 		cmd.Process.Signal(os.Interrupt)
 		cmd.Wait()
 	}
-	if disp != nil {
-		disp.closeXDisplay()
-	}
-	closeAuth()
-	os.Exit(1)
 }

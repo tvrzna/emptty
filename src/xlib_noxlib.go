@@ -22,9 +22,3 @@ func (c *xdisplay) openXDisplay() error {
 	}
 	return nil
 }
-
-// Nothing to do here
-func (c *xdisplay) closeXDisplay() error {
-	// Nothing to do here
-	return nil
-}
