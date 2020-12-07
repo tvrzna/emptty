@@ -7,15 +7,16 @@ import (
 
 const version = "0.4.2"
 
+var buildVersion string
+
 // Handles main functionality of whole application.
 func Main() {
 	if contains(os.Args, "-h") || contains(os.Args, "--help") {
 		printHelp()
 		os.Exit(0)
 	}
-
 	if contains(os.Args, "-v") || contains(os.Args, "--version") {
-		fmt.Printf("emptty %s\nhttps://github.com/tvrzna/emptty\n\nReleased under the MIT License.\n\n", version)
+		fmt.Printf("emptty %s\nhttps://github.com/tvrzna/emptty\n\nReleased under the MIT License.\n\n", getVersion())
 		os.Exit(0)
 	}
 
@@ -57,4 +58,12 @@ func printHelp() {
 	fmt.Printf("  -v, --version\t\tprint version\n")
 	fmt.Printf("  -d, --daemon\t\tstart in daemon mode\n")
 	fmt.Printf("  -t, --tty NUMBER\toverrides configured TTY number\n")
+}
+
+// Gets current version
+func getVersion() string {
+	if buildVersion != "" {
+		return buildVersion[1:]
+	}
+	return version
 }
