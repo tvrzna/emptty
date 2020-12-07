@@ -20,11 +20,8 @@ type issueVariable struct {
 	command []string
 }
 
-// Starts emptty as daemon spawning emptty on defined TTY
-func startDaemon() {
-	conf := loadConfig()
-	conf.daemonMode = true
-
+// Starts emptty as daemon spawning emptty on defined TTY.
+func startDaemon(conf *config) *os.File {
 	fTTY, err := os.OpenFile("/dev/tty"+conf.strTTY(), os.O_RDWR, 0700)
 	if err != nil {
 		log.Fatal(err)
@@ -47,10 +44,17 @@ func startDaemon() {
 
 	switchTTY(conf)
 
-	showLoginScreen(conf)
+	return fTTY
+}
 
+// Stops daemon mode and closes opened TTY.
+func stopDaemon(conf *config, fTTY *os.File) {
 	resetColors()
 	clearScreen(fTTY)
+
+	if fTTY != nil {
+		fTTY.Close()
+	}
 }
 
 // Clears terminal screen

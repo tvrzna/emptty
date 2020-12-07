@@ -166,3 +166,13 @@ func cmdAsUser(usr *sysuser, name string, arg ...string) *exec.Cmd {
 	cmd.SysProcAttr.Credential = &syscall.Credential{Uid: usr.uidu32(), Gid: usr.gidu32(), Groups: usr.gidsu32}
 	return cmd
 }
+
+// Checks, if array contains value
+func contains(array []string, value string) bool {
+	for _, v := range array {
+		if v == value {
+			return true
+		}
+	}
+	return false
+}
