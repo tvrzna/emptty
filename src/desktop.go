@@ -191,7 +191,7 @@ func loadUserDesktop(homeDir string) (*desktop, string) {
 	var lang string
 	for _, confFile := range []string{confDirConf, homeDirConf} {
 		if fileExists(confFile) {
-			d := desktop{isUser: true, path: confFile, env: Xorg}
+			d := &desktop{isUser: true, path: confFile, env: Xorg}
 
 			err := readProperties(confFile, func(key string, value string) {
 				switch key {
@@ -206,7 +206,14 @@ func loadUserDesktop(homeDir string) (*desktop, string) {
 				}
 			})
 			handleErr(err)
-			return &d, lang
+
+			if d.exec == "" && !fileIsExecutable(d.path) {
+				fmt.Printf("\nMissing Exec value and your '%s' is not executable.\n", d.path)
+				log.Printf("\nMissing Exec value and your '%s' is not executable.\n", d.path)
+				return nil, lang
+			}
+
+			return d, lang
 		}
 	}
 

@@ -234,7 +234,6 @@ func prepareGuiCommand(usr *sysuser, d *desktop, conf *config) (*exec.Cmd, strin
 	var cmd *exec.Cmd
 	if len(arrExec) > 1 {
 		if startScript {
-
 			cmd = cmdAsUser(usr, "/bin/sh", arrExec...)
 		} else {
 			cmd = cmdAsUser(usr, arrExec[0], arrExec...)
