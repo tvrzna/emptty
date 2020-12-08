@@ -195,9 +195,11 @@ func loadUserDesktop(homeDir string) (*desktop, string) {
 
 			err := readProperties(confFile, func(key string, value string) {
 				switch key {
-				case confCommand:
+				case desktopName:
+					d.name = value
+				case desktopExec, confCommand:
 					d.exec = sanitizeValue(value, "")
-				case confEnvironment:
+				case desktopEnvironment:
 					d.env = parseEnv(value, constEnvXorg)
 				case confLang:
 					lang = value

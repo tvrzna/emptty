@@ -56,11 +56,13 @@ Optional configuration file, that could be also handled as shell script. If is n
 Configuration file stored as `${HOME}/.config/emptty` has higher priority on loading.
 See [samples](SAMPLES.md#emptty-as-config)
 
-`ENVIRONMENT` Selects, which environment should be defined for following command. Possible values are "xorg" and "wayland", "xorg" is default.
+`Name` Optional name to be used as Session Name.
 
-`COMMAND` Defines command to start Desktop Environment/Window Manager. This value does not need to be defined, if .emptty file is presented as shell script (with shebang at the start and execution permissions).
+`Exec` Defines command to start Desktop Environment/Window Manager. This value does not need to be defined, if .emptty file is presented as shell script (with shebang at the start and execution permissions).
 
-`LANG` Defines locale for logged user, has higher priority than LANG from global configuration
+`Environment` Selects, which environment should be defined for following command. Possible values are "xorg" and "wayland", "xorg" is default.
+
+`Lang` Defines locale for logged user, has higher priority than LANG from global configuration
 
 #### /etc/emptty/custom-sessions/ or ${HOME}/.config/emptty-custom-sessions/
 Optional folders for custom sessions, that could be available system-wide (in case of `/etc/emptty/custom-sessions/`) or user-specific (in case of `${HOME}/.config/emptty-custom-sessions/`), but do not have .desktop file stored on standard paths for Xorg or Wayland sessions. Expected suffix of each file is ".desktop".

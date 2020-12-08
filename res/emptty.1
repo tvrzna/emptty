@@ -97,11 +97,13 @@ or
 Optional file stored as ${HOME}/.config/emptty or ${HOME}/.emptty
 
 Configuration file stored as ${HOME}/.config/emptty has higher priority on loading.
-.IP ENVIRONMENT
-Selects, which environment should be defined for following command. Possible values are "xorg" and "wayland", "xorg" is default.
-.IP COMMAND
+.IP Name
+Optional name to be used as Session Name.
+.IP Exec
 Defines command to start Desktop Environment/Window Manager. This value does not need to be defined, if .emptty file is presented as shell script (with shebang at the start and execution permissions).
-.IP LANG
+.IP Environment
+Selects, which environment should be defined for following command. Possible values are "xorg" and "wayland", "xorg" is default.
+.IP Lang
 Defines locale for logged user, has higher priority than LANG from global configuration
 
 .SH CUSTOM SESSIONS

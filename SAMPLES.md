@@ -5,21 +5,23 @@ In your .config folder you have to create 'emptty' file or in your home folder y
 
 #### Xorg session
 ```
-command=/usr/bin/openbox-session
-environment=xorg
+Name=Custom Optional Name
+Exec=/usr/bin/openbox-session
+Environment=xorg
 ```
 
 #### Wayland session
 ```
-command=/usr/bin/sway
-environment=wayland
+Name=Custom Optional Name
+Exec=/usr/bin/sway
+Environment=wayland
 ```
 
 ## \~/.config/emptty or \~/.emptty as script
 In your .config folder you have to create 'emptty' file or in your home folder you have to create `.emptty` file. This file needs to have execution permission (`chmod +x ~/.config/emptty` or `chmod +x ~/.emptty`).
 ```
 #!/bin/sh
-environment=xorg
+Environment=xorg
 
 exec dbus-launch i3
 ```
