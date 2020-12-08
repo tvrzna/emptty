@@ -27,6 +27,8 @@ const (
 	envShell           = "SHELL"
 	envLang            = "LANG"
 	envPath            = "PATH"
+	envDesktopSession  = "DESKTOP_SESSION"
+	envXdgSessDesktop  = "XDG_SESSION_DESKTOP"
 )
 
 // Login into graphical environment
@@ -44,7 +46,7 @@ func login(conf *config) {
 		conf.lang = usrLang
 	}
 
-	defineEnvironment(usr, conf)
+	defineEnvironment(usr, conf, d)
 
 	switch d.env {
 	case Wayland:
@@ -57,8 +59,7 @@ func login(conf *config) {
 }
 
 // Prepares environment and env variables for authorized user.
-// Defines users Uid and Gid for further syscalls.
-func defineEnvironment(usr *sysuser, conf *config) {
+func defineEnvironment(usr *sysuser, conf *config, d *desktop) {
 	defineSpecificEnvVariables(usr)
 
 	usr.setenv(envHome, usr.homedir)
@@ -72,6 +73,11 @@ func defineEnvironment(usr *sysuser, conf *config) {
 	usr.setenv(envShell, getUserShell(usr))
 	usr.setenv(envLang, conf.lang)
 	usr.setenv(envPath, os.Getenv(envPath))
+
+	if d.name != "" {
+		usr.setenv(envDesktopSession, d.name)
+		usr.setenv(envXdgSessDesktop, d.name)
+	}
 
 	log.Print("Defined Environment")
 
