@@ -62,9 +62,11 @@ func authUser(conf *config) *sysuser {
 	err = trans.AcctMgmt(pam.Silent)
 	handleErr(err)
 
-	trans.SetItem(pam.Tty, "tty"+conf.strTTY())
+	err = trans.SetItem(pam.Tty, "tty"+conf.strTTY())
+	handleErr(err)
 
-	trans.OpenSession(pam.Silent)
+	err = trans.OpenSession(pam.Silent)
+	handleErr(err)
 
 	pamUsr, _ := trans.GetItem(pam.User)
 	usr, _ := user.Lookup(pamUsr)
@@ -75,8 +77,11 @@ func authUser(conf *config) *sysuser {
 // Handles close of PAM authentication
 func closeAuth() {
 	if trans != nil {
-		trans.CloseSession(pam.Silent)
+		err := trans.CloseSession(pam.Silent)
 		trans = nil
+		if err != nil {
+			log.Println(err)
+		}
 	}
 }
 
