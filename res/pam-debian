@@ -1,6 +1,8 @@
 #%PAM-1.0
 auth            sufficient      pam_succeed_if.so user ingroup nopasswdlogin
 @include                        common-auth
+-auth           optional        pam_gnome_keyring.so
 @include                        common-account
 @include                        common-session
+-session        optional        pam_gnome_keyring.so auto_start
 @include                        common-password
