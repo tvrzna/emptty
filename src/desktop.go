@@ -209,7 +209,7 @@ func loadUserDesktop(homeDir string) (*desktop, string) {
 
 			if d.exec == "" && !fileIsExecutable(d.path) {
 				fmt.Printf("\nMissing Exec value and your '%s' is not executable.\n", d.path)
-				log.Printf("\nMissing Exec value and your '%s' is not executable.\n", d.path)
+				log.Printf("Missing Exec value and your '%s' is not executable.\n", d.path)
 				return nil, lang
 			}
 
