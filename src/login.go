@@ -38,8 +38,14 @@ func login(conf *config) {
 	var d *desktop
 	d, usrLang := loadUserDesktop(usr.homedir)
 
-	if d == nil {
-		d = selectDesktop(usr, conf)
+	if d == nil || (d != nil && d.selection) {
+		selectedDesktop := selectDesktop(usr, conf)
+		if d != nil && d.selection {
+			d.child = selectedDesktop
+			d.env = d.child.env
+		} else {
+			d = selectedDesktop
+		}
 	}
 
 	if usrLang != "" {
@@ -77,6 +83,9 @@ func defineEnvironment(usr *sysuser, conf *config, d *desktop) {
 	if d.name != "" {
 		usr.setenv(envDesktopSession, d.name)
 		usr.setenv(envXdgSessDesktop, d.name)
+	} else if d.child != nil && d.child.name != "" {
+		usr.setenv(envDesktopSession, d.child.name)
+		usr.setenv(envXdgSessDesktop, d.child.name)
 	}
 
 	log.Print("Defined Environment")
@@ -219,14 +228,18 @@ func prepareGuiCommand(usr *sysuser, d *desktop, conf *config) (*exec.Cmd, strin
 
 	startScript := false
 
-	if d.env == Xorg && conf.xinitrcLaunch && allowStartupPrefix && !strings.Contains(strExec, ".xinitrc") && fileExists(usr.homedir+"/.xinitrc") {
-		startScript = true
-		allowStartupPrefix = false
-		strExec = usr.homedir + "/.xinitrc " + strExec
-	}
+	if d.selection && d.child != nil {
+		strExec = d.path + " " + d.child.exec
+	} else {
+		if d.env == Xorg && conf.xinitrcLaunch && allowStartupPrefix && !strings.Contains(strExec, ".xinitrc") && fileExists(usr.homedir+"/.xinitrc") {
+			startScript = true
+			allowStartupPrefix = false
+			strExec = usr.homedir + "/.xinitrc " + strExec
+		}
 
-	if conf.dbusLaunch && !strings.Contains(strExec, "dbus-launch") && allowStartupPrefix {
-		strExec = "dbus-launch " + strExec
+		if conf.dbusLaunch && !strings.Contains(strExec, "dbus-launch") && allowStartupPrefix {
+			strExec = "dbus-launch " + strExec
+		}
 	}
 
 	arrExec := strings.Split(strExec, " ")

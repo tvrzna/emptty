@@ -176,3 +176,12 @@ func contains(array []string, value string) bool {
 	}
 	return false
 }
+
+// Parse boolean values.
+func parseBool(strBool string, defaultValue string) bool {
+	val, err := strconv.ParseBool(sanitizeValue(strBool, defaultValue))
+	if err != nil {
+		return false
+	}
+	return val
+}

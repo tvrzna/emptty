@@ -131,15 +131,6 @@ func parseTTY(tty string, defaultValue string) int {
 	return int(val)
 }
 
-// Parse boolean values.
-func parseBool(strBool string, defaultValue string) bool {
-	val, err := strconv.ParseBool(sanitizeValue(strBool, defaultValue))
-	if err != nil {
-		return false
-	}
-	return val
-}
-
 // Parse logging option
 func parseLogging(strLogging string, defaultValue string) enLogging {
 	val := sanitizeValue(strLogging, defaultValue)

@@ -1,4 +1,4 @@
-.TH EMPTTY 1 "December 2020" "emptty 0.4.2" emptty
+.TH EMPTTY 1 "January 2021" "emptty 0.4.2" emptty
 
 .SH NAME
 emptty \- Dead simple CLI Display Manager on TTY
@@ -105,6 +105,14 @@ Defines command to start Desktop Environment/Window Manager. This value does not
 Selects, which environment should be defined for following command. Possible values are "xorg" and "wayland", "xorg" is default.
 .IP Lang
 Defines locale for logged user, has higher priority than LANG from global configuration
+.IP Selection
+Requires selection of desktop, basically turns
+.I emptty
+file into
+.I .xinitrc
+for Xorg and Wayland. In this case
+.I Exec
+is skipped.
 
 .SH CUSTOM SESSIONS
 Optional folders for custom sessions, that could be available system-wide (in case of /etc/emptty/custom-sessions/) or user-specific (in case of ${HOME}/.config/emptty-custom-sessions/), but do not have .desktop file stored on standard paths for Xorg or Wayland sessions. Expected suffix of each file is ".desktop".

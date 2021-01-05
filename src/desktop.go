@@ -15,6 +15,7 @@ import (
 const (
 	confEnvironment = "ENVIRONMENT"
 	confCommand     = "COMMAND"
+	confSelection   = "SELECTION"
 
 	desktopExec        = "EXEC"
 	desktopName        = "NAME"
@@ -45,11 +46,13 @@ const (
 
 // desktop defines structure for display environments and window managers.
 type desktop struct {
-	name   string
-	exec   string
-	env    enEnvironment
-	isUser bool
-	path   string
+	name      string
+	exec      string
+	env       enEnvironment
+	isUser    bool
+	path      string
+	selection bool
+	child     *desktop
 }
 
 // lastSession defines structure for last used session on user login.
@@ -191,7 +194,7 @@ func loadUserDesktop(homeDir string) (*desktop, string) {
 	var lang string
 	for _, confFile := range []string{confDirConf, homeDirConf} {
 		if fileExists(confFile) {
-			d := &desktop{isUser: true, path: confFile, env: Xorg}
+			d := &desktop{isUser: true, path: confFile, env: Xorg, selection: false}
 
 			err := readProperties(confFile, func(key string, value string) {
 				switch key {
@@ -203,14 +206,20 @@ func loadUserDesktop(homeDir string) (*desktop, string) {
 					d.env = parseEnv(value, constEnvXorg)
 				case confLang:
 					lang = value
+				case confSelection:
+					d.selection = parseBool(value, "false")
 				}
 			})
 			handleErr(err)
 
-			if d.exec == "" && !fileIsExecutable(d.path) {
-				fmt.Printf("\nMissing Exec value and your '%s' is not executable.\n", d.path)
-				log.Printf("Missing Exec value and your '%s' is not executable.\n", d.path)
+			if (d.exec == "" || d.selection) && !fileIsExecutable(d.path) {
+				fmt.Printf("\nMissing Exec value/Using selection and your '%s' is not executable.\n", d.path)
+				log.Printf("Missing Exec value/Using selection and your '%s' is not executable.\n", d.path)
 				return nil, lang
+			}
+			if d.selection {
+				d.exec = ""
+				d.name = ""
 			}
 
 			return d, lang

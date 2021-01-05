@@ -1,5 +1,25 @@
 # emptty - Samples
 
+## \~/.config/emptty or \~/.emptty as init script
+In your .config folder you have to create 'emptty' file or in your home folder you have to create `.emptty` file. This file needs to have execution permission (`chmod +x ~/.config/emptty` or `chmod +x ~/.emptty`).
+
+This variant allows to treat your script in similar way as your `.xinitrc`, however this is common to both Xorg and Wayland. The magic option is `Selection=true`. You can define your own environmental variables and keep the possibility to select any desktop.
+
+#### Script
+```
+#!/bin/sh
+Selection=true
+
+xrandr --output eDP1 --mode 1920x1080
+xrdb -merge ~/.Xresources
+
+export BROWSER=firefox
+export EDITOR=vim
+
+exec dbus-launch $@
+```
+
+
 ## \~/.config/emptty or \~/.emptty as config
 In your .config folder you have to create 'emptty' file or in your home folder you have to create `.emptty` file. If `environment` is not defined, it assumes xorg.
 
