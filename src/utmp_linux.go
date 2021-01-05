@@ -3,12 +3,14 @@
 package src
 
 // #include <paths.h>
+// #include <stdlib.h>
 // #include <utmp.h>
 // #include <utmpx.h>
 import "C"
+import "unsafe"
 
-// Puts UTMP entry into wtmp file
-func updwtmpx(utmpx *C.struct_utmpx) {
+// Converts UTMPx entry into UTMP structure.
+func convertUtmpxToUtmp(utmpx *C.struct_utmpx) *C.struct_utmp {
 	utmp := &C.struct_utmp{}
 	utmp.ut_type = utmpx.ut_type
 	utmp.ut_pid = utmpx.ut_pid
@@ -20,5 +22,20 @@ func updwtmpx(utmpx *C.struct_utmpx) {
 	utmp.ut_host = utmpx.ut_host
 	utmp.ut_addr_v6 = utmpx.ut_addr_v6
 
-	C.updwtmp(C.CString(C._PATH_WTMP), utmp)
+	return utmp
+}
+
+// Puts UTMP entry into wtmp file.
+func updwtmpx(utmpx *C.struct_utmpx) {
+	wtmpPath := C.CString(C._PATH_WTMP)
+	C.updwtmp(wtmpPath, convertUtmpxToUtmp(utmpx))
+	C.free(unsafe.Pointer(wtmpPath))
+}
+
+// Adds BTMP entry to log unsuccessful login attempt.
+func addBtmpEntry(username string, pid int, ttyNo string) {
+	btmpPath := C.CString("/var/log/btmp")
+	utmpx := prepareUtmpEntry(username, pid, ttyNo, "")
+	C.updwtmp(btmpPath, convertUtmpxToUtmp(utmpx))
+	C.free(unsafe.Pointer(btmpPath))
 }

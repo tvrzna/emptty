@@ -32,8 +32,8 @@ import (
 	"unsafe"
 )
 
-// Adds UTMPx entry as user process
-func addUtmpEntry(username string, pid int, ttyNo string, xdisplay string) *C.struct_utmpx {
+// Prepares UTMPx entry
+func prepareUtmpEntry(username string, pid int, ttyNo string, xdisplay string) *C.struct_utmpx {
 	utmp := &C.struct_utmpx{}
 
 	id := xdisplay
@@ -54,6 +54,13 @@ func addUtmpEntry(username string, pid int, ttyNo string, xdisplay string) *C.st
 	C.free(unsafe.Pointer(ut_line))
 	C.free(unsafe.Pointer(ut_user))
 	C.free(unsafe.Pointer(ut_host))
+
+	return utmp
+}
+
+// Adds UTMPx entry as user process
+func addUtmpEntry(username string, pid int, ttyNo string, xdisplay string) *C.struct_utmpx {
+	utmp := prepareUtmpEntry(username, pid, ttyNo, xdisplay)
 
 	putUtmpEntry(utmp)
 

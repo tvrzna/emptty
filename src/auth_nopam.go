@@ -43,6 +43,7 @@ func authUser(conf *config) *sysuser {
 
 		return getSysuser(usr)
 	}
+	addBtmpEntry(username, os.Getpid(), conf.strTTY())
 	handleStrErr("Authentication failure")
 	return nil
 }

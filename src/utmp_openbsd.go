@@ -12,3 +12,8 @@ func addUtmpEntry(username string, pid int, ttyNo string, xdisplay string) bool 
 func endUtmpEntry(value bool) {
 	// Not implemented yet
 }
+
+// Adds BTMP entry to log unsuccessful login attempt.
+func addBtmpEntry(username string, pid int, ttyNo string) {
+	// Not implemented yet
+}

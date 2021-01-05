@@ -56,7 +56,12 @@ func authUser(conf *config) *sysuser {
 	})
 
 	err = trans.Authenticate(pam.Silent)
-	handleErr(err)
+	if err != nil {
+		bkpErr := errors.New(err.Error())
+		username, _ := trans.GetItem(pam.User)
+		addBtmpEntry(username, os.Getpid(), conf.strTTY())
+		handleErr(bkpErr)
+	}
 	log.Print("Authenticate OK")
 
 	err = trans.AcctMgmt(pam.Silent)
