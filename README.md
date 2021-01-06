@@ -148,6 +148,7 @@ __NOTE:__ If any issue starts to appear and you want to report it, ensure you do
 - `make install-pam` to install pam module.
 - `make install-pam-debian` to install pam module for Debian.
 - `make install-pam-fedora` to install pam module for Fedora.
+- `make install-pam-suse` to install pam module for openSUSE.
 - `make install-manual` to install man page.
 - `make install-all` to install binary, pam module and man page.
 ---
