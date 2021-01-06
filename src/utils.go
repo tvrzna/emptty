@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net"
 	"os"
 	"os/exec"
 	"strconv"
@@ -191,6 +192,63 @@ func runSimpleCmd(cmd []string) string {
 	output, err := exec.Command(cmd[0], cmd[1:]...).Output()
 	if err == nil {
 		return strings.TrimSpace(string(output))
+	}
+	return ""
+}
+
+// Tries to find corresponding interface and its IP address
+func getIpAddress(name string, ipType byte) string {
+	if name == "" {
+		ifaces, err := net.Interfaces()
+		if err != nil {
+			log.Print(err)
+			return ""
+		}
+		for _, iface := range ifaces {
+			if iface.Flags&net.FlagUp > 0 && iface.Flags&net.FlagLoopback == 0 {
+				return getIpAddressFromIface(&iface, ipType)
+			}
+		}
+	} else {
+		iface, err := net.InterfaceByName(name)
+		if err != nil {
+			log.Print(err)
+			return ""
+		}
+		return getIpAddressFromIface(iface, ipType)
+	}
+
+	return ""
+}
+
+// Gets corresponding IP address from interface
+func getIpAddressFromIface(iface *net.Interface, ipType byte) string {
+	if iface.Flags&net.FlagUp == 0 || iface.Flags&net.FlagLoopback != 0 {
+		return ""
+	}
+	addrs, err := iface.Addrs()
+	if err != nil {
+		log.Print(err)
+		return ""
+	}
+	for _, addr := range addrs {
+		var ip net.IP
+		switch v := addr.(type) {
+		case *net.IPNet:
+			ip = v.IP
+		case *net.IPAddr:
+			ip = v.IP
+		}
+		if ipType == '4' {
+			if ip.To4() != nil {
+				return ip.String()
+			}
+		} else {
+			ip = ip.To16()
+			if ip.To4() == nil {
+				return ip.String()
+			}
+		}
 	}
 	return ""
 }

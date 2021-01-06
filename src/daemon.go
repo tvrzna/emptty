@@ -162,6 +162,8 @@ func evaluateIssueVars(issue string, issueVars []*issueVariable) string {
 			output = runSimpleCmd([]string{"/usr/bin/uname", "-s"})
 		case 't':
 			output = runSimpleCmd([]string{"/bin/date", "+%T"})
+		case '4', '6':
+			output = getIpAddress(issueVar.arg, issueVar.char)
 		default:
 			processed = false
 		}
