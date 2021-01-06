@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -14,10 +15,11 @@ const (
 	strCleanScreen = "\x1b[H\x1b[2J"
 )
 
-// IssueVariable defines commands being set during printing of issue file
+// IssueVariable defines list of all escape sequences found in issue file
 type issueVariable struct {
-	value   string
-	command []string
+	issue string
+	char  byte
+	arg   string
 }
 
 // Starts emptty as daemon spawning emptty on defined TTY.
@@ -80,25 +82,7 @@ func printIssue() {
 		bIssue, err := ioutil.ReadFile(pathIssue)
 		if err == nil {
 			issue := string(bIssue)
-			vars := []issueVariable{
-				issueVariable{"\\d", []string{"/bin/date"}},
-				issueVariable{"\\l", []string{"/bin/ps", "-p", strconv.Itoa(os.Getpid()), "-o", "tty", "--no-headers"}},
-				issueVariable{"\\m", []string{"/usr/bin/uname", "-m"}},
-				issueVariable{"\\n", []string{"/usr/bin/uname", "-n"}},
-				issueVariable{"\\r", []string{"/usr/bin/uname", "-r"}},
-				issueVariable{"\\s", []string{"/usr/bin/uname", "-s"}},
-				issueVariable{"\\t", []string{"/bin/date", "+%T"}},
-			}
-
-			for _, variable := range vars {
-				if strings.Contains(issue, variable.value) {
-					output, err := exec.Command(variable.command[0], variable.command[1:]...).Output()
-
-					if err == nil {
-						issue = strings.ReplaceAll(issue, variable.value, strings.TrimSpace(string(output)))
-					}
-				}
-			}
+			issue = evaluateIssueVars(issue, findUniqueIssueVars(issue))
 
 			if issue[len(issue)-2:] == "\n\n" {
 				issue = issue[:len(issue)-1]
@@ -107,4 +91,85 @@ func printIssue() {
 			fmt.Print(revertColorEscaping(issue))
 		}
 	}
+}
+
+// Finds all unique issue escape sequences
+func findUniqueIssueVars(issue string) []*issueVariable {
+	var result []*issueVariable
+	var knownIssues []string
+
+	saveData := false
+	var buffer strings.Builder
+	var varName byte
+	var arg strings.Builder
+
+	for i := 0; i < len(issue); i++ {
+		b := issue[i]
+
+		if b == '\\' {
+			saveData = true
+			buffer.Reset()
+			arg.Reset()
+		}
+
+		if saveData {
+			if i > 0 {
+				if issue[i-1] == '\\' {
+					varName = b
+				} else if b != '{' && b != '}' && b != '\\' {
+					arg.WriteByte(b)
+				}
+			}
+			buffer.WriteByte(b)
+			if (i < len(issue) && i > 0 && issue[i-1] == '\\' && issue[i+1] != '{') || b == '}' {
+				if !contains(knownIssues, buffer.String()) {
+					result = append(result, &issueVariable{buffer.String(), varName, arg.String()})
+					knownIssues = append(knownIssues, buffer.String())
+				}
+
+				saveData = false
+			}
+		}
+	}
+
+	return result
+}
+
+// Evaluates outputs for all known escape sequences and return replaced issue
+func evaluateIssueVars(issue string, issueVars []*issueVariable) string {
+	result := issue
+
+	sort.Slice(issueVars, func(i int, j int) bool {
+		return len(issueVars[i].arg) > len(issueVars[j].arg)
+	})
+
+	for _, issueVar := range issueVars {
+		output := ""
+		processed := true
+
+		switch issueVar.char {
+		case 'd':
+			output = runSimpleCmd([]string{"/bin/date"})
+		case 'l':
+			output = runSimpleCmd([]string{"/bin/ps", "-p", strconv.Itoa(os.Getpid()), "-o", "tty", "--no-headers"})
+		case 'm':
+			output = runSimpleCmd([]string{"/usr/bin/uname", "-m"})
+		case 'n':
+			output = runSimpleCmd([]string{"/usr/bin/uname", "-n"})
+		case 'r':
+			output = runSimpleCmd([]string{"/usr/bin/uname", "-r"})
+		case 's':
+			output = runSimpleCmd([]string{"/usr/bin/uname", "-s"})
+		case 't':
+			output = runSimpleCmd([]string{"/bin/date", "+%T"})
+		default:
+			processed = false
+		}
+
+		if processed {
+			result = strings.ReplaceAll(result, issueVar.issue, output)
+		}
+	}
+
+	return result
 }

@@ -185,3 +185,12 @@ func parseBool(strBool string, defaultValue string) bool {
 	}
 	return val
 }
+
+// Runs wimple command and returns its output as string
+func runSimpleCmd(cmd []string) string {
+	output, err := exec.Command(cmd[0], cmd[1:]...).Output()
+	if err == nil {
+		return strings.TrimSpace(string(output))
+	}
+	return ""
+}
