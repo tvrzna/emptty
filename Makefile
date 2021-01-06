@@ -54,7 +54,10 @@ install-pam-fedora:
 	@install -DZ res/pam-fedora -m 644 -T ${DESTDIR}/etc/pam.d/${DISTFILE}
 	@echo "Done"
 
-install-all: install install-manual install-pam
+install-pam-suse:
+	@echo "Installing pam-suse file..."
+	@install -DZ res/pam-suse -m 644 -T ${DESTDIR}/etc/pam.d/${DISTFILE}
+	@echo "Done"
 
 install-runit:
 	@echo "Installing runit service..."
@@ -70,6 +73,8 @@ install-openrc:
 	@echo "Installing OpenRC service..."
 	@install -DZ res/openrc-service -m 755 -T ${DESTDIR}/etc/init.d/${DISTFILE}
 	@echo "Done"
+
+install-all: install install-manual install-pam
 
 uninstall:
 	@echo "Uninstalling..."
