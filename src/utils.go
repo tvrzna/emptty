@@ -239,14 +239,16 @@ func getIpAddressFromIface(iface *net.Interface, ipType byte) string {
 		case *net.IPAddr:
 			ip = v.IP
 		}
+		if ip == nil {
+			return ""
+		}
 		if ipType == '4' {
 			if ip.To4() != nil {
-				return ip.String()
+				return ip.To4().String()
 			}
 		} else {
-			ip = ip.To16()
 			if ip.To4() == nil {
-				return ip.String()
+				return ip.To16().String()
 			}
 		}
 	}
