@@ -32,6 +32,8 @@ import (
 	"unsafe"
 )
 
+const tagUtmp = ""
+
 // Prepares UTMPx entry
 func prepareUtmpEntry(username string, pid int, ttyNo string, xdisplay string) *C.struct_utmpx {
 	utmp := &C.struct_utmpx{}

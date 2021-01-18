@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+const tagXlib = "noxlib"
+
 type xdisplay struct {
 	disp     string
 	dispName string

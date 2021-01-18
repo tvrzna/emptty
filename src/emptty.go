@@ -3,6 +3,7 @@ package src
 import (
 	"fmt"
 	"os"
+	"strings"
 )
 
 const version = "0.4.2"
@@ -16,7 +17,7 @@ func Main() {
 		os.Exit(0)
 	}
 	if contains(os.Args, "-v") || contains(os.Args, "--version") {
-		fmt.Printf("emptty %s\nhttps://github.com/tvrzna/emptty\n\nReleased under the MIT License.\n\n", getVersion())
+		fmt.Printf("emptty %s\nhttps://github.com/tvrzna/emptty\n\nReleased under the MIT License.\n", getVersion())
 		os.Exit(0)
 	}
 
@@ -62,8 +63,19 @@ func printHelp() {
 
 // Gets current version
 func getVersion() string {
+	tags := strings.Builder{}
+	for _, tag := range []string{tagPam, tagUtmp, tagXlib} {
+		if tags.Len() > 0 {
+			tags.WriteString(", ")
+		}
+		tags.WriteString(tag)
+	}
 	if buildVersion != "" {
-		return buildVersion[1:]
+		if tags.Len() == 0 {
+			return buildVersion[1:]
+		} else {
+			return buildVersion[1:] + " (" + tags.String() + ")"
+		}
 	}
 	return version
 }

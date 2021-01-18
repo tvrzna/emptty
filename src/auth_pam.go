@@ -13,6 +13,8 @@ import (
 	"github.com/msteinert/pam"
 )
 
+const tagPam = ""
+
 var trans *pam.Transaction
 
 // Handle PAM authentication of user.

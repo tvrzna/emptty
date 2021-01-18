@@ -12,6 +12,8 @@ import (
 	"unsafe"
 )
 
+const tagXlib = ""
+
 type xdisplay struct {
 	disp     *C.Display
 	dispName string

@@ -9,6 +9,8 @@ import (
 	"os/user"
 )
 
+const tagPam = "nopam"
+
 // Handle authentication of user without PAM.
 // If user is successfully authorized, it returns sysuser.
 //
