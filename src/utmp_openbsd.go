@@ -2,6 +2,8 @@
 
 package src
 
+const tagUtmp = ""
+
 // Adds UTMP entry as user process
 func addUtmpEntry(username string, pid int, ttyNo string, xdisplay string) bool {
 	// Not implemented yet
