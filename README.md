@@ -103,7 +103,7 @@ Please, be aware that `LIGHT_` colors could be unavailable as background color.
 	<li>LIGHT_PURPLE</li>
 	<li>LIGHT_CYAN</li>
 	<li>LIGHT_WHITE</li>
- <ul>
+ </ul>
 </details>
 
 ## Logging
