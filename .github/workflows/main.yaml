@@ -1,0 +1,80 @@
+name: Build
+
+on:
+  push:
+    branches: master
+  pull_request:
+    branches: master
+
+jobs:
+  build:
+    name: Build on Void Linux
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+
+    container:
+      image: 'voidlinux/voidlinux:latest'
+
+    steps:
+      - name: Prepare container
+        run: |
+          # Update system
+          xbps-install -Syu || xbps-install -yu xbps
+          # Update system for sure (in case XBPS has been updated)
+          xbps-install -yu
+          # Install dependencies
+          xbps-install -y git make gcc go pam-devel libx11-devel
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build with noxlib tag
+        run: |
+          # Make clean
+          make clean
+          # Make build
+          make build TAGS=noxlib
+
+      - name: Build with noutmp tag
+        run: |
+          # Make clean
+          make clean
+          # Make build
+          make build TAGS=noutmp
+
+      - name: Build with nopam tag
+        run: |
+          # Make clean
+          make clean
+          # Make build
+          make build TAGS=nopam
+
+      - name: Build without tags
+        run: |
+          # Make clean
+          make clean
+          # Make build
+          make build
+
+      - name: Test install-pam
+        run: make install-pam
+
+      - name: Test install-manual
+        run: make install-manual
+
+      - name: Test install-config
+        run: make install-config
+
+      - name: Test install-runit
+        run: make install-runit
+
+      - name: Test install-motd-gen
+        run: make install-motd-gen
+
+      - name: Test install
+        run: make install
+
+      - name: Test uninstall
+        run: make uninstall
