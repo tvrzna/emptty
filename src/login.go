@@ -62,6 +62,8 @@ func login(conf *config) {
 	}
 
 	closeAuth()
+
+	displayStopScript(conf)
 }
 
 // Prepares environment and env variables for authorized user.
@@ -291,5 +293,19 @@ func handleInterrupt(c chan os.Signal, cmds ...*exec.Cmd) {
 	for _, cmd := range cmds {
 		cmd.Process.Signal(os.Interrupt)
 		cmd.Wait()
+	}
+}
+
+// Runs display stop script, if defined
+func displayStopScript(conf *config) {
+	if conf.displayStopScript != "" {
+		if fileIsExecutable(conf.displayStopScript) {
+			err := exec.Command(conf.displayStopScript).Run()
+			if err != nil {
+				log.Print(err)
+			}
+		} else {
+			log.Print(confDisplayStopScript + " is not executable.")
+		}
 	}
 }

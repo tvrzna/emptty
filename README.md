@@ -45,6 +45,9 @@ __NOTE:__ Be sure, that /etc/emptty/motd-gen.sh has correct content and permissi
 
 `BG_COLOR` Background color, available only in daemon mode. List of colors is listed below.
 
+`DISPLAY_STOP_SCRIPT` Script started after Display (Xorg/Wayland) stops.
+__NOTE:__ The script is started as default user; in daemon mode it means `root`.
+
 #### /etc/emptty/motd-gen.sh
 If `DYNAMIC_MOTD` is set to `true`, this file exists and is executable for its owner, the result is printed as your own MOTD. Be very careful with this script!
 

@@ -77,6 +77,13 @@ Foreground color, available only in daemon mode. List of colors is listed below.
 .IP BG_COLOR
 Background color, available only in daemon mode. List of colors is listed below.
 
+.IP DISPLAY_STOP_SCRIPT
+Script started after Display (Xorg/Wayland) stops.
+
+.B NOTE:
+The script is started as default user; in daemon mode it means
+.I root
+
 .SH DYNAMIC MOTD
 Optional file stored as /etc/emptty/motd-gen.sh
 

@@ -21,6 +21,7 @@ const (
 	confDynamicMotd       = "DYNAMIC_MOTD"
 	confFgColor           = "FG_COLOR"
 	confBgColor           = "BG_COLOR"
+	confDisplayStopScript = "DISPLAY_STOP_SCRIPT"
 
 	pathConfigFile = "/etc/emptty/conf"
 
@@ -57,26 +58,30 @@ type config struct {
 	dynamicMotd       bool
 	fgColor           string
 	bgColor           string
+	displayStopScript string
 }
 
 // LoadConfig handles loading of application configuration.
 func loadConfig() *config {
 	c := config{
-		daemonMode:       false,
-		tty:              0,
-		switchTTY:        true,
-		printIssue:       true,
-		defaultUser:      "",
-		autologin:        false,
-		autologinSession: "",
-		lang:             "en_US.UTF-8",
-		dbusLaunch:       true,
-		logging:          Default,
-		xorgArgs:         "",
-		loggingFile:      "",
-		dynamicMotd:      false,
-		fgColor:          "",
-		bgColor:          "",
+		daemonMode:        false,
+		tty:               0,
+		switchTTY:         true,
+		printIssue:        true,
+		defaultUser:       "",
+		autologin:         false,
+		autologinSession:  "",
+		lang:              "en_US.UTF-8",
+		dbusLaunch:        true,
+		xinitrcLaunch:     false,
+		verticalSelection: false,
+		logging:           Default,
+		xorgArgs:          "",
+		loggingFile:       "",
+		dynamicMotd:       false,
+		fgColor:           "",
+		bgColor:           "",
+		displayStopScript: "",
 	}
 
 	if fileExists(pathConfigFile) {
@@ -114,6 +119,8 @@ func loadConfig() *config {
 				c.fgColor = convertColor(sanitizeValue(value, ""), true)
 			case confBgColor:
 				c.bgColor = convertColor(sanitizeValue(value, ""), false)
+			case confDisplayStopScript:
+				c.displayStopScript = sanitizeValue(value, "")
 			}
 		})
 		handleErr(err)
