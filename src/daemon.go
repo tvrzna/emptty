@@ -2,6 +2,7 @@ package src
 
 import (
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -13,6 +14,7 @@ import (
 
 const (
 	strCleanScreen = "\x1b[H\x1b[2J"
+	pathIssue      = "/etc/issue"
 )
 
 // IssueVariable defines list of all escape sequences found in issue file
@@ -40,7 +42,7 @@ func startDaemon(conf *config) *os.File {
 
 	fmt.Println()
 	if conf.printIssue {
-		printIssue()
+		printIssue(pathIssue)
 		setColors(conf.fgColor, conf.bgColor)
 	}
 
@@ -60,7 +62,7 @@ func stopDaemon(conf *config, fTTY *os.File) {
 }
 
 // Clears terminal screen
-func clearScreen(w *os.File) {
+func clearScreen(w io.Writer) {
 	if w == nil {
 		fmt.Print(strCleanScreen)
 	} else {
@@ -69,22 +71,24 @@ func clearScreen(w *os.File) {
 }
 
 // Perform switch to defined TTY, if switchTTY is true and tty is greater than 0.
-func switchTTY(conf *config) {
+func switchTTY(conf *config) bool {
 	if conf.switchTTY && conf.tty > 0 {
 		ttyCmd := exec.Command("/usr/bin/chvt", conf.strTTY())
 		ttyCmd.Run()
+		return true
 	}
+	return false
 }
 
 // Prints getty issue
-func printIssue() {
-	if fileExists(pathIssue) {
-		bIssue, err := ioutil.ReadFile(pathIssue)
+func printIssue(path string) {
+	if fileExists(path) {
+		bIssue, err := ioutil.ReadFile(path)
 		if err == nil {
 			issue := string(bIssue)
 			issue = evaluateIssueVars(issue, findUniqueIssueVars(issue))
 
-			if issue[len(issue)-2:] == "\n\n" {
+			for issue[len(issue)-2:] == "\n\n" {
 				issue = issue[:len(issue)-1]
 			}
 
@@ -121,7 +125,7 @@ func findUniqueIssueVars(issue string) []*issueVariable {
 				}
 			}
 			buffer.WriteByte(b)
-			if (i < len(issue) && i > 0 && issue[i-1] == '\\' && issue[i+1] != '{') || b == '}' {
+			if i == (len(issue)-1) || (i < len(issue) && i > 0 && issue[i-1] == '\\' && issue[i+1] != '{') || b == '}' {
 				if !contains(knownIssues, buffer.String()) {
 					result = append(result, &issueVariable{buffer.String(), varName, arg.String()})
 					knownIssues = append(knownIssues, buffer.String())

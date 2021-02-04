@@ -16,7 +16,6 @@ const (
 
 	pathDynamicMotd = "/etc/emptty/motd-gen.sh"
 	pathMotd        = "/etc/emptty/motd"
-	pathIssue       = "/etc/issue"
 )
 
 // Prints dynamic motd, if configured; otherwise prints motd, if pathMotd exists; otherwise it prints default motd.
