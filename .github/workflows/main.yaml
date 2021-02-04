@@ -30,6 +30,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Test without tags
+        run: make test
+
+      - name: Test with noxlib tag
+        run: make test TAGS=noxlib
+
+      - name: Test with noutmp tag
+        run: make test TAGS=noutmp
+
+      - name: Test with nopam tag
+        run: make test TAGS=nopam
+
       - name: Build with noxlib tag
         run: |
           # Make clean

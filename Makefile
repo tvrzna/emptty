@@ -5,6 +5,10 @@ ifdef TAGS
 	TAGS_ARGS = -tags ${TAGS}
 endif
 
+test:
+	@echo "Testing..."
+	@go test -coverprofile cover.out ${TAGS_ARGS} ./...
+
 clean:
 	@echo "Cleaning..."
 	@rm -f dist/${DISTFILE}
