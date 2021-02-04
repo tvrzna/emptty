@@ -1,0 +1,3 @@
+Name=CustomDesktop2
+Exec=/usr/bin/custom-desktop2
+Environment=xorg

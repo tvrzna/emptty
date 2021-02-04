@@ -1,0 +1,3 @@
+Name=CustomDesktop1
+Exec=/usr/bin/custom-desktop1
+Environment=wayland

@@ -1,0 +1,5 @@
+ENVIRONMENT=xorg
+COMMAND=none
+SELECTION=false
+EXEC=none
+NAME=window-manager

@@ -13,9 +13,8 @@ import (
 )
 
 const (
-	confEnvironment = "ENVIRONMENT"
-	confCommand     = "COMMAND"
-	confSelection   = "SELECTION"
+	confCommand   = "COMMAND"
+	confSelection = "SELECTION"
 
 	desktopExec        = "EXEC"
 	desktopName        = "NAME"
@@ -57,14 +56,13 @@ type desktop struct {
 
 // lastSession defines structure for last used session on user login.
 type lastSession struct {
-	uid  int
 	exec string
 	env  enEnvironment
 }
 
 // Allows to select desktop, which could be selected.
 func selectDesktop(usr *sysuser, conf *config) *desktop {
-	desktops := listAllDesktops(usr)
+	desktops := listAllDesktops(usr, pathXorgSessions, pathWaylandSessions)
 	if len(desktops) == 0 {
 		handleStrErr("Not found any installed desktop.")
 	}
@@ -118,17 +116,17 @@ func selectDesktop(usr *sysuser, conf *config) *desktop {
 }
 
 // List all installed desktops and return their exec commands.
-func listAllDesktops(usr *sysuser) []*desktop {
+func listAllDesktops(usr *sysuser, pathXorgDesktops string, pathWaylandDesktops string) []*desktop {
 	var result []*desktop
 
 	// load Xorg desktops
-	xorgDesktops := listDesktops(pathXorgSessions, Xorg)
+	xorgDesktops := listDesktops(pathXorgDesktops, Xorg)
 	if xorgDesktops != nil && len(xorgDesktops) > 0 {
 		result = append(result, xorgDesktops...)
 	}
 
 	// load Wayland desktops
-	waylandDesktops := listDesktops(pathWaylandSessions, Wayland)
+	waylandDesktops := listDesktops(pathWaylandDesktops, Wayland)
 	if waylandDesktops != nil && len(waylandDesktops) > 0 {
 		result = append(result, waylandDesktops...)
 	}
@@ -272,7 +270,7 @@ func setUserLastSession(usr *sysuser, d *desktop) {
 	setFsUser(usr)
 
 	path := usr.homedir + pathLastSession
-	data := fmt.Sprintf("%s;%s\n", d.exec, stringifyEnv(d.env))
+	data := fmt.Sprintf("%s;%s\n", d.exec, d.env.stringify())
 	err := mkDirsForFile(path, 0744)
 	if err != nil {
 		log.Print(err)
@@ -302,8 +300,8 @@ func parseEnv(env string, defaultValue string) enEnvironment {
 }
 
 // Stringify enEnvironment value.
-func stringifyEnv(env enEnvironment) string {
-	switch env {
+func (e enEnvironment) stringify() string {
+	switch e {
 	case Xorg:
 		return constEnvXorg
 	case Wayland:

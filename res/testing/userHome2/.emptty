@@ -1,0 +1,6 @@
+ENVIRONMENT=xorg
+COMMAND=none
+SELECTION=false
+EXEC=none
+NAME=window-manager
+LANG=en_US.UTF-8
