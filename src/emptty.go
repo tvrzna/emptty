@@ -21,7 +21,7 @@ func Main() {
 		os.Exit(0)
 	}
 
-	conf := loadConfig()
+	conf := loadConfig(pathConfigFile)
 
 	for i, arg := range os.Args {
 		switch arg {

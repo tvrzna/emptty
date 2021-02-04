@@ -62,7 +62,7 @@ type config struct {
 }
 
 // LoadConfig handles loading of application configuration.
-func loadConfig() *config {
+func loadConfig(path string) *config {
 	c := config{
 		daemonMode:        false,
 		tty:               0,
@@ -84,8 +84,8 @@ func loadConfig() *config {
 		displayStopScript: "",
 	}
 
-	if fileExists(pathConfigFile) {
-		err := readProperties(pathConfigFile, func(key string, value string) {
+	if fileExists(path) {
+		err := readProperties(path, func(key string, value string) {
 			switch key {
 			case confTTYnumber:
 				c.tty = parseTTY(value, "0")
