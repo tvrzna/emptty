@@ -161,8 +161,8 @@ jobs:
       - name: Test install-config
         run: make install-config
 
-      - name: Test install-runit
-        run: make install-runit
+      - name: Test install-systemd
+        run: make install-systemd
 
       - name: Test install-motd-gen
         run: make install-motd-gen
