@@ -8,6 +8,7 @@ endif
 test:
 	@echo "Testing..."
 	@go test -coverprofile cover.out ${TAGS_ARGS} ./...
+	@echo "Done"
 
 clean:
 	@echo "Cleaning..."
