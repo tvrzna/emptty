@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	default_motd = `┌─┐┌┬┐┌─┐┌┬┐┌┬┐┬ ┬
+	defaultMotd = `┌─┐┌┬┐┌─┐┌┬┐┌┬┐┬ ┬
 ├┤ │││├─┘ │  │ └┬┘
 └─┘┴ ┴┴   ┴  ┴  ┴   ` + version
 
@@ -58,7 +58,7 @@ func printMotd(conf *config) {
 
 // Prints default motd.
 func printDefaultMotd() {
-	fmt.Printf("%s\n\n", default_motd)
+	fmt.Printf("%s\n\n", defaultMotd)
 }
 
 // Reverts escaped color definitions to real color values.

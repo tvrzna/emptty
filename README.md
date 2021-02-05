@@ -1,4 +1,8 @@
 # emptty
+[![Release](https://img.shields.io/github/release/tvrzna/emptty.svg?style=flat-square)](https://github.com/tvrzna/emptty/releases/latest)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/tvrzna/emptty/Build?style=flat-square)](https://github.com/tvrzna/emptty/actions?query=workflow:Build)
+[![Go Report Card](https://goreportcard.com/badge/github.com/tvrzna/emptty?style=flat-square)](https://goreportcard.com/report/github.com/tvrzna/emptty)
+
 Dead simple CLI Display Manager on TTY
 
 ![](screenshot.png)

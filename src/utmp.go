@@ -43,19 +43,19 @@ func prepareUtmpEntry(username string, pid int, ttyNo string, xdisplay string) *
 		id = ttyNo
 	}
 
-	ut_pid := C.int(pid)
-	ut_id := C.CString(id)
-	ut_line := C.CString("tty" + ttyNo)
-	ut_user := C.CString(username)
-	ut_host := C.CString(xdisplay)
+	utPid := C.int(pid)
+	utId := C.CString(id)
+	utLine := C.CString("tty" + ttyNo)
+	utUser := C.CString(username)
+	utHost := C.CString(xdisplay)
 
 	utmp.ut_type = C.USER_PROCESS
-	C.prepareUtmpEntry(utmp, ut_pid, ut_id, ut_line, ut_user, ut_host)
+	C.prepareUtmpEntry(utmp, utPid, utId, utLine, utUser, utHost)
 
-	C.free(unsafe.Pointer(ut_id))
-	C.free(unsafe.Pointer(ut_line))
-	C.free(unsafe.Pointer(ut_user))
-	C.free(unsafe.Pointer(ut_host))
+	C.free(unsafe.Pointer(utId))
+	C.free(unsafe.Pointer(utLine))
+	C.free(unsafe.Pointer(utUser))
+	C.free(unsafe.Pointer(utHost))
 
 	return utmp
 }

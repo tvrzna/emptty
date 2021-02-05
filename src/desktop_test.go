@@ -129,7 +129,7 @@ func TestGetLastDesktop(t *testing.T) {
 	usr := &sysuser{}
 	usr.homedir = getTestingPath("userHome")
 
-	desktops := []*desktop{&desktop{exec: "/usr/bin/none", env: Xorg}, &desktop{exec: "/usr/bin/none", env: Wayland}, &desktop{exec: "/usr/bin/none2", env: Wayland}}
+	desktops := []*desktop{{exec: "/usr/bin/none", env: Xorg}, {exec: "/usr/bin/none", env: Wayland}, {exec: "/usr/bin/none2", env: Wayland}}
 
 	if getLastDesktop(usr, desktops) != 1 {
 		t.Error("TestGetLastDesktop: expected different index")

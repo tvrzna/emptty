@@ -59,7 +59,7 @@ func TestSysuserEnviron(t *testing.T) {
 	}
 
 	if len(u.environ()) != 1 {
-		t.Error("TestSysuserEnviron: 1 environemntal variable was expected")
+		t.Error("TestSysuserEnviron: 1 environmental variable was expected")
 	}
 
 	u.setenv("key", "value2")
@@ -68,7 +68,7 @@ func TestSysuserEnviron(t *testing.T) {
 	}
 
 	if len(u.environ()) != 1 {
-		t.Error("TestSysuserEnviron: 1 environemntal variable was expected after update")
+		t.Error("TestSysuserEnviron: 1 environmental variable was expected after update")
 	}
 
 	u.setenv("key2", "value")
@@ -77,7 +77,7 @@ func TestSysuserEnviron(t *testing.T) {
 	}
 
 	if len(u.environ()) == 1 {
-		t.Error("TestSysuserEnviron: 2 environemntal variable were expected")
+		t.Error("TestSysuserEnviron: 2 environmental variable were expected")
 	}
 
 }

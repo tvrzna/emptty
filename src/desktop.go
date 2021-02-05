@@ -40,6 +40,7 @@ const (
 	// Wayland represents Wayland environment
 	Wayland
 
+	// Custom represents user's custom desktops, only helper before real env is loaded
 	Custom
 )
 

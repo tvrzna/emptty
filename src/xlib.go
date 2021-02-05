@@ -31,9 +31,8 @@ func (c *xdisplay) openXDisplay() error {
 		if d != nil {
 			c.disp = d
 			return nil
-		} else {
-			time.Sleep(50 * time.Millisecond)
 		}
+		time.Sleep(50 * time.Millisecond)
 	}
 	return errors.New("Could not open X Display")
 }

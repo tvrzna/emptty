@@ -10,7 +10,7 @@ const version = "0.5.0"
 
 var buildVersion string
 
-// Handles main functionality of whole application.
+// Main handles the functionality of whole application.
 func Main() {
 	if contains(os.Args, "-h") || contains(os.Args, "--help") {
 		printHelp()
@@ -73,9 +73,8 @@ func getVersion() string {
 	if buildVersion != "" {
 		if tags.Len() == 0 {
 			return buildVersion[1:]
-		} else {
-			return buildVersion[1:] + " (" + tags.String() + ")"
 		}
+		return buildVersion[1:] + " (" + tags.String() + ")"
 	}
 	return version
 }

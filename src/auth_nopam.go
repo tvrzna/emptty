@@ -37,7 +37,6 @@ func authUser(conf *config) *sysuser {
 	handleErr(err)
 
 	if authPassword(username, password) {
-		password = ""
 		usr, err := user.Lookup(username)
 		username = ""
 

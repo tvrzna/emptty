@@ -34,8 +34,13 @@ const (
 type enLogging int
 
 const (
+	// Default represents saving into new file and backing up older with suffix
 	Default enLogging = iota + 1
+
+	// Appending represents saving all logs into same file
 	Appending
+
+	// Disabled represents disabled logging
 	Disabled
 )
 

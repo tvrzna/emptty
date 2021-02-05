@@ -9,7 +9,7 @@ func TestPrintDefaultMotd(t *testing.T) {
 		printDefaultMotd()
 	})
 
-	if output != default_motd+"\n\n" {
+	if output != defaultMotd+"\n\n" {
 		t.Error("TestPrintDefaultMotd: default motd does not match")
 	}
 }
