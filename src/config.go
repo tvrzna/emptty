@@ -1,6 +1,7 @@
 package src
 
 import (
+	"os"
 	"strconv"
 )
 
@@ -76,7 +77,6 @@ func loadConfig(path string) *config {
 		defaultUser:       "",
 		autologin:         false,
 		autologinSession:  "",
-		lang:              "en_US.UTF-8",
 		dbusLaunch:        true,
 		xinitrcLaunch:     false,
 		verticalSelection: false,
@@ -87,6 +87,13 @@ func loadConfig(path string) *config {
 		fgColor:           "",
 		bgColor:           "",
 		displayStopScript: "",
+	}
+
+	defaultLang := os.Getenv(envLang)
+	if defaultLang != "" {
+		c.lang = defaultLang
+	} else {
+		c.lang = "en_US.UTF-8"
 	}
 
 	if fileExists(path) {
