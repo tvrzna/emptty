@@ -105,7 +105,9 @@ jobs:
       - name: Prepare container
         run: |
           # Update system
-          pacman -Syu --noconfirm
+          pacman -Syyu --noconfirm
+          # pacman db upgrade
+          pacman-db-upgrade
           # Install dependencies
           pacman -S --noconfirm git make go gcc pam libx11
 
