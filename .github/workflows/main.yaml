@@ -99,15 +99,13 @@ jobs:
       fail-fast: false
 
     container:
-      image: 'archlinux:latest'
+      image: 'archlinux:base-20210131.0.14634'
 
     steps:
       - name: Prepare container
         run: |
           # Update system
-          pacman -Syyu --noconfirm
-          # pacman db upgrade
-          pacman-db-upgrade
+          pacman -Syu --noconfirm
           # Install dependencies
           pacman -S --noconfirm git make go gcc pam libx11
 
