@@ -54,6 +54,8 @@ func login(conf *config) {
 
 	defineEnvironment(usr, conf, d)
 
+	runDisplayScript(conf.displayStartScript)
+
 	switch d.env {
 	case Wayland:
 		wayland(usr, d, conf)
@@ -63,7 +65,7 @@ func login(conf *config) {
 
 	closeAuth()
 
-	displayStopScript(conf)
+	runDisplayScript(conf.displayStopScript)
 }
 
 // Prepares environment and env variables for authorized user.
@@ -296,16 +298,16 @@ func handleInterrupt(c chan os.Signal, cmds ...*exec.Cmd) {
 	}
 }
 
-// Runs display stop script, if defined
-func displayStopScript(conf *config) {
-	if conf.displayStopScript != "" {
-		if fileIsExecutable(conf.displayStopScript) {
-			err := exec.Command(conf.displayStopScript).Run()
+// Runs display script, if defined
+func runDisplayScript(scriptPath string) {
+	if scriptPath != "" {
+		if fileIsExecutable(scriptPath) {
+			err := exec.Command(scriptPath).Run()
 			if err != nil {
 				log.Print(err)
 			}
 		} else {
-			log.Print(confDisplayStopScript + " is not executable.")
+			log.Print(scriptPath + " is not executable.")
 		}
 	}
 }

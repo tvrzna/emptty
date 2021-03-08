@@ -1,4 +1,4 @@
-.TH EMPTTY 1 "January 2021" "emptty 0.5.0" emptty
+.TH EMPTTY 1 "March 2021" "emptty 0.5.0" emptty
 
 .SH NAME
 emptty \- Dead simple CLI Display Manager on TTY
@@ -76,6 +76,13 @@ Foreground color, available only in daemon mode. List of colors is listed below.
 
 .IP BG_COLOR
 Background color, available only in daemon mode. List of colors is listed below.
+
+.IP DISPLAY_STARTED_SCRIPT
+Script started before Display (Xorg/Wayland) starts.
+
+.B NOTE:
+The script is started as default user; in daemon mode it means
+.I root
 
 .IP DISPLAY_STOP_SCRIPT
 Script started after Display (Xorg/Wayland) stops.

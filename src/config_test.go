@@ -69,6 +69,10 @@ func TestLoadConfig(t *testing.T) {
 		t.Error("TestLoadConfig: BG_COLOR value is not correct")
 	}
 
+	if conf.displayStartScript != "/usr/bin/none-start" {
+		t.Error("TestLoadConfig: DISPLAY_START_SCRIPT value is not correct")
+	}
+
 	if conf.displayStopScript != "/usr/bin/none" {
 		t.Error("TestLoadConfig: DISPLAY_STOP_SCRIPT value is not correct")
 	}

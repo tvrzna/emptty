@@ -6,23 +6,24 @@ import (
 )
 
 const (
-	confTTYnumber         = "TTY_NUMBER"
-	confSwitchTTY         = "SWITCH_TTY"
-	confPrintIssue        = "PRINT_ISSUE"
-	confDefaultUser       = "DEFAULT_USER"
-	confAutologin         = "AUTOLOGIN"
-	confAutologinSession  = "AUTOLOGIN_SESSION"
-	confLang              = "LANG"
-	confDbusLaunch        = "DBUS_LAUNCH"
-	confXinitrcLaunch     = "XINITRC_LAUNCH"
-	confVerticalSelection = "VERTICAL_SELECTION"
-	confLogging           = "LOGGING"
-	confXorgArgs          = "XORG_ARGS"
-	confLoggingFile       = "LOGGING_FILE"
-	confDynamicMotd       = "DYNAMIC_MOTD"
-	confFgColor           = "FG_COLOR"
-	confBgColor           = "BG_COLOR"
-	confDisplayStopScript = "DISPLAY_STOP_SCRIPT"
+	confTTYnumber          = "TTY_NUMBER"
+	confSwitchTTY          = "SWITCH_TTY"
+	confPrintIssue         = "PRINT_ISSUE"
+	confDefaultUser        = "DEFAULT_USER"
+	confAutologin          = "AUTOLOGIN"
+	confAutologinSession   = "AUTOLOGIN_SESSION"
+	confLang               = "LANG"
+	confDbusLaunch         = "DBUS_LAUNCH"
+	confXinitrcLaunch      = "XINITRC_LAUNCH"
+	confVerticalSelection  = "VERTICAL_SELECTION"
+	confLogging            = "LOGGING"
+	confXorgArgs           = "XORG_ARGS"
+	confLoggingFile        = "LOGGING_FILE"
+	confDynamicMotd        = "DYNAMIC_MOTD"
+	confFgColor            = "FG_COLOR"
+	confBgColor            = "BG_COLOR"
+	confDisplayStartScript = "DISPLAY_START_SCRIPT"
+	confDisplayStopScript  = "DISPLAY_STOP_SCRIPT"
 
 	pathConfigFile = "/etc/emptty/conf"
 
@@ -47,46 +48,48 @@ const (
 
 // config defines structure of application configuration.
 type config struct {
-	daemonMode        bool
-	defaultUser       string
-	autologin         bool
-	autologinSession  string
-	tty               int
-	switchTTY         bool
-	printIssue        bool
-	lang              string
-	dbusLaunch        bool
-	xinitrcLaunch     bool
-	verticalSelection bool
-	logging           enLogging
-	xorgArgs          string
-	loggingFile       string
-	dynamicMotd       bool
-	fgColor           string
-	bgColor           string
-	displayStopScript string
+	daemonMode         bool
+	defaultUser        string
+	autologin          bool
+	autologinSession   string
+	tty                int
+	switchTTY          bool
+	printIssue         bool
+	lang               string
+	dbusLaunch         bool
+	xinitrcLaunch      bool
+	verticalSelection  bool
+	logging            enLogging
+	xorgArgs           string
+	loggingFile        string
+	dynamicMotd        bool
+	fgColor            string
+	bgColor            string
+	displayStartScript string
+	displayStopScript  string
 }
 
 // LoadConfig handles loading of application configuration.
 func loadConfig(path string) *config {
 	c := config{
-		daemonMode:        false,
-		tty:               0,
-		switchTTY:         true,
-		printIssue:        true,
-		defaultUser:       "",
-		autologin:         false,
-		autologinSession:  "",
-		dbusLaunch:        true,
-		xinitrcLaunch:     false,
-		verticalSelection: false,
-		logging:           Default,
-		xorgArgs:          "",
-		loggingFile:       "",
-		dynamicMotd:       false,
-		fgColor:           "",
-		bgColor:           "",
-		displayStopScript: "",
+		daemonMode:         false,
+		tty:                0,
+		switchTTY:          true,
+		printIssue:         true,
+		defaultUser:        "",
+		autologin:          false,
+		autologinSession:   "",
+		dbusLaunch:         true,
+		xinitrcLaunch:      false,
+		verticalSelection:  false,
+		logging:            Default,
+		xorgArgs:           "",
+		loggingFile:        "",
+		dynamicMotd:        false,
+		fgColor:            "",
+		bgColor:            "",
+		displayStartScript: "",
+		displayStopScript:  "",
 	}
 
 	defaultLang := os.Getenv(envLang)
@@ -131,6 +134,8 @@ func loadConfig(path string) *config {
 				c.fgColor = convertColor(sanitizeValue(value, ""), true)
 			case confBgColor:
 				c.bgColor = convertColor(sanitizeValue(value, ""), false)
+			case confDisplayStartScript:
+				c.displayStartScript = sanitizeValue(value, "")
 			case confDisplayStopScript:
 				c.displayStopScript = sanitizeValue(value, "")
 			}
