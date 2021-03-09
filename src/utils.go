@@ -189,7 +189,13 @@ func parseBool(strBool string, defaultValue string) bool {
 
 // Runs wimple command and returns its output as string
 func runSimpleCmd(cmd []string) string {
-	output, err := exec.Command(cmd[0], cmd[1:]...).Output()
+	path, err := exec.LookPath(cmd[0])
+	if err != nil {
+		log.Printf("Could not find command '%s' on PATH", cmd[0])
+		return ""
+	}
+
+	output, err := exec.Command(path, cmd[1:]...).Output()
 	if err == nil {
 		return strings.TrimSpace(string(output))
 	}

@@ -153,19 +153,19 @@ func evaluateIssueVars(issue string, issueVars []*issueVariable) string {
 
 		switch issueVar.char {
 		case 'd':
-			output = runSimpleCmd([]string{"/bin/date"})
+			output = runSimpleCmd([]string{"date"})
 		case 'l':
-			output = runSimpleCmd([]string{"/bin/ps", "-p", strconv.Itoa(os.Getpid()), "-o", "tty", "--no-headers"})
+			output = runSimpleCmd([]string{"ps", "-p", strconv.Itoa(os.Getpid()), "-o", "tty", "--no-headers"})
 		case 'm':
-			output = runSimpleCmd([]string{"/usr/bin/uname", "-m"})
+			output = runSimpleCmd([]string{"uname", "-m"})
 		case 'n':
-			output = runSimpleCmd([]string{"/usr/bin/uname", "-n"})
+			output = runSimpleCmd([]string{"uname", "-n"})
 		case 'r':
-			output = runSimpleCmd([]string{"/usr/bin/uname", "-r"})
+			output = runSimpleCmd([]string{"uname", "-r"})
 		case 's':
-			output = runSimpleCmd([]string{"/usr/bin/uname", "-s"})
+			output = runSimpleCmd([]string{"uname", "-s"})
 		case 't':
-			output = runSimpleCmd([]string{"/bin/date", "+%T"})
+			output = runSimpleCmd([]string{"date", "+%T"})
 		case '4', '6':
 			output = getIpAddress(issueVar.arg, issueVar.char)
 		default:
