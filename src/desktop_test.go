@@ -210,3 +210,25 @@ func TestListAllDesktops(t *testing.T) {
 		t.Error("TestListAllDesktops: unexpected count of desktops, 0 expected")
 	}
 }
+
+func TestFindAutoselectDesktop(t *testing.T) {
+	usr := &sysuser{}
+	usr.homedir = getTestingPath("userHome2")
+
+	desktops := listAllDesktops(usr, getTestingPath("desktops"), getTestingPath("desktops"))
+
+	d1 := findAutoselectDesktop("CustomDesktop1", desktops)
+	if d1 == nil || d1.name != "CustomDesktop1" {
+		t.Error("TestFindAutoselectDesktop: could not find desktop by its name")
+	}
+
+	d2 := findAutoselectDesktop("custom-desktop2", desktops)
+	if d2 == nil || d2.name != "CustomDesktop2" {
+		t.Error("TestFindAutoselectDesktop: could not find desktop by its exec")
+	}
+
+	d3 := findAutoselectDesktop("UnknownDesktop", desktops)
+	if d3 != nil {
+		t.Error("TestFindAutoselectDesktop: found desktop, that should be uknown")
+	}
+}

@@ -71,13 +71,12 @@ func selectDesktop(usr *sysuser, conf *config) *desktop {
 	lastDesktop := getLastDesktop(usr, desktops)
 
 	if conf.autologin && conf.autologinSession != "" {
-		for _, d := range desktops {
-			if strings.HasSuffix(d.exec, conf.autologinSession) {
-				if isLastDesktopForSave(usr, desktops[lastDesktop], d) {
-					setUserLastSession(usr, d)
-				}
-				return d
+		d := findAutoselectDesktop(conf.autologinSession, desktops)
+		if d != nil {
+			if isLastDesktopForSave(usr, desktops[lastDesktop], d) {
+				setUserLastSession(usr, d)
 			}
+			return d
 		}
 	}
 
@@ -110,6 +109,16 @@ func selectDesktop(usr *sysuser, conf *config) *desktop {
 			if isLastDesktopForSave(usr, desktops[lastDesktop], d) {
 				setUserLastSession(usr, d)
 			}
+			return d
+		}
+	}
+	return nil
+}
+
+// Finds defined autologinSession in array of desktops by its exec or its name
+func findAutoselectDesktop(autologinSession string, desktops []*desktop) *desktop {
+	for _, d := range desktops {
+		if strings.HasSuffix(d.exec, autologinSession) || autologinSession == d.name {
 			return d
 		}
 	}
