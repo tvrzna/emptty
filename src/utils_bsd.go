@@ -14,3 +14,8 @@ func setFsUser(usr *sysuser) {
 	err = syscall.Setgid(usr.gid)
 	handleErr(err)
 }
+
+// Sets keyboard LEDs
+func setKeyboardLeds(tty *os.File, scrolllock, numlock, capslock bool) {
+	// Not implemented yet
+}

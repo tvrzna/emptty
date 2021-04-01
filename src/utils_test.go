@@ -171,3 +171,20 @@ func TestCmdAsUser(t *testing.T) {
 		t.Error("TestCmdAsUser: unexpected UID")
 	}
 }
+
+func TestSetKeyboardLeds(t *testing.T) {
+	f, err := ioutil.TempFile(os.TempDir(), "emptty-led-test")
+	if err != nil {
+		t.Error("TestSetKeyboardLeds: could not open test file")
+	}
+
+	setKeyboardLeds(f, true, true, true)
+	setKeyboardLeds(f, false, false, false)
+
+
+	f.Close()
+	err = os.Remove(f.Name())
+	if err != nil {
+		t.Error("TestSetKeyboardLeds: could not remove test file")
+	}
+}

@@ -24,6 +24,7 @@ const (
 	confBgColor            = "BG_COLOR"
 	confDisplayStartScript = "DISPLAY_START_SCRIPT"
 	confDisplayStopScript  = "DISPLAY_STOP_SCRIPT"
+	confEnableNumlock      = "ENABLE_NUMLOCK"
 
 	pathConfigFile = "/etc/emptty/conf"
 
@@ -67,6 +68,7 @@ type config struct {
 	bgColor            string
 	displayStartScript string
 	displayStopScript  string
+	enableNumlock      bool
 }
 
 // LoadConfig handles loading of application configuration.
@@ -90,6 +92,7 @@ func loadConfig(path string) *config {
 		bgColor:            "",
 		displayStartScript: "",
 		displayStopScript:  "",
+		enableNumlock:      false,
 	}
 
 	defaultLang := os.Getenv(envLang)
@@ -138,6 +141,8 @@ func loadConfig(path string) *config {
 				c.displayStartScript = sanitizeValue(value, "")
 			case confDisplayStopScript:
 				c.displayStopScript = sanitizeValue(value, "")
+			case confEnableNumlock:
+				c.enableNumlock = parseBool(value, "false")
 			}
 		})
 		handleErr(err)

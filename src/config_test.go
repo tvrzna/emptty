@@ -76,6 +76,10 @@ func TestLoadConfig(t *testing.T) {
 	if conf.displayStopScript != "/usr/bin/none" {
 		t.Error("TestLoadConfig: DISPLAY_STOP_SCRIPT value is not correct")
 	}
+
+	if !conf.enableNumlock {
+		t.Error("TestLoadConfig: ENABLE_NUMLOCK value is not correct")
+	}
 }
 
 func TestParseTTY(t *testing.T) {

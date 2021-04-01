@@ -45,3 +45,6 @@ VERTICAL_SELECTION=false
 
 # Background color, available only in daemon mode.
 #BG_COLOR=BLACK
+
+# Enables numlock in daemon mode. Possible values are "true" or "false".
+#ENABLE_NUMLOCK=false

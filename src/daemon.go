@@ -31,6 +31,10 @@ func startDaemon(conf *config) *os.File {
 		log.Fatal(err)
 	}
 
+	if conf.enableNumlock {
+		setKeyboardLeds(fTTY, false, true, false)
+	}
+
 	clearScreen(fTTY)
 
 	os.Stdout = fTTY

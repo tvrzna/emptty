@@ -55,6 +55,8 @@ __NOTE:__ The script is started as default user; in daemon mode it means `root`.
 `DISPLAY_STOP_SCRIPT` Script started after Display (Xorg/Wayland) stops.
 __NOTE:__ The script is started as default user; in daemon mode it means `root`.
 
+`ENABLE_NUMLOCK` Enables numlock in daemon mode. Possible values are "true" or "false". Default value is false.
+
 #### /etc/emptty/motd-gen.sh
 If `DYNAMIC_MOTD` is set to `true`, this file exists and is executable for its owner, the result is printed as your own MOTD. Be very careful with this script!
 
