@@ -45,7 +45,7 @@ func setKeyboardLeds(tty *os.File, scrolllock, numlock, capslock bool) {
 		flags |= _K_CAPSLOCK
 	}
 
-	if (scrolllock || numlock || capslock) {
+	if scrolllock || numlock || capslock {
 		// Magic constant that allows user changes
 		flags |= 0x30
 

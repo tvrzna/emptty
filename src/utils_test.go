@@ -181,7 +181,6 @@ func TestSetKeyboardLeds(t *testing.T) {
 	setKeyboardLeds(f, true, true, true)
 	setKeyboardLeds(f, false, false, false)
 
-
 	f.Close()
 	err = os.Remove(f.Name())
 	if err != nil {
