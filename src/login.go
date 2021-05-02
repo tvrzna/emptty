@@ -76,9 +76,15 @@ func defineEnvironment(usr *sysuser, conf *config, d *desktop) {
 	usr.setenv(envPwd, usr.homedir)
 	usr.setenv(envUser, usr.username)
 	usr.setenv(envLogname, usr.username)
-	usr.setenv(envXdgConfigHome, usr.homedir+"/.config")
-	usr.setenv(envXdgRuntimeDir, "/run/user/"+usr.strUid())
-	usr.setenv(envXdgSeat, "seat0")
+	if usr.getenv(envXdgConfigHome) == "" {
+		usr.setenv(envXdgConfigHome, usr.homedir+"/.config")
+	}
+	if usr.getenv(envXdgRuntimeDir) == "" {
+		usr.setenv(envXdgRuntimeDir, "/run/user/"+usr.strUid())
+	}
+	if usr.getenv(envXdgSeat) == "" {
+		usr.setenv(envXdgSeat, "seat0")
+	}
 	usr.setenv(envXdgSessionClass, "user")
 	usr.setenv(envShell, getUserShell(usr))
 	usr.setenv(envLang, conf.lang)
