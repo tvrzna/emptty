@@ -168,6 +168,8 @@ func evaluateIssueVars(issue string, issueVars []*issueVariable) string {
 			output = runSimpleCmd([]string{"uname", "-r"})
 		case 's':
 			output = runSimpleCmd([]string{"uname", "-s"})
+		case 'S':
+			output = getOsReleaseValue(issueVar.arg)
 		case 't':
 			output = runSimpleCmd([]string{"date", "+%T"})
 		case '4', '6':
