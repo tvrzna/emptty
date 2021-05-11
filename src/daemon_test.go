@@ -7,19 +7,19 @@ import (
 
 func TestPrintIssue(t *testing.T) {
 	readOutput(func() {
-		printIssue(getTestingPath("issue"))
+		printIssue(getTestingPath("issue"), "X")
 	})
 }
 
 func TestPrintIssueFull(t *testing.T) {
 	readOutput(func() {
-		printIssue(getTestingPath("issue_anything"))
+		printIssue(getTestingPath("issue_anything"), "X")
 	})
 }
 
 func TestPrintIssueWithMoreLines(t *testing.T) {
 	output := readOutput(func() {
-		printIssue(getTestingPath("issue_more_new_lines"))
+		printIssue(getTestingPath("issue_more_new_lines"), "X")
 	})
 
 	if output != "Hello with new lines\n" {

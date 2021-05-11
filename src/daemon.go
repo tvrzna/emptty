@@ -46,7 +46,7 @@ func startDaemon(conf *config) *os.File {
 
 	fmt.Println()
 	if conf.printIssue {
-		printIssue(pathIssue)
+		printIssue(pathIssue, conf.strTTY())
 		setColors(conf.fgColor, conf.bgColor)
 	}
 
@@ -85,12 +85,12 @@ func switchTTY(conf *config) bool {
 }
 
 // Prints getty issue
-func printIssue(path string) {
+func printIssue(path string, strTTY string) {
 	if fileExists(path) {
 		bIssue, err := ioutil.ReadFile(path)
 		if err == nil {
 			issue := string(bIssue)
-			issue = evaluateIssueVars(issue, findUniqueIssueVars(issue))
+			issue = evaluateIssueVars(issue, findUniqueIssueVars(issue), strTTY)
 
 			for issue[len(issue)-2:] == "\n\n" {
 				issue = issue[:len(issue)-1]
@@ -144,7 +144,7 @@ func findUniqueIssueVars(issue string) []*issueVariable {
 }
 
 // Evaluates outputs for all known escape sequences and return replaced issue
-func evaluateIssueVars(issue string, issueVars []*issueVariable) string {
+func evaluateIssueVars(issue string, issueVars []*issueVariable, strTTY string) string {
 	result := issue
 
 	sort.Slice(issueVars, func(i int, j int) bool {
@@ -159,7 +159,10 @@ func evaluateIssueVars(issue string, issueVars []*issueVariable) string {
 		case 'd':
 			output = runSimpleCmd([]string{"date"})
 		case 'l':
-			output = runSimpleCmd([]string{"ps", "-p", strconv.Itoa(os.Getpid()), "-o", "tty", "--no-headers"})
+			output = "tty" + strTTY
+			if strTTY == "" {
+				output = runSimpleCmd([]string{"ps", "-p", strconv.Itoa(os.Getpid()), "-o", "tty", "--no-headers"})
+			}
 		case 'm':
 			output = runSimpleCmd([]string{"uname", "-m"})
 		case 'n':
