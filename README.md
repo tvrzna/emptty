@@ -167,6 +167,7 @@ __NOTE:__ If any issue starts to appear and you want to report it, ensure you do
 - `make install-config` to create default conf file in /etc/emptty/.
 - `make install-runit` to install runit service
 - `make install-openrc` to install openrc service
+- `make install-s6` to install s6 service
 - `make install-systemd` to install systemd service.
 - `make install-motd-gen` to create default motd-gen.sh in /etc/emptty/
 ---

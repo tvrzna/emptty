@@ -79,6 +79,13 @@ install-openrc:
 	@install -DZ res/openrc-service -m 755 -T ${DESTDIR}/etc/init.d/${DISTFILE}
 	@echo "Done"
 
+install-s6:
+	@echo "Installing S6 service..."
+	@install -DZ res/s6-dependencies -m 644 -T ${DESTDIR}/etc/s6/sv/${DISTFILE}/dependencies
+	@install -DZ res/s6-type -m 644 -T ${DESTDIR}/etc/s6/sv/${DISTFILE}/type
+	@install -DZ res/s6-run -m 755 -T ${DESTDIR}/etc/s6/sv/${DISTFILE}/run
+	@echo "Done. Please recompile your S6 database."
+
 install-all: install install-manual install-pam
 
 uninstall:
@@ -88,5 +95,6 @@ uninstall:
 	@rm -f ${DESTDIR}/etc/init.d/${DISTFILE}
 	@rm -f ${DESTDIR}/usr/share/man/man1/emptty.1.gz
 	@rm -f ${DESTDIR}/etc/pam.d/emptty
+	@rm -rf ${DESTDIR}/etc/s6/sv/${DISTFILE}
 	@rm -rf ${DESTDIR}/usr/bin/${DISTFILE}
 	@echo "Done"
