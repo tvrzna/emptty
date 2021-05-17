@@ -165,11 +165,12 @@ __NOTE:__ If any issue starts to appear and you want to report it, ensure you do
 - `make install-all` to install binary, pam module and man page.
 ---
 - `make install-config` to create default conf file in /etc/emptty/.
-- `make install-runit` to install runit service
-- `make install-openrc` to install openrc service
-- `make install-s6` to install s6 service
+- `make install-runit` to install runit service.
+- `make install-runit-artix` to install runit to Artix service folder.
+- `make install-openrc` to install openrc service.
+- `make install-s6` to install s6 service.
 - `make install-systemd` to install systemd service.
-- `make install-motd-gen` to create default motd-gen.sh in /etc/emptty/
+- `make install-motd-gen` to create default motd-gen.sh in /etc/emptty/.
 ---
 - `make uninstall` to remove emptty from your system
 ---

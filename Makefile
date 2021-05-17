@@ -69,6 +69,11 @@ install-runit:
 	@install -DZ res/runit-run -m 755 -T ${DESTDIR}/etc/sv/${DISTFILE}/run
 	@echo "Done"
 
+install-runit-artix:
+	@echo "Installing Artix runit service..."
+	@install -DZ res/runit-run -m 755 -T ${DESTDIR}/etc/runit/sv/${DISTFILE}/run
+	@echo "Done"
+
 install-systemd:
 	@echo "Installing systemd service..."
 	@install -DZ res/systemd-service -m 644 -T ${DESTDIR}/usr/lib/systemd/system/${DISTFILE}.service
@@ -91,6 +96,7 @@ install-all: install install-manual install-pam
 uninstall:
 	@echo "Uninstalling..."
 	@rm -rf ${DESTDIR}/etc/sv/${DISTFILE}
+	@rm -rf ${DESTDIR}/etc/runit/sv/${DISTFILE}
 	@rm -f ${DESTDIR}/usr/lib/systemd/system/${DISTFILE}.service
 	@rm -f ${DESTDIR}/etc/init.d/${DISTFILE}
 	@rm -f ${DESTDIR}/usr/share/man/man1/emptty.1.gz
