@@ -1,7 +1,7 @@
 # emptty - Samples
 
 ## \~/.config/emptty or \~/.emptty as init script
-In your .config folder you have to create 'emptty' file or in your home folder you have to create `.emptty` file. This file needs to have execution permission (`chmod +x ~/.config/emptty` or `chmod +x ~/.emptty`).
+In your .config folder you have to create 'emptty' file or in your home folder you have to create `.emptty` file.
 
 This variant allows to treat your script in similar way as your `.xinitrc`, however this is common to both Xorg and Wayland. The magic option is `Selection=true`. You can define your own environmental variables and keep the possibility to select any desktop.
 

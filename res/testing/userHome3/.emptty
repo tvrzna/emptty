@@ -1,6 +1,6 @@
 ENVIRONMENT=xorg
 COMMAND=none
 SELECTION=true
-EXEC=
+EXEC=sfdgfdgd
 NAME=window-manager
 LANG=en_US.UTF-8

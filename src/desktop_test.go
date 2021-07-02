@@ -73,8 +73,8 @@ func TestLoadUserDesktop(t *testing.T) {
 
 	readOutput(func() {
 		d, _ = loadUserDesktop(getTestingPath("userHome3"))
-		if d != nil {
-			t.Error("TestLoadUserDesktop: No desktop should be returned, exec is missing and should not be executable")
+		if d == nil || d.exec != "" || d.name != "" {
+			t.Error("TestLoadUserDesktop: No desktop returned, selection does not return empty desktop or exec/name are not empty.")
 		}
 	})
 

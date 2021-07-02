@@ -240,6 +240,7 @@ func prepareGuiCommand(usr *sysuser, d *desktop, conf *config) (*exec.Cmd, strin
 
 	if d.selection && d.child != nil {
 		strExec = d.path + " " + d.child.exec
+		startScript = true
 	} else {
 		if d.env == Xorg && conf.xinitrcLaunch && allowStartupPrefix && !strings.Contains(strExec, ".xinitrc") && fileExists(usr.homedir+"/.xinitrc") {
 			startScript = true
