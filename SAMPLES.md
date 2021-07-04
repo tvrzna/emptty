@@ -19,6 +19,7 @@ export EDITOR=vim
 exec dbus-launch $@
 ```
 
+Important: make sure you give the file execute permissions!
 
 ## \~/.config/emptty or \~/.emptty as config
 In your .config folder you have to create 'emptty' file or in your home folder you have to create `.emptty` file. If `environment` is not defined, it assumes xorg.
