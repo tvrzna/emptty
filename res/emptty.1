@@ -4,7 +4,7 @@
 emptty \- Dead simple CLI Display Manager on TTY
 
 .SH SYNOPSIS
-.B emptty [-v] [--version] [-d] [--daemon] [-t TTY] [--tty TTY] [-u defaultUser] [--default-user defaultUser]
+.B emptty [-v] [--version] [-d] [--daemon] [-t TTY] [--tty TTY] [-u defaultUser] [--default-user defaultUser] [-a [session]] [--autologin [session]]
 
 .SH DESCRIPTION
 .B emppty
@@ -24,6 +24,9 @@ Overrides loaded configuration by setting defined TTY.
 
 .IP "\-u, \-\-default-user defaultUser"
 Overrides loaded configuration by setting defined defaultUser.
+
+.IP "\-a, \-\-autologin [session]"
+Overrides loaded configuration by enabling autologin. If session is defined, it overrides autologin session.
 
 .SH CONFIG
 /etc/emptty/conf

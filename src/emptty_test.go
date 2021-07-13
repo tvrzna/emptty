@@ -59,6 +59,30 @@ func TestProcessArgs(t *testing.T) {
 	if conf3.defaultUser != "emptty" {
 		t.Errorf("TestProcessArgs: expected default user was 'emptty', but was '%s'", conf3.defaultUser)
 	}
+
+	conf4 := &config{}
+	processArgs([]string{}, conf4)
+	if conf4.autologin || conf4.autologinSession != "" {
+		t.Error("TestProcessArgs: unexpected value for autologin or autologinSession")
+	}
+
+	processArgs([]string{"-a"}, conf4)
+	if !conf4.autologin || conf4.autologinSession != "" {
+		t.Error("TestProcessArgs: unexpected value for autologin or autologinSession")
+	}
+
+	conf4.autologin = false
+	processArgs([]string{"-a", "-t", "7"}, conf4)
+	if !conf4.autologin || conf4.autologinSession != "" {
+		t.Error("TestProcessArgs: unexpected value for autologin or autologinSession")
+	}
+
+	conf4.autologin = false
+	processArgs([]string{"--autologin", "sway"}, conf4)
+	if !conf4.autologin || conf4.autologinSession != "sway" {
+		t.Errorf("TestProcessArgs: unexpected value for autologin (is '%t') or autologinSession (is '%s')", conf4.autologin, conf4.autologinSession)
+	}
+
 }
 
 func TestNextArg(t *testing.T) {
