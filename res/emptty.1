@@ -1,10 +1,10 @@
-.TH EMPTTY 1 "May 2021" "emptty 0.5.2" emptty
+.TH EMPTTY 1 "July 2021" "emptty 0.5.2" emptty
 
 .SH NAME
 emptty \- Dead simple CLI Display Manager on TTY
 
 .SH SYNOPSIS
-.B emptty [-v] [--version] [-d] [--daemon]
+.B emptty [-v] [--version] [-d] [--daemon] [-t TTY] [--tty TTY]
 
 .SH DESCRIPTION
 .B emppty
@@ -18,6 +18,9 @@ Display the version of the program.
 
 .IP "\-d, \-\-daemon"
 Starts emptty as daemon, that does not require agetty.
+
+.IP "\-t, \-\-tty TTY"
+Overrides loaded configuration with setting defined TTY.
 
 .SH CONFIG
 /etc/emptty/conf
