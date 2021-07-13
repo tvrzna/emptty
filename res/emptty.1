@@ -4,7 +4,7 @@
 emptty \- Dead simple CLI Display Manager on TTY
 
 .SH SYNOPSIS
-.B emptty [-v] [--version] [-d] [--daemon] [-t TTY] [--tty TTY]
+.B emptty [-v] [--version] [-d] [--daemon] [-t TTY] [--tty TTY] [-u defaultUser] [--default-user defaultUser]
 
 .SH DESCRIPTION
 .B emppty
@@ -20,7 +20,10 @@ Display the version of the program.
 Starts emptty as daemon, that does not require agetty.
 
 .IP "\-t, \-\-tty TTY"
-Overrides loaded configuration with setting defined TTY.
+Overrides loaded configuration by setting defined TTY.
+
+.IP "\-t, \-\-tty defaultUser"
+Overrides loaded configuration by setting defined defaultUser.
 
 .SH CONFIG
 /etc/emptty/conf

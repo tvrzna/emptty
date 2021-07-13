@@ -22,20 +22,7 @@ func Main() {
 	}
 
 	conf := loadConfig(pathConfigFile)
-
-	for i, arg := range os.Args {
-		switch arg {
-		case "-t", "--tty":
-			if len(os.Args) > i+1 {
-				tty := parseTTY(os.Args[i+1], "0")
-				if tty > 0 {
-					conf.tty = tty
-				}
-			}
-		case "-d", "--daemon":
-			conf.daemonMode = true
-		}
-	}
+	processArgs(os.Args, conf)
 
 	var fTTY *os.File
 	if conf.daemonMode {
@@ -51,6 +38,34 @@ func Main() {
 	}
 }
 
+// Process arguments with affection on configuration
+func processArgs(args []string, conf *config) {
+	for i, arg := range args {
+		switch arg {
+		case "-t", "--tty":
+			nextArg(args, i, func(val string) {
+				tty := parseTTY(val, "0")
+				if tty > 0 {
+					conf.tty = tty
+				}
+			})
+		case "-u", "--default-user":
+			nextArg(args, i, func(val string) {
+				conf.defaultUser = val
+			})
+		case "-d", "--daemon":
+			conf.daemonMode = true
+		}
+	}
+}
+
+// Gets next argument, if available
+func nextArg(args []string, i int, callback func(value string)) {
+	if callback != nil && len(args) > i+1 {
+		callback(args[i+1])
+	}
+}
+
 // Prints help
 func printHelp() {
 	fmt.Println("Usage: emptty [options]")
@@ -59,6 +74,7 @@ func printHelp() {
 	fmt.Printf("  -v, --version\t\tprint version\n")
 	fmt.Printf("  -d, --daemon\t\tstart in daemon mode\n")
 	fmt.Printf("  -t, --tty NUMBER\toverrides configured TTY number\n")
+	fmt.Printf("  -u, --default-user\toverrides configured Default User\n")
 }
 
 // Gets current version
