@@ -1,9 +1,21 @@
 package src
 
-import "testing"
+import (
+	"os"
+	"testing"
+)
 
 func TestLoadConfig(t *testing.T) {
+	lang := os.Getenv(envLang)
+	os.Setenv(envLang, "")
 	conf := loadConfig(getTestingPath("conf"))
+	os.Setenv(envLang, lang)
+
+	if conf.lang != "en_US.UTF-8" {
+		t.Error("TestLoadConfig: fallback language is not correct")
+	}
+
+	conf = loadConfig(getTestingPath("conf"))
 
 	if conf.tty != 14 || conf.strTTY() != "14" {
 		t.Error("TestLoadConfig: TTY value is not correct")
