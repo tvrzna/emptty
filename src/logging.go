@@ -8,6 +8,7 @@ import (
 	"os"
 )
 
+// TEST_MODE Defines if logging is in test mode
 var TEST_MODE bool
 
 const (
