@@ -132,17 +132,26 @@ func wayland(usr *sysuser, d *desktop, conf *config) {
 	log.Print("Defined Wayland environment")
 
 	// start Wayland
-	wayland, strExec := prepareGuiCommand(usr, d, conf)
-	registerInterruptHandler(wayland)
+	wsession, strExec := prepareGuiCommand(usr, d, conf)
+	registerInterruptHandler(wsession)
+
+	sessionErrLog, sessionErrLogErr := initSessionErrorLogger(conf)
+	if sessionErrLogErr == nil {
+		wsession.Stderr = sessionErrLog
+		defer sessionErrLog.Close()
+	} else {
+		log.Print(sessionErrLogErr)
+	}
+
 	log.Print("Starting " + strExec)
-	err := wayland.Start()
+	err := wsession.Start()
 	handleErr(err)
 
 	// make utmp entry
-	utmpEntry := addUtmpEntry(usr.username, wayland.Process.Pid, conf.strTTY(), "")
+	utmpEntry := addUtmpEntry(usr.username, wsession.Process.Pid, conf.strTTY(), "")
 	log.Print("Added utmp entry")
 
-	wayland.Wait()
+	wsession.Wait()
 	log.Print(strExec + " finished")
 
 	// end utmp entry
@@ -204,18 +213,27 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	utmpEntry := addUtmpEntry(usr.username, xorg.Process.Pid, conf.strTTY(), usr.getenv(envDisplay))
 	log.Print("Added utmp entry")
 
-	// start xinit
-	xinit, strExec := prepareGuiCommand(usr, d, conf)
-	registerInterruptHandler(xinit, xorg)
+	// start xsession
+	xsession, strExec := prepareGuiCommand(usr, d, conf)
+	registerInterruptHandler(xsession, xorg)
+
+	sessionErrLog, sessionErrLogErr := initSessionErrorLogger(conf)
+	if sessionErrLogErr == nil {
+		xsession.Stderr = sessionErrLog
+		defer sessionErrLog.Close()
+	} else {
+		log.Print(sessionErrLogErr)
+	}
+
 	log.Print("Starting " + strExec)
-	err = xinit.Start()
+	err = xsession.Start()
 	if err != nil {
 		xorg.Process.Signal(os.Interrupt)
 		xorg.Wait()
 		handleErr(err)
 	}
 
-	xinit.Wait()
+	xsession.Wait()
 	log.Print(strExec + " finished")
 
 	// Stop Xorg

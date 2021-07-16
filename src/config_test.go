@@ -80,6 +80,14 @@ func TestLoadConfig(t *testing.T) {
 	if !conf.enableNumlock {
 		t.Error("TestLoadConfig: ENABLE_NUMLOCK value is not correct")
 	}
+
+	if conf.sessionErrLog != Appending {
+		t.Error("TestLoadconfig: SESSION_ERROR_LOGGING value is not correct")
+	}
+
+	if conf.sessionErrLogFile != "/dev/null" {
+		t.Error("TestLoadconfig: SESSION_ERROR_LOGGING_FILE value is not correct")
+	}
 }
 
 func TestParseTTY(t *testing.T) {

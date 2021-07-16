@@ -16,6 +16,7 @@ import (
 const (
 	pathLogFileNull      = "/dev/null"
 	pathLogFile          = "/var/log/emptty"
+	pathLogSessErrFile   = "/var/log/emptty-session-errors"
 	pathLogFileOldSuffix = ".old"
 	pathOsRelaseFile     = "/etc/os-release"
 
@@ -85,24 +86,34 @@ func handleErr(err error) {
 
 // Initialize logger to file defined by pathLogFile.
 func initLogger(conf *config) {
-	logFilePath := pathLogFile
-	if conf.loggingFile != "" {
-		logFilePath = conf.loggingFile
+	f, err := prepareLogFile(conf.loggingFile, pathLogFile, conf.logging)
+	if err == nil {
+		log.SetOutput(f)
+	}
+}
+
+// Initialize logger to file for session-errors.
+func initSessionErrorLogger(conf *config) (*os.File, error) {
+	return prepareLogFile(conf.sessionErrLogFile, pathLogSessErrFile, conf.sessionErrLog)
+}
+
+// Prepares logging file according to defined configuration.
+func prepareLogFile(path string, defaultPath string, method enLogging) (*os.File, error) {
+	logFilePath := defaultPath
+	if path != "" {
+		logFilePath = path
 	}
 
-	if conf.logging == Default {
+	if method == Default && logFilePath != pathLogFileNull {
 		if fileExists(logFilePath) {
 			os.Remove(logFilePath + pathLogFileOldSuffix)
 			os.Rename(logFilePath, logFilePath+pathLogFileOldSuffix)
 		}
-	} else if conf.logging == Disabled {
+	} else if method == Disabled {
 		logFilePath = pathLogFileNull
 	}
 
-	f, err := os.OpenFile(logFilePath, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0644)
-	if err == nil {
-		log.SetOutput(f)
-	}
+	return os.OpenFile(logFilePath, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0644)
 }
 
 // Sanitize value.

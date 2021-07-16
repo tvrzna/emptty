@@ -31,11 +31,11 @@ VERTICAL_SELECTION=false
 # Defines the way, how is logging handled. Possible values are "default", "appending" or "disabled".
 #LOGGING=default
 
-# Arguments passed to Xorg server.
-#XORG_ARGS=
-
 # Overrides path of log file
 #LOGGING_FILE=/var/log/emptty
+
+# Arguments passed to Xorg server.
+#XORG_ARGS=
 
 # Allows to use /etc/emptty/motd-gen.sh script to generate custom MOTD.
 #DYNAMIC_MOTD=false
@@ -48,3 +48,9 @@ VERTICAL_SELECTION=false
 
 # Enables numlock in daemon mode. Possible values are "true" or "false".
 #ENABLE_NUMLOCK=false
+
+# Defines the way, how is logging of session errors handled. Possible values are "default", "appending" or "disabled".
+#SESSION_ERROR_LOGGING=disabled
+
+# Overrides path of session errors log file
+#SESSION_ERROR_LOGGING_FILE=/var/log/emptty-session-errors

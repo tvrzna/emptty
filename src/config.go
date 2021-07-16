@@ -25,6 +25,8 @@ const (
 	confDisplayStartScript = "DISPLAY_START_SCRIPT"
 	confDisplayStopScript  = "DISPLAY_STOP_SCRIPT"
 	confEnableNumlock      = "ENABLE_NUMLOCK"
+	confSessionErrLog      = "SESSION_ERROR_LOGGING"
+	confSessionErrLogFile  = "SESSION_ERROR_LOGGING_FILE"
 
 	pathConfigFile = "/etc/emptty/conf"
 
@@ -61,14 +63,16 @@ type config struct {
 	xinitrcLaunch      bool
 	verticalSelection  bool
 	logging            enLogging
-	xorgArgs           string
 	loggingFile        string
+	xorgArgs           string
 	dynamicMotd        bool
 	fgColor            string
 	bgColor            string
 	displayStartScript string
 	displayStopScript  string
 	enableNumlock      bool
+	sessionErrLog      enLogging
+	sessionErrLogFile  string
 }
 
 // LoadConfig handles loading of application configuration.
@@ -85,14 +89,16 @@ func loadConfig(path string) *config {
 		xinitrcLaunch:      false,
 		verticalSelection:  false,
 		logging:            Default,
-		xorgArgs:           "",
 		loggingFile:        "",
+		xorgArgs:           "",
 		dynamicMotd:        false,
 		fgColor:            "",
 		bgColor:            "",
 		displayStartScript: "",
 		displayStopScript:  "",
 		enableNumlock:      false,
+		sessionErrLog:      Disabled,
+		sessionErrLogFile:  "",
 	}
 
 	defaultLang := os.Getenv(envLang)
@@ -127,10 +133,10 @@ func loadConfig(path string) *config {
 				c.verticalSelection = parseBool(value, "false")
 			case confLogging:
 				c.logging = parseLogging(value, constLogDefault)
-			case confXorgArgs:
-				c.xorgArgs = sanitizeValue(value, "")
 			case confLoggingFile:
 				c.loggingFile = sanitizeValue(value, "")
+			case confXorgArgs:
+				c.xorgArgs = sanitizeValue(value, "")
 			case confDynamicMotd:
 				c.dynamicMotd = parseBool(value, "false")
 			case confFgColor:
@@ -143,6 +149,10 @@ func loadConfig(path string) *config {
 				c.displayStopScript = sanitizeValue(value, "")
 			case confEnableNumlock:
 				c.enableNumlock = parseBool(value, "false")
+			case confSessionErrLog:
+				c.sessionErrLog = parseLogging(value, constLogDisabled)
+			case confSessionErrLogFile:
+				c.sessionErrLogFile = sanitizeValue(value, "")
 			}
 		})
 		handleErr(err)

@@ -64,8 +64,6 @@ is handled as script, this config is overriden to false.
 Prints available WM/DE each on new line instead of printing on single line.
 .IP LOGGING
 Defines how logging is handled. Possible values are "default", "appending" or "disabled". Default value is "default".
-.IP XORG_ARGS
-Arguments passed to Xorg server.
 .IP LOGGING_FILE
 Overrides path of log file. Default value is
 .I /var/log/emptty
@@ -73,6 +71,8 @@ Overrides path of log file. Default value is
 .B NOTE:
 It expects existence of directories to defined logging file.
 
+.IP XORG_ARGS
+Arguments passed to Xorg server.
 .IP DYNAMIC_MOTD
 Allows to use /etc/emptty/motd-gen.sh script to generate custom MOTD. Possible values are "true" or "false". Default value is false.
 
@@ -102,6 +102,15 @@ The script is started as default user; in daemon mode it means
 
 .IP ENABLE_NUMLOCK
 Enables numlock in daemon mode. Possible values are "true" or "false". Default value is false.
+
+.IP SESSION_ERROR_LOGGING
+Defines how logging of session errors is handled. Possible values are "default", "appending" or "disabled". Default value is "disabled".
+.IP SESSION_ERROR_LOGGING_FILE
+Overrides path of session errors log file. Default value is
+.I /var/log/emptty-session-errors
+
+.B NOTE:
+It expects existence of directories to defined logging file.
 
 .SH DYNAMIC MOTD
 Optional file stored as /etc/emptty/motd-gen.sh
