@@ -6,7 +6,6 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"os/user"
 
@@ -48,7 +47,7 @@ func authUser(conf *config) *sysuser {
 			}
 			return input[:len(input)-1], nil
 		case pam.ErrorMsg:
-			log.Print(msg)
+			logPrint(msg)
 			return "", nil
 		case pam.TextInfo:
 			fmt.Println(msg)
@@ -64,7 +63,7 @@ func authUser(conf *config) *sysuser {
 		addBtmpEntry(username, os.Getpid(), conf.strTTY())
 		handleErr(bkpErr)
 	}
-	log.Print("Authenticate OK")
+	logPrint("Authenticate OK")
 
 	err = trans.AcctMgmt(pam.Silent)
 	handleErr(err)
@@ -87,7 +86,7 @@ func closeAuth() {
 		err := trans.CloseSession(pam.Silent)
 		trans = nil
 		if err != nil {
-			log.Println(err)
+			logPrint(err)
 		}
 	}
 }

@@ -29,10 +29,6 @@ const (
 	confSessionErrLogFile  = "SESSION_ERROR_LOGGING_FILE"
 
 	pathConfigFile = "/etc/emptty/conf"
-
-	constLogDefault   = "default"
-	constLogAppending = "appending"
-	constLogDisabled  = "disabled"
 )
 
 // enLogging defines possible option how to handle configuration.
@@ -168,20 +164,6 @@ func parseTTY(tty string, defaultValue string) int {
 		return 0
 	}
 	return int(val)
-}
-
-// Parse logging option
-func parseLogging(strLogging string, defaultValue string) enLogging {
-	val := sanitizeValue(strLogging, defaultValue)
-	switch val {
-	case constLogDisabled:
-		return Disabled
-	case constLogAppending:
-		return Appending
-	case constLogDefault:
-		return Default
-	}
-	return Default
 }
 
 // Returns TTY number converted to string

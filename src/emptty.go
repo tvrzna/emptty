@@ -12,6 +12,8 @@ var buildVersion string
 
 // Main handles the functionality of whole application.
 func Main() {
+	TEST_MODE = false
+
 	if contains(os.Args, "-h") || contains(os.Args, "--help") {
 		printHelp()
 		os.Exit(0)

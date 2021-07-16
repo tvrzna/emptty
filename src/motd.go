@@ -3,7 +3,6 @@ package src
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
@@ -24,7 +23,7 @@ func printMotd(conf *config) {
 		cmd := exec.Command(pathDynamicMotd)
 		dynamicMotd, err := cmd.Output()
 		if err != nil {
-			log.Print(err)
+			logPrint(err)
 			printDefaultMotd()
 			return
 		}
@@ -38,7 +37,7 @@ func printMotd(conf *config) {
 		file, err := os.Open(pathMotd)
 		defer file.Close()
 		if err != nil {
-			log.Print(err)
+			logPrint(err)
 			printDefaultMotd()
 			return
 		}

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
 	"sort"
@@ -28,7 +27,7 @@ type issueVariable struct {
 func startDaemon(conf *config) *os.File {
 	fTTY, err := os.OpenFile("/dev/tty"+conf.strTTY(), os.O_RDWR, 0700)
 	if err != nil {
-		log.Fatal(err)
+		logFatal(err)
 	}
 
 	if conf.enableNumlock {

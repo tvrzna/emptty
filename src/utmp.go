@@ -28,7 +28,6 @@ void prepareUtmpEntry(struct utmpx * utmp, int pid, char* id, char* line, char* 
 */
 import "C"
 import (
-	"log"
 	"unsafe"
 )
 
@@ -81,7 +80,7 @@ func endUtmpEntry(utmp *C.struct_utmpx) {
 func putUtmpEntry(utmp *C.struct_utmpx) {
 	C.setutxent()
 	if C.pututxline(utmp) == nil {
-		log.Println("Could not write into utmp.")
+		logPrint("Could not write into utmp.")
 	}
 	C.endutxent()
 

@@ -3,8 +3,6 @@ package src
 import (
 	"bufio"
 	"errors"
-	"fmt"
-	"log"
 	"net"
 	"os"
 	"os/exec"
@@ -14,11 +12,7 @@ import (
 )
 
 const (
-	pathLogFileNull      = "/dev/null"
-	pathLogFile          = "/var/log/emptty"
-	pathLogSessErrFile   = "/var/log/emptty-session-errors"
-	pathLogFileOldSuffix = ".old"
-	pathOsRelaseFile     = "/etc/os-release"
+	pathOsRelaseFile = "/etc/os-release"
 
 	osReleasePrettyName = "PRETTY_NAME"
 	osReleaseName       = "NAME"
@@ -64,56 +58,6 @@ func fileExists(path string) bool {
 func fileIsExecutable(path string) bool {
 	stat, err := os.Stat(path)
 	return err == nil && (stat.Mode()&0100 == 0100)
-}
-
-// Handles error passed as string and calls handleErr function.
-func handleStrErr(err string) {
-	if err != "" {
-		handleErr(errors.New(err))
-	}
-}
-
-// If error is not nil, otherwise it prints error, waits for user input and then exits the program.
-func handleErr(err error) {
-	if err != nil {
-		log.Print(err)
-		fmt.Printf("Error: %s\n", err)
-		fmt.Printf("\nPress Enter to continue...")
-		bufio.NewReader(os.Stdin).ReadString('\n')
-		os.Exit(1)
-	}
-}
-
-// Initialize logger to file defined by pathLogFile.
-func initLogger(conf *config) {
-	f, err := prepareLogFile(conf.loggingFile, pathLogFile, conf.logging)
-	if err == nil {
-		log.SetOutput(f)
-	}
-}
-
-// Initialize logger to file for session-errors.
-func initSessionErrorLogger(conf *config) (*os.File, error) {
-	return prepareLogFile(conf.sessionErrLogFile, pathLogSessErrFile, conf.sessionErrLog)
-}
-
-// Prepares logging file according to defined configuration.
-func prepareLogFile(path string, defaultPath string, method enLogging) (*os.File, error) {
-	logFilePath := defaultPath
-	if path != "" {
-		logFilePath = path
-	}
-
-	if method == Default && logFilePath != pathLogFileNull {
-		if fileExists(logFilePath) {
-			os.Remove(logFilePath + pathLogFileOldSuffix)
-			os.Rename(logFilePath, logFilePath+pathLogFileOldSuffix)
-		}
-	} else if method == Disabled {
-		logFilePath = pathLogFileNull
-	}
-
-	return os.OpenFile(logFilePath, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0644)
 }
 
 // Sanitize value.
@@ -206,7 +150,7 @@ func parseBool(strBool string, defaultValue string) bool {
 func runSimpleCmd(cmd []string) string {
 	path, err := exec.LookPath(cmd[0])
 	if err != nil {
-		log.Printf("Could not find command '%s' on PATH", cmd[0])
+		logPrintf("Could not find command '%s' on PATH", cmd[0])
 		return ""
 	}
 
@@ -222,7 +166,7 @@ func getIpAddress(name string, ipType byte) string {
 	if name == "" {
 		ifaces, err := net.Interfaces()
 		if err != nil {
-			log.Print(err)
+			logPrint(err)
 			return ""
 		}
 		for _, iface := range ifaces {
@@ -233,7 +177,7 @@ func getIpAddress(name string, ipType byte) string {
 	} else {
 		iface, err := net.InterfaceByName(name)
 		if err != nil {
-			log.Print(err)
+			logPrint(err)
 			return ""
 		}
 		return getIpAddressFromIface(iface, ipType)
@@ -249,7 +193,7 @@ func getIpAddressFromIface(iface *net.Interface, ipType byte) string {
 	}
 	addrs, err := iface.Addrs()
 	if err != nil {
-		log.Print(err)
+		logPrint(err)
 		return ""
 	}
 	for _, addr := range addrs {

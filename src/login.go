@@ -2,7 +2,6 @@ package src
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -98,7 +97,7 @@ func defineEnvironment(usr *sysuser, conf *config, d *desktop) {
 		usr.setenv(envXdgSessDesktop, d.child.name)
 	}
 
-	log.Print("Defined Environment")
+	logPrint("Defined Environment")
 
 	// create XDG folder
 	if !fileExists(usr.getenv(envXdgRuntimeDir)) {
@@ -108,9 +107,9 @@ func defineEnvironment(usr *sysuser, conf *config, d *desktop) {
 		// Set owner of XDG folder
 		os.Chown(usr.getenv(envXdgRuntimeDir), usr.uid, usr.gid)
 
-		log.Print("Created XDG folder")
+		logPrint("Created XDG folder")
 	} else {
-		log.Print("XDG folder already exists, no need to create")
+		logPrint("XDG folder already exists, no need to create")
 	}
 
 	os.Chdir(usr.getenv(envPwd))
@@ -129,7 +128,7 @@ func getUserShell(usr *sysuser) string {
 func wayland(usr *sysuser, d *desktop, conf *config) {
 	// Set environment
 	usr.setenv(envXdgSessionType, "wayland")
-	log.Print("Defined Wayland environment")
+	logPrint("Defined Wayland environment")
 
 	// start Wayland
 	wsession, strExec := prepareGuiCommand(usr, d, conf)
@@ -140,23 +139,23 @@ func wayland(usr *sysuser, d *desktop, conf *config) {
 		wsession.Stderr = sessionErrLog
 		defer sessionErrLog.Close()
 	} else {
-		log.Print(sessionErrLogErr)
+		logPrint(sessionErrLogErr)
 	}
 
-	log.Print("Starting " + strExec)
+	logPrint("Starting " + strExec)
 	err := wsession.Start()
 	handleErr(err)
 
 	// make utmp entry
 	utmpEntry := addUtmpEntry(usr.username, wsession.Process.Pid, conf.strTTY(), "")
-	log.Print("Added utmp entry")
+	logPrint("Added utmp entry")
 
 	wsession.Wait()
-	log.Print(strExec + " finished")
+	logPrint(strExec + " finished")
 
 	// end utmp entry
 	endUtmpEntry(utmpEntry)
-	log.Print("Ended utmp entry")
+	logPrint("Ended utmp entry")
 }
 
 // Prepares and starts Xorg session for authorized user.
@@ -169,7 +168,7 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	usr.setenv(envDisplay, ":"+freeDisplay)
 	os.Setenv(envXauthority, usr.getenv(envXauthority))
 	os.Setenv(envDisplay, usr.getenv(envDisplay))
-	log.Print("Defined Xorg environment")
+	logPrint("Defined Xorg environment")
 
 	// create xauth
 	os.Remove(usr.getenv(envXauthority))
@@ -178,17 +177,17 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	cmd := cmdAsUser(usr, "/usr/bin/mcookie")
 	mcookie, err := cmd.Output()
 	handleErr(err)
-	log.Print("Generated mcookie")
+	logPrint("Generated mcookie")
 
 	// generate xauth
 	cmd = cmdAsUser(usr, "/usr/bin/xauth", "add", usr.getenv(envDisplay), ".", string(mcookie))
 	_, err = cmd.Output()
 	handleErr(err)
 
-	log.Print("Generated xauthority")
+	logPrint("Generated xauthority")
 
 	// start X
-	log.Print("Starting Xorg")
+	logPrint("Starting Xorg")
 
 	xorgArgs := []string{"vt" + conf.strTTY(), usr.getenv(envDisplay)}
 
@@ -203,7 +202,7 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	if xorg.Process == nil {
 		handleStrErr("Xorg is not running")
 	}
-	log.Print("Started Xorg")
+	logPrint("Started Xorg")
 
 	disp := &xdisplay{}
 	disp.dispName = usr.getenv(envDisplay)
@@ -211,7 +210,7 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 
 	// make utmp entry
 	utmpEntry := addUtmpEntry(usr.username, xorg.Process.Pid, conf.strTTY(), usr.getenv(envDisplay))
-	log.Print("Added utmp entry")
+	logPrint("Added utmp entry")
 
 	// start xsession
 	xsession, strExec := prepareGuiCommand(usr, d, conf)
@@ -222,10 +221,10 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 		xsession.Stderr = sessionErrLog
 		defer sessionErrLog.Close()
 	} else {
-		log.Print(sessionErrLogErr)
+		logPrint(sessionErrLogErr)
 	}
 
-	log.Print("Starting " + strExec)
+	logPrint("Starting " + strExec)
 	err = xsession.Start()
 	if err != nil {
 		xorg.Process.Signal(os.Interrupt)
@@ -234,20 +233,20 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	}
 
 	xsession.Wait()
-	log.Print(strExec + " finished")
+	logPrint(strExec + " finished")
 
 	// Stop Xorg
 	xorg.Process.Signal(os.Interrupt)
 	xorg.Wait()
-	log.Print("Interrupted Xorg")
+	logPrint("Interrupted Xorg")
 
 	// Remove auth
 	os.Remove(usr.getenv(envXauthority))
-	log.Print("Cleaned up xauthority")
+	logPrint("Cleaned up xauthority")
 
 	// End utmp entry
 	endUtmpEntry(utmpEntry)
-	log.Print("Ended utmp entry")
+	logPrint("Ended utmp entry")
 }
 
 // Prepares command for starting GUI.
@@ -316,7 +315,7 @@ func registerInterruptHandler(cmds ...*exec.Cmd) {
 // Catch interrupt signal chan and interrupts all mentioned Cmds.
 func handleInterrupt(c chan os.Signal, cmds ...*exec.Cmd) {
 	<-c
-	log.Print("Catched interrupt signal")
+	logPrint("Catched interrupt signal")
 	for _, cmd := range cmds {
 		cmd.Process.Signal(os.Interrupt)
 		cmd.Wait()
@@ -329,10 +328,10 @@ func runDisplayScript(scriptPath string) {
 		if fileIsExecutable(scriptPath) {
 			err := exec.Command(scriptPath).Run()
 			if err != nil {
-				log.Print(err)
+				logPrint(err)
 			}
 		} else {
-			log.Print(scriptPath + " is not executable.")
+			logPrint(scriptPath + " is not executable.")
 		}
 	}
 }

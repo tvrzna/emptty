@@ -120,32 +120,3 @@ func TestParseTTY(t *testing.T) {
 		t.Error("TestParseTTY: wrong fallback value")
 	}
 }
-
-func TestParseLogging(t *testing.T) {
-	var logging enLogging
-
-	logging = parseLogging("", constLogDefault)
-	if logging != Default {
-		t.Error("TestParseLogging: wrong default value")
-	}
-
-	logging = parseLogging(constLogDefault, constLogDefault)
-	if logging != Default {
-		t.Error("TestParseLogging: wrong parsed value for default")
-	}
-
-	logging = parseLogging(constLogAppending, constLogDefault)
-	if logging != Appending {
-		t.Error("TestParseLogging: wrong parsed value for appending")
-	}
-
-	logging = parseLogging(constLogDisabled, constLogDefault)
-	if logging != Disabled {
-		t.Error("TestParseLogging: wrong parsed value for disabled")
-	}
-
-	logging = parseLogging("aaa", "bbb")
-	if logging != Default {
-		t.Error("TestParseLogging: wrong fallback value")
-	}
-}

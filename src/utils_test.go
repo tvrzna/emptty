@@ -11,7 +11,7 @@ import (
 func getCwd() string {
 	cwd, err := os.Getwd()
 	if err != nil {
-		log.Fatal(err)
+		logFatal(err)
 	}
 	return cwd
 }
@@ -26,12 +26,14 @@ func readOutput(method func()) string {
 	original := os.Stdout
 	r, w, _ := os.Pipe()
 	os.Stdout = w
+	log.SetOutput(w)
 
 	method()
 
 	w.Close()
 	output, _ := ioutil.ReadAll(r)
 	os.Stdout = original
+	log.SetOutput(original)
 
 	if testing.Verbose() {
 		os.Stdout.Write(output)

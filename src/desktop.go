@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -222,7 +221,7 @@ func loadUserDesktop(homeDir string) (*desktop, string) {
 
 			if d.exec == "" && !d.selection && !fileIsExecutable(d.path) {
 				fmt.Printf("\nMissing Exec value/Using selection and your '%s' is not executable.\n", d.path)
-				log.Printf("Missing Exec value/Using selection and your '%s' is not executable.\n", d.path)
+				logPrintf("Missing Exec value/Using selection and your '%s' is not executable.\n", d.path)
 				return nil, lang
 			}
 			if d.selection {
@@ -283,11 +282,11 @@ func setUserLastSession(usr *sysuser, d *desktop) {
 	data := fmt.Sprintf("%s;%s\n", d.exec, d.env.stringify())
 	err := mkDirsForFile(path, 0744)
 	if err != nil {
-		log.Print(err)
+		logPrint(err)
 	}
 	err = ioutil.WriteFile(path, []byte(data), 0600)
 	if err != nil {
-		log.Print(err)
+		logPrint(err)
 	}
 
 	setFsUser(previousUser)
