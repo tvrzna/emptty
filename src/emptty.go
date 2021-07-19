@@ -53,6 +53,8 @@ func loadConfigPath(args []string) (configPath string) {
 				}
 			})
 			return configPath
+		case "-i", "--ignore-config":
+			return ""
 		}
 	}
 
@@ -102,7 +104,8 @@ func printHelp() {
 	fmt.Printf("  -h, --help\t\t\tprint this help\n")
 	fmt.Printf("  -v, --version\t\t\tprint version\n")
 	fmt.Printf("  -d, --daemon\t\t\tstart in daemon mode\n")
-	fmt.Printf("  -c, --config PATH\t\t\tload configuration from specified path\n")
+	fmt.Printf("  -c, --config PATH\t\tload configuration from specified path\n")
+	fmt.Printf("  -i, --ignore-config\t\tskips loading of configuration from file, loads only argument configuration\n")
 	fmt.Printf("  -t, --tty NUMBER\t\toverrides configured TTY number\n")
 	fmt.Printf("  -u, --default-user USER_NAME\toverrides configured Default User\n")
 	fmt.Printf("  -a, --autologin [SESSION]\toverrides configured autologin to true and if next argument is defined, it defines also Autologin Session.\n")

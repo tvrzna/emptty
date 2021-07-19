@@ -4,7 +4,7 @@
 emptty \- Dead simple CLI Display Manager on TTY
 
 .SH SYNOPSIS
-.B emptty [-v] [--version] [-d] [--daemon] [-c PATH] [--config PATH] [-t TTY] [--tty TTY] [-u defaultUser] [--default-user defaultUser] [-a [session]] [--autologin [session]]
+.B emptty [-v] [--version] [-d] [--daemon] [-c PATH] [--config PATH] [-i] [--ignore-config] [-t TTY] [--tty TTY] [-u defaultUser] [--default-user defaultUser] [-a [session]] [--autologin [session]]
 
 .SH DESCRIPTION
 .B emptty
@@ -21,6 +21,9 @@ Starts emptty as daemon, that does not require agetty.
 
 .IP "\-c, \-\-config PATH"
 Loads configuration from specified path.
+
+.IP "\-i, \-\-ignore-config"
+Skips loading of configuration from file, loads only argument configuration.
 
 .IP "\-t, \-\-tty TTY"
 Overrides loaded configuration by setting defined TTY.

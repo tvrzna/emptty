@@ -112,8 +112,14 @@ func TestLoadConfigPath(t *testing.T) {
 	}
 
 	expected := "/dev/null"
-	path = loadConfigPath([]string{"-c", expected, "-c", "unexpected"})
+	path = loadConfigPath([]string{"-c", expected, "-c", "unexpected", "-i"})
 	if path != expected {
 		t.Errorf("TestLoadConfigPath: '%s' was expected, but was '%s'", expected, path)
+	}
+
+	unexpected := "/dev/null"
+	path = loadConfigPath([]string{"-i", "-c", unexpected})
+	if path != "" {
+		t.Errorf("TestLoadConfigPath: no path was expected, but was '%s'", path)
 	}
 }

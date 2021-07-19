@@ -104,7 +104,7 @@ func loadConfig(path string) *config {
 		c.lang = "en_US.UTF-8"
 	}
 
-	if fileExists(path) {
+	if path != "" && fileExists(path) {
 		err := readProperties(path, func(key string, value string) {
 			switch key {
 			case confTTYnumber:
