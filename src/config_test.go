@@ -15,7 +15,7 @@ func TestLoadConfig(t *testing.T) {
 		t.Error("TestLoadConfig: fallback language is not correct")
 	}
 
-	conf = loadConfig(getTestingPath("conf"))
+	conf = loadConfig(loadConfigPath([]string{"-c", getTestingPath("conf")}))
 
 	if conf.tty != 14 || conf.strTTY() != "14" {
 		t.Error("TestLoadConfig: TTY value is not correct")

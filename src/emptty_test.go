@@ -104,3 +104,16 @@ func TestNextArg(t *testing.T) {
 		t.Error("TestNextArg: unexpected next argument")
 	})
 }
+
+func TestLoadConfigPath(t *testing.T) {
+	path := loadConfigPath([]string{})
+	if path != pathConfigFile {
+		t.Errorf("TestLoadConfigPath: '%s' was expected, but was '%s'", pathConfigFile, path)
+	}
+
+	expected := "/dev/null"
+	path = loadConfigPath([]string{"-c", expected, "-c", "unexpected"})
+	if path != expected {
+		t.Errorf("TestLoadConfigPath: '%s' was expected, but was '%s'", expected, path)
+	}
+}

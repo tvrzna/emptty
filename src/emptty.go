@@ -23,7 +23,7 @@ func Main() {
 		os.Exit(0)
 	}
 
-	conf := loadConfig(pathConfigFile)
+	conf := loadConfig(loadConfigPath(os.Args))
 	processArgs(os.Args, conf)
 
 	var fTTY *os.File
@@ -38,6 +38,25 @@ func Main() {
 	if conf.daemonMode {
 		stopDaemon(conf, fTTY)
 	}
+}
+
+// Loads config from path according to arguments
+func loadConfigPath(args []string) (configPath string) {
+	configPath = pathConfigFile
+
+	for i, arg := range args {
+		switch arg {
+		case "-c", "--config":
+			nextArg(args, i, func(val string) {
+				if fileExists(val) {
+					configPath = val
+				}
+			})
+			return configPath
+		}
+	}
+
+	return configPath
 }
 
 // Process arguments with affection on configuration
@@ -83,6 +102,7 @@ func printHelp() {
 	fmt.Printf("  -h, --help\t\t\tprint this help\n")
 	fmt.Printf("  -v, --version\t\t\tprint version\n")
 	fmt.Printf("  -d, --daemon\t\t\tstart in daemon mode\n")
+	fmt.Printf("  -c, --config PATH\t\t\tload configuration from specified path\n")
 	fmt.Printf("  -t, --tty NUMBER\t\toverrides configured TTY number\n")
 	fmt.Printf("  -u, --default-user USER_NAME\toverrides configured Default User\n")
 	fmt.Printf("  -a, --autologin [SESSION]\toverrides configured autologin to true and if next argument is defined, it defines also Autologin Session.\n")
