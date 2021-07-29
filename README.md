@@ -130,7 +130,7 @@ This option provides simple solution, when current instance of `emptty` logs int
 __NOTE:__ Current instance always move previous log into old file, if `emptty` crashes and is started again, previous log is in `/var/log/emptty.old`.
 
 #### appending
-This option provides functionality that logs everything into `/var/log/emptty` and does not handle log rotation by itself. It leaves the option for user to handle it himself (e.g. with logrotate).
+This option provides functionality that logs everything into `/var/log/emptty` and does not handle log rotation by itself. It leaves the option for user to handle it themselves (e.g. with logrotate).
 
 __NOTE:__ Appending without roration could cause large log file, be sure that log file is rotated.
 
