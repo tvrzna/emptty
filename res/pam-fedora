@@ -2,7 +2,9 @@
 auth            sufficient      pam_succeed_if.so user ingroup nopasswdlogin
 auth            include         password-auth
 -auth           optional        pam_gnome_keyring.so
+-auth           optional        pam_kwallet5.so
 account         include         password-auth
 password        include         password-auth
 session         include         password-auth
 -session        optional        pam_gnome_keyring.so auto_start
+-session        optional        pam_kwallet5.so auto_start force_run

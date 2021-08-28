@@ -2,7 +2,9 @@
 auth            sufficient      pam_succeed_if.so user ingroup nopasswdlogin
 @include                        common-auth
 -auth           optional        pam_gnome_keyring.so
+-auth           optional        pam_kwallet5.so
 @include                        common-account
 @include                        common-session
 -session        optional        pam_gnome_keyring.so auto_start
+-session        optional        pam_kwallet5.so auto_start force_run
 @include                        common-password
