@@ -100,6 +100,10 @@ func TestLoadConfig(t *testing.T) {
 	if conf.sessionErrLogFile != "/dev/null" {
 		t.Error("TestLoadconfig: SESSION_ERROR_LOGGING_FILE value is not correct")
 	}
+
+	if conf.noXdgFallback {
+		t.Error("TestLoadconfig: NO_XDG_FALLBACK value is not correct")
+	}
 }
 
 func TestParseTTY(t *testing.T) {

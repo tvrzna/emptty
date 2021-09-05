@@ -27,6 +27,7 @@ const (
 	confEnableNumlock      = "ENABLE_NUMLOCK"
 	confSessionErrLog      = "SESSION_ERROR_LOGGING"
 	confSessionErrLogFile  = "SESSION_ERROR_LOGGING_FILE"
+	confNoXdgFallback      = "NO_XDG_FALLBACK"
 
 	pathConfigFile = "/etc/emptty/conf"
 )
@@ -69,6 +70,7 @@ type config struct {
 	enableNumlock      bool
 	sessionErrLog      enLogging
 	sessionErrLogFile  string
+	noXdgFallback      bool
 }
 
 // LoadConfig handles loading of application configuration.
@@ -95,6 +97,7 @@ func loadConfig(path string) *config {
 		enableNumlock:      false,
 		sessionErrLog:      Disabled,
 		sessionErrLogFile:  "",
+		noXdgFallback:      false,
 	}
 
 	defaultLang := os.Getenv(envLang)
@@ -149,6 +152,8 @@ func loadConfig(path string) *config {
 				c.sessionErrLog = parseLogging(value, constLogDisabled)
 			case confSessionErrLogFile:
 				c.sessionErrLogFile = sanitizeValue(value, "")
+			case confNoXdgFallback:
+				c.noXdgFallback = parseBool(value, "false")
 			}
 		})
 		handleErr(err)

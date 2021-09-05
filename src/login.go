@@ -75,41 +75,48 @@ func defineEnvironment(usr *sysuser, conf *config, d *desktop) {
 	usr.setenv(envPwd, usr.homedir)
 	usr.setenv(envUser, usr.username)
 	usr.setenv(envLogname, usr.username)
-	if usr.getenv(envXdgConfigHome) == "" {
-		usr.setenv(envXdgConfigHome, usr.homedir+"/.config")
+	if !conf.noXdgFallback {
+		if usr.getenv(envXdgConfigHome) == "" {
+			usr.setenv(envXdgConfigHome, usr.homedir+"/.config")
+		}
+		if usr.getenv(envXdgRuntimeDir) == "" {
+			usr.setenv(envXdgRuntimeDir, "/run/user/"+usr.strUid())
+		}
+		if usr.getenv(envXdgSeat) == "" {
+			usr.setenv(envXdgSeat, "seat0")
+		}
+
+		usr.setenv(envXdgSessionClass, "user")
 	}
-	if usr.getenv(envXdgRuntimeDir) == "" {
-		usr.setenv(envXdgRuntimeDir, "/run/user/"+usr.strUid())
-	}
-	if usr.getenv(envXdgSeat) == "" {
-		usr.setenv(envXdgSeat, "seat0")
-	}
-	usr.setenv(envXdgSessionClass, "user")
 	usr.setenv(envShell, getUserShell(usr))
 	usr.setenv(envLang, conf.lang)
 	usr.setenv(envPath, os.Getenv(envPath))
 
-	if d.name != "" {
-		usr.setenv(envDesktopSession, d.name)
-		usr.setenv(envXdgSessDesktop, d.name)
-	} else if d.child != nil && d.child.name != "" {
-		usr.setenv(envDesktopSession, d.child.name)
-		usr.setenv(envXdgSessDesktop, d.child.name)
+	if !conf.noXdgFallback {
+		if d.name != "" {
+			usr.setenv(envDesktopSession, d.name)
+			usr.setenv(envXdgSessDesktop, d.name)
+		} else if d.child != nil && d.child.name != "" {
+			usr.setenv(envDesktopSession, d.child.name)
+			usr.setenv(envXdgSessDesktop, d.child.name)
+		}
 	}
 
 	logPrint("Defined Environment")
 
 	// create XDG folder
-	if !fileExists(usr.getenv(envXdgRuntimeDir)) {
-		err := os.MkdirAll(usr.getenv(envXdgRuntimeDir), 0700)
-		handleErr(err)
+	if !conf.noXdgFallback {
+		if !fileExists(usr.getenv(envXdgRuntimeDir)) {
+			err := os.MkdirAll(usr.getenv(envXdgRuntimeDir), 0700)
+			handleErr(err)
 
-		// Set owner of XDG folder
-		os.Chown(usr.getenv(envXdgRuntimeDir), usr.uid, usr.gid)
+			// Set owner of XDG folder
+			os.Chown(usr.getenv(envXdgRuntimeDir), usr.uid, usr.gid)
 
-		logPrint("Created XDG folder")
-	} else {
-		logPrint("XDG folder already exists, no need to create")
+			logPrint("Created XDG folder")
+		} else {
+			logPrint("XDG folder already exists, no need to create")
+		}
 	}
 
 	os.Chdir(usr.getenv(envPwd))
@@ -127,7 +134,9 @@ func getUserShell(usr *sysuser) string {
 // Prepares and stars Wayland session for authorized user.
 func wayland(usr *sysuser, d *desktop, conf *config) {
 	// Set environment
-	usr.setenv(envXdgSessionType, "wayland")
+	if !conf.noXdgFallback {
+		usr.setenv(envXdgSessionType, "wayland")
+	}
 	logPrint("Defined Wayland environment")
 
 	// start Wayland
@@ -163,7 +172,9 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	freeDisplay := strconv.Itoa(getFreeXDisplay())
 
 	// Set environment
-	usr.setenv(envXdgSessionType, "x11")
+	if !conf.noXdgFallback {
+		usr.setenv(envXdgSessionType, "x11")
+	}
 	usr.setenv(envXauthority, usr.getenv(envXdgRuntimeDir)+"/.emptty-xauth")
 	usr.setenv(envDisplay, ":"+freeDisplay)
 	os.Setenv(envXauthority, usr.getenv(envXauthority))

@@ -62,6 +62,10 @@ __NOTE:__ The script is started as default user; in daemon mode it means `root`.
 `SESSION_ERROR_LOGGING_FILE` Overrides path of session errors log file. Default value is `/var/log/emptty-session-errors`.
 __NOTE:__ It expects existence of directories to defined logging file.
 
+`NO_XDG_FALLBACK`
+Disallows setting of fallback values for all XDG environmental variables and leaves it on Login Controls. Possible values are "true" or "false". Default value is false.
+__NOTE:__ Be aware, that setting to "true" could lead to unexpected behaviour.
+
 #### /etc/emptty/motd-gen.sh
 If `DYNAMIC_MOTD` is set to `true`, this file exists and is executable for its owner, the result is printed as your own MOTD. Be very careful with this script!
 

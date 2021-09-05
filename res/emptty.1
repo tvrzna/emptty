@@ -1,4 +1,4 @@
-.TH EMPTTY 1 "July 2021" "emptty 0.6.0" emptty
+.TH EMPTTY 1 "September 2021" "emptty 0.6.0" emptty
 
 .SH NAME
 emptty \- Dead simple CLI Display Manager on TTY
@@ -117,6 +117,11 @@ Overrides path of session errors log file. Default value is
 
 .B NOTE:
 It expects existence of directories to defined logging file.
+.IP NO_XDG_FALLBACK
+Disallows setting of fallback values for all XDG environmental variables and leaves it on Login Controls. Possible values are "true" or "false". Default value is false.
+
+.B NOTE:
+Be aware, that setting to "true" could lead to unexpected behaviour.
 
 .SH DYNAMIC MOTD
 Optional file stored as /etc/emptty/motd-gen.sh
