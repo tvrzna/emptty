@@ -5,7 +5,6 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-	"os/exec"
 	"sort"
 	"strconv"
 	"strings"
@@ -76,8 +75,7 @@ func clearScreen(w io.Writer) {
 // Perform switch to defined TTY, if switchTTY is true and tty is greater than 0.
 func switchTTY(conf *config) bool {
 	if conf.switchTTY && conf.tty > 0 {
-		ttyCmd := exec.Command("/usr/bin/chvt", conf.strTTY())
-		ttyCmd.Run()
+		runSimpleCmd("chvt", conf.strTTY())
 		return true
 	}
 	return false
