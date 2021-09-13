@@ -90,7 +90,9 @@ func defineEnvironment(usr *sysuser, conf *config, d *desktop) {
 	}
 	usr.setenv(envShell, getUserShell(usr))
 	usr.setenv(envLang, conf.lang)
-	usr.setenv(envPath, os.Getenv(envPath))
+	if strings.TrimSpace(usr.getenv(envPath)) == "" {
+		usr.setenv(envPath, os.Getenv(envPath))
+	}
 
 	if !conf.noXdgFallback {
 		if d.name != "" {
