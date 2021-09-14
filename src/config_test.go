@@ -104,6 +104,10 @@ func TestLoadConfig(t *testing.T) {
 	if conf.noXdgFallback {
 		t.Error("TestLoadconfig: NO_XDG_FALLBACK value is not correct")
 	}
+
+	if conf.defaultXauthority {
+		t.Error("TestLoadconfig: DEFAULT_XAUTHORITY value is not correct")
+	}
 }
 
 func TestParseTTY(t *testing.T) {

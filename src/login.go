@@ -177,14 +177,14 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	if !conf.noXdgFallback {
 		usr.setenv(envXdgSessionType, "x11")
 	}
-	usr.setenv(envXauthority, usr.getenv(envXdgRuntimeDir)+"/.emptty-xauth")
+	if !conf.defaultXauthority {
+		usr.setenv(envXauthority, usr.getenv(envXdgRuntimeDir)+"/.emptty-xauth")
+		os.Setenv(envXauthority, usr.getenv(envXauthority))
+		os.Remove(usr.getenv(envXauthority))
+	}
 	usr.setenv(envDisplay, ":"+freeDisplay)
-	os.Setenv(envXauthority, usr.getenv(envXauthority))
 	os.Setenv(envDisplay, usr.getenv(envDisplay))
 	logPrint("Defined Xorg environment")
-
-	// create xauth
-	os.Remove(usr.getenv(envXauthority))
 
 	// generate mcookie
 	cmd := cmdAsUser(usr, "/usr/bin/mcookie")

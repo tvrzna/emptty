@@ -123,6 +123,9 @@ Disallows setting of fallback values for all XDG environmental variables and lea
 .B NOTE:
 Be aware, that setting to "true" could lead to unexpected behaviour.
 
+.IP DEFAULT_XAUTHORITY
+If set true, it will not use .emptty-xauth file, but the standard ~/.Xauthority file. This allows to handle xauth issues. Possible values are "true" or "false". Default value is false.
+
 .SH DYNAMIC MOTD
 Optional file stored as /etc/emptty/motd-gen.sh
 

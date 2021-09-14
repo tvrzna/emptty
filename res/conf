@@ -54,3 +54,6 @@ VERTICAL_SELECTION=false
 
 # Overrides path of session errors log file
 #SESSION_ERROR_LOGGING_FILE=/var/log/emptty-session-errors
+
+# If set true, it will not use `.emptty-xauth` file, but the standard `~/.Xauthority` file. This allows to handle xauth issues.
+#DEFAULT_XAUTHORITY=false
