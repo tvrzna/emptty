@@ -74,9 +74,16 @@ func (u *sysuser) getenv(key string) string {
 }
 
 // sets user's environmental variable.
-func (u *sysuser) setenv(key string, value string) {
+func (u *sysuser) setenv(key, value string) {
 	if strings.TrimSpace(key) != "" {
 		u.env[strings.TrimSpace(key)] = value
+	}
+}
+
+// sets user's environmental variable only if is not already defined with same key
+func (u *sysuser) setenvIfEmpty(key, value string) {
+	if strings.TrimSpace(u.getenv(key)) == "" {
+		u.setenv(key, value)
 	}
 }
 

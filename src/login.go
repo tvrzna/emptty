@@ -76,23 +76,14 @@ func defineEnvironment(usr *sysuser, conf *config, d *desktop) {
 	usr.setenv(envUser, usr.username)
 	usr.setenv(envLogname, usr.username)
 	if !conf.noXdgFallback {
-		if usr.getenv(envXdgConfigHome) == "" {
-			usr.setenv(envXdgConfigHome, usr.homedir+"/.config")
-		}
-		if usr.getenv(envXdgRuntimeDir) == "" {
-			usr.setenv(envXdgRuntimeDir, "/run/user/"+usr.strUid())
-		}
-		if usr.getenv(envXdgSeat) == "" {
-			usr.setenv(envXdgSeat, "seat0")
-		}
-
+		usr.setenvIfEmpty(envXdgConfigHome, usr.homedir+"/.config")
+		usr.setenvIfEmpty(envXdgRuntimeDir, "/run/user/"+usr.strUid())
+		usr.setenvIfEmpty(envXdgSeat, "seat0")
 		usr.setenv(envXdgSessionClass, "user")
 	}
 	usr.setenv(envShell, getUserShell(usr))
-	usr.setenv(envLang, conf.lang)
-	if strings.TrimSpace(usr.getenv(envPath)) == "" {
-		usr.setenv(envPath, os.Getenv(envPath))
-	}
+	usr.setenvIfEmpty(envLang, conf.lang)
+	usr.setenvIfEmpty(envPath, os.Getenv(envPath))
 
 	if !conf.noXdgFallback {
 		if d.name != "" {

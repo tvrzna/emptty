@@ -80,4 +80,14 @@ func TestSysuserEnviron(t *testing.T) {
 		t.Error("TestSysuserEnviron: 2 environmental variable were expected")
 	}
 
+	u.setenvIfEmpty("key3", "value1")
+	if u.getenv("key3") != "value1" {
+		t.Errorf("TestSysuserEnviron: key3 has unexpected value '%s'", u.getenv("key3"))
+	}
+
+	u.setenvIfEmpty("key3", "value2")
+	if u.getenv("key3") != "value1" {
+		t.Errorf("TestSysuserEnviron: key3 has unexpected value '%s'", u.getenv("key3"))
+	}
+
 }
