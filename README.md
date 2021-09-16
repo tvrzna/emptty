@@ -11,6 +11,10 @@ Dead simple CLI Display Manager on TTY
 
 ## Configuration
 
+__NOTE__: Please be aware that emptty does not source any kind of `.profile` scripts by default. If you want to use them, please see [samples](SAMPLES.md).
+
+---
+
 #### /etc/emptty/conf
 Default startup configuration. On each change it requires to restart emptty.
 
