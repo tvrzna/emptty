@@ -28,6 +28,7 @@ const (
 	envPath            = "PATH"
 	envDesktopSession  = "DESKTOP_SESSION"
 	envXdgSessDesktop  = "XDG_SESSION_DESKTOP"
+	envUid             = "UID"
 )
 
 // Login into graphical environment
@@ -75,6 +76,7 @@ func defineEnvironment(usr *sysuser, conf *config, d *desktop) {
 	usr.setenv(envPwd, usr.homedir)
 	usr.setenv(envUser, usr.username)
 	usr.setenv(envLogname, usr.username)
+	usr.setenv(envUid, usr.strUid())
 	if !conf.noXdgFallback {
 		usr.setenvIfEmpty(envXdgConfigHome, usr.homedir+"/.config")
 		usr.setenvIfEmpty(envXdgRuntimeDir, "/run/user/"+usr.strUid())
