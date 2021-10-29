@@ -1,9 +1,11 @@
 # emptty - Samples
 
 ## \~/.config/emptty or \~/.emptty as init script
-In your .config folder you have to create 'emptty' file or in your home folder you have to create `.emptty` file.
+In your `.config` folder you have to create 'emptty' file or in your home folder you have to create `.emptty` file.
 
 This variant allows to treat your script in similar way as your `.xinitrc`, however this is common to both Xorg and Wayland. The magic option is `Selection=true`. You can define your own environmental variables and keep the possibility to select any desktop.
+
+As it is mentioned in [README](README.md), no `.profile` scripts are sourced by default. However following scripts contains few examples, how it could be done inside `emptty` file.
 
 #### Script
 ```
@@ -12,6 +14,9 @@ Selection=true
 
 xrandr --output eDP1 --mode 1920x1080
 xrdb -merge ~/.Xresources
+
+source /etc/profile
+source ~/.bashrc
 
 export BROWSER=firefox
 export EDITOR=vim
@@ -42,6 +47,9 @@ In your .config folder you have to create 'emptty' file or in your home folder y
 ```
 #!/bin/sh
 Environment=xorg
+
+source /etc/profile
+source ~/.bashrc
 
 exec dbus-launch i3
 ```
