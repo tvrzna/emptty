@@ -19,6 +19,9 @@ const (
 
 // Prints dynamic motd, if configured; otherwise prints motd, if pathMotd exists; otherwise it prints default motd.
 func printMotd(conf *config) {
+	if !conf.printMotd {
+		return
+	}
 	if conf.dynamicMotd && fileIsExecutable(pathDynamicMotd) {
 		cmd := exec.Command(pathDynamicMotd)
 		dynamicMotd, err := cmd.Output()

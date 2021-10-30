@@ -29,6 +29,10 @@ func TestLoadConfig(t *testing.T) {
 		t.Error("TestLoadConfig: PRINT_ISSUE value is not correct")
 	}
 
+	if conf.printMotd {
+		t.Error("TestLoadConfig: PRINT_MOTD value is not correct")
+	}
+
 	if conf.defaultUser != "emptty-user" {
 		t.Error("TestLoadConfig: DEFAULT_USER value is not correct")
 	}

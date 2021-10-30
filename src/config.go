@@ -9,6 +9,7 @@ const (
 	confTTYnumber          = "TTY_NUMBER"
 	confSwitchTTY          = "SWITCH_TTY"
 	confPrintIssue         = "PRINT_ISSUE"
+	confPrintMotd          = "PRINT_MOTD"
 	confDefaultUser        = "DEFAULT_USER"
 	confAutologin          = "AUTOLOGIN"
 	confAutologinSession   = "AUTOLOGIN_SESSION"
@@ -56,6 +57,7 @@ type config struct {
 	tty                int
 	switchTTY          bool
 	printIssue         bool
+	printMotd          bool
 	lang               string
 	dbusLaunch         bool
 	xinitrcLaunch      bool
@@ -82,6 +84,7 @@ func loadConfig(path string) *config {
 		tty:                0,
 		switchTTY:          true,
 		printIssue:         true,
+		printMotd:          true,
 		defaultUser:        "",
 		autologin:          false,
 		autologinSession:   "",
@@ -119,6 +122,8 @@ func loadConfig(path string) *config {
 				c.switchTTY = parseBool(value, "true")
 			case confPrintIssue:
 				c.printIssue = parseBool(value, "true")
+			case confPrintMotd:
+				c.printMotd = parseBool(value, "true")
 			case confDefaultUser:
 				c.defaultUser = sanitizeValue(value, "")
 			case confAutologin:

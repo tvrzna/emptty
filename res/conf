@@ -7,6 +7,9 @@ SWITCH_TTY=true
 # Enables printing of /etc/issue in daemon mode.
 PRINT_ISSUE=true
 
+# Enables printing of default motd, /etc/emptty/motd or /etc/emptty/motd-gen.sh.
+PRINT_MOTD=true
+
 # Preselected user, if AUTOLOGIN is enabled, this user is logged in.
 #DEFAULT_USER=user
 

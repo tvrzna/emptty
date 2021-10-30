@@ -24,6 +24,8 @@ Default startup configuration. On each change it requires to restart emptty.
 
 `PRINT_ISSUE` Enables printing of /etc/issue in daemon mode.
 
+`PRINT_MOTD` Enables printing of default motd, `/etc/emptty/motd` or `/etc/emptty/motd-gen.sh`.
+
 `DEFAULT_USER` Preselected user, if AUTOLOGIN is enabled, this user is logged in.
 
 `AUTOLOGIN` Enables Autologin, if DEFAULT_USER is defined. Possible values are "true" or "false". Default value is false.
