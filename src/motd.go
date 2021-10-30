@@ -34,6 +34,7 @@ func printMotd(conf *config) {
 			resetColors()
 		}
 	} else if fileExists(pathMotd) {
+		emptyMotd := true
 		file, err := os.Open(pathMotd)
 		defer file.Close()
 		if err != nil {
@@ -43,12 +44,17 @@ func printMotd(conf *config) {
 		}
 		scan := bufio.NewScanner(file)
 		for scan.Scan() {
-			fmt.Println(revertColorEscaping(scan.Text()))
+			if scan.Text() != "" {
+				emptyMotd = false
+				fmt.Println(revertColorEscaping(scan.Text()))
+			}
 		}
-		if conf.daemonMode {
-			setColors(conf.fgColor, conf.bgColor)
-		} else {
-			resetColors()
+		if !emptyMotd {
+			if conf.daemonMode {
+				setColors(conf.fgColor, conf.bgColor)
+			} else {
+				resetColors()
+			}
 		}
 	} else {
 		printDefaultMotd()

@@ -42,8 +42,8 @@ func startDaemon(conf *config) *os.File {
 	setColors(conf.fgColor, conf.bgColor)
 	clearScreen(fTTY)
 
-	fmt.Println()
 	if conf.printIssue {
+		fmt.Println()
 		printIssue(pathIssue, conf.strTTY())
 		setColors(conf.fgColor, conf.bgColor)
 	}
