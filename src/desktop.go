@@ -125,7 +125,7 @@ func findAutoselectDesktop(autologinSession string, desktops []*desktop) *deskto
 }
 
 // List all installed desktops and return their exec commands.
-func listAllDesktops(usr *sysuser, pathXorgDesktops string, pathWaylandDesktops string) []*desktop {
+func listAllDesktops(usr *sysuser, pathXorgDesktops, pathWaylandDesktops string) []*desktop {
 	var result []*desktop
 
 	// load Xorg desktops
@@ -194,43 +194,43 @@ func getDesktop(path string, env enEnvironment) *desktop {
 }
 
 // Parses user-specified configuration from file and returns it as desktop structure.
-func loadUserDesktop(homeDir string) (*desktop, string) {
+func loadUserDesktop(homeDir string) (d *desktop, lang string) {
 	homeDirConf := homeDir + "/.emptty"
 	confDirConf := homeDir + "/.config/emptty"
 
-	var lang string
 	for _, confFile := range []string{confDirConf, homeDirConf} {
-		if fileExists(confFile) {
-			d := &desktop{isUser: true, path: confFile, env: Xorg, selection: false}
-
-			err := readProperties(confFile, func(key string, value string) {
-				switch key {
-				case desktopName:
-					d.name = value
-				case desktopExec, confCommand:
-					d.exec = sanitizeValue(value, "")
-				case desktopEnvironment:
-					d.env = parseEnv(value, constEnvXorg)
-				case confLang:
-					lang = value
-				case confSelection:
-					d.selection = parseBool(value, "false")
-				}
-			})
-			handleErr(err)
-
-			if d.exec == "" && !d.selection && !fileIsExecutable(d.path) {
-				fmt.Printf("\nMissing Exec value/Using selection and your '%s' is not executable.\n", d.path)
-				logPrintf("Missing Exec value/Using selection and your '%s' is not executable.\n", d.path)
-				return nil, lang
-			}
-			if d.selection {
-				d.exec = ""
-				d.name = ""
-			}
-
-			return d, lang
+		if !fileExists(confFile) {
+			continue
 		}
+		d := &desktop{isUser: true, path: confFile, env: Xorg, selection: false}
+
+		err := readProperties(confFile, func(key string, value string) {
+			switch key {
+			case desktopName:
+				d.name = value
+			case desktopExec, confCommand:
+				d.exec = sanitizeValue(value, "")
+			case desktopEnvironment:
+				d.env = parseEnv(value, constEnvXorg)
+			case confLang:
+				lang = value
+			case confSelection:
+				d.selection = parseBool(value, "false")
+			}
+		})
+		handleErr(err)
+
+		if d.exec == "" && !d.selection && !fileIsExecutable(d.path) {
+			fmt.Printf("\nMissing Exec value/Using selection and your '%s' is not executable.\n", d.path)
+			logPrintf("Missing Exec value/Using selection and your '%s' is not executable.\n", d.path)
+			return nil, lang
+		}
+		if d.selection {
+			d.exec = ""
+			d.name = ""
+		}
+
+		return d, lang
 	}
 
 	return nil, lang
@@ -293,12 +293,12 @@ func setUserLastSession(usr *sysuser, d *desktop) {
 }
 
 // Checks, if user last session file already exists.
-func isLastDesktopForSave(usr *sysuser, lastDesktop *desktop, currentDesktop *desktop) bool {
+func isLastDesktopForSave(usr *sysuser, lastDesktop, currentDesktop *desktop) bool {
 	return !fileExists(usr.homedir+pathLastSession) || lastDesktop.exec != currentDesktop.exec || lastDesktop.env != currentDesktop.env
 }
 
 // Parse input env and selects corresponding environment.
-func parseEnv(env string, defaultValue string) enEnvironment {
+func parseEnv(env, defaultValue string) enEnvironment {
 	switch sanitizeValue(env, defaultValue) {
 	case constEnvXorg:
 		return Xorg

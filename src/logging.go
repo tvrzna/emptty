@@ -71,7 +71,7 @@ func initSessionErrorLogger(conf *config) (*os.File, error) {
 }
 
 // Prepares logging file according to defined configuration.
-func prepareLogFile(path string, defaultPath string, method enLogging) (*os.File, error) {
+func prepareLogFile(path, defaultPath string, method enLogging) (*os.File, error) {
 	logFilePath := defaultPath
 	if path != "" {
 		logFilePath = path
@@ -90,7 +90,7 @@ func prepareLogFile(path string, defaultPath string, method enLogging) (*os.File
 }
 
 // Parse logging option
-func parseLogging(strLogging string, defaultValue string) enLogging {
+func parseLogging(strLogging, defaultValue string) enLogging {
 	val := sanitizeValue(strLogging, defaultValue)
 	switch val {
 	case constLogDisabled:

@@ -173,7 +173,7 @@ func loadConfig(path string) *config {
 }
 
 // Parse TTY number.
-func parseTTY(tty string, defaultValue string) int {
+func parseTTY(tty, defaultValue string) int {
 	val, err := strconv.ParseInt(sanitizeValue(tty, defaultValue), 10, 32)
 	if err != nil {
 		return 0

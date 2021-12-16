@@ -82,7 +82,7 @@ func switchTTY(conf *config) bool {
 }
 
 // Prints getty issue
-func printIssue(path string, strTTY string) {
+func printIssue(path, strTTY string) {
 	if fileExists(path) {
 		bIssue, err := ioutil.ReadFile(path)
 		if err == nil {

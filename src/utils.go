@@ -61,7 +61,7 @@ func fileIsExecutable(path string) bool {
 }
 
 // Sanitize value.
-func sanitizeValue(value string, defaultValue string) string {
+func sanitizeValue(value, defaultValue string) string {
 	if value == "" {
 		return defaultValue
 	}
@@ -138,7 +138,7 @@ func contains(array []string, value string) bool {
 }
 
 // Parse boolean values.
-func parseBool(strBool string, defaultValue string) bool {
+func parseBool(strBool, defaultValue string) bool {
 	val, err := strconv.ParseBool(sanitizeValue(strBool, defaultValue))
 	if err != nil {
 		return false

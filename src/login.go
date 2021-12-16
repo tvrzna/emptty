@@ -256,7 +256,7 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 }
 
 // Prepares command for starting GUI.
-func prepareGuiCommand(usr *sysuser, d *desktop, conf *config) (*exec.Cmd, string) {
+func prepareGuiCommand(usr *sysuser, d *desktop, conf *config) (cmd *exec.Cmd, strExec string) {
 	strExec, allowStartupPrefix := getStrExec(d)
 
 	startScript := false
@@ -278,7 +278,6 @@ func prepareGuiCommand(usr *sysuser, d *desktop, conf *config) (*exec.Cmd, strin
 
 	arrExec := strings.Split(strExec, " ")
 
-	var cmd *exec.Cmd
 	if len(arrExec) > 1 {
 		if startScript {
 			cmd = cmdAsUser(usr, "/bin/sh", arrExec...)

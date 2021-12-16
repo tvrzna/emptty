@@ -80,7 +80,7 @@ func revertColorEscaping(value string) string {
 }
 
 // Sets defined colors.
-func setColors(fg string, bg string) {
+func setColors(fg, bg string) {
 	color := ""
 
 	if fg != "" {

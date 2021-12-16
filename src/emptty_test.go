@@ -23,7 +23,7 @@ func TestPrintHelp(t *testing.T) {
 		printHelp()
 	})
 
-	if len(output) == 0 {
+	if output == "" {
 		t.Error("TestPrintHelp: help does not return text")
 	}
 }
