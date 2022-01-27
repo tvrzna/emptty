@@ -195,15 +195,27 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	// start X
 	logPrint("Starting Xorg")
 
-	xorgArgs := []string{"vt" + conf.strTTY(), usr.getenv(envDisplay)}
+	var xorgArgs []string
+	if conf.rootlessXorg {
+		xorgArgs = []string{"-keeptty", "vt" + conf.strTTY(), usr.getenv(envDisplay)}
+	} else {
+		xorgArgs = []string{"-keeptty", "vt" + conf.strTTY(), usr.getenv(envDisplay)}
+	}
 
 	if conf.xorgArgs != "" {
 		arrXorgArgs := strings.Split(conf.xorgArgs, " ")
 		xorgArgs = append(xorgArgs, arrXorgArgs...)
 	}
 
-	xorg := exec.Command("/usr/bin/Xorg", xorgArgs...)
-	xorg.Env = append(os.Environ())
+	var xorg *exec.Cmd
+	if conf.rootlessXorg {
+		xorg = cmdAsUser(usr, "/usr/bin/Xorg", xorgArgs...)
+		xorg.Env = append(usr.environ())
+	} else {
+		xorg = exec.Command("/usr/bin/Xorg", xorgArgs...)
+		xorg.Env = append(os.Environ())
+	}
+
 	xorg.Start()
 	if xorg.Process == nil {
 		handleStrErr("Xorg is not running")

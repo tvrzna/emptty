@@ -30,6 +30,7 @@ const (
 	confSessionErrLogFile  = "SESSION_ERROR_LOGGING_FILE"
 	confNoXdgFallback      = "NO_XDG_FALLBACK"
 	confDefaultXauthority  = "DEFAULT_XAUTHORITY"
+	confRootlessXorg       = "ROOTLESS_XORG"
 
 	pathConfigFile = "/etc/emptty/conf"
 )
@@ -75,6 +76,7 @@ type config struct {
 	sessionErrLogFile  string
 	noXdgFallback      bool
 	defaultXauthority  bool
+	rootlessXorg       bool
 }
 
 // LoadConfig handles loading of application configuration.
@@ -104,6 +106,7 @@ func loadConfig(path string) *config {
 		sessionErrLogFile:  "",
 		noXdgFallback:      false,
 		defaultXauthority:  false,
+		rootlessXorg:       false,
 	}
 
 	defaultLang := os.Getenv(envLang)
@@ -164,6 +167,8 @@ func loadConfig(path string) *config {
 				c.noXdgFallback = parseBool(value, "false")
 			case confDefaultXauthority:
 				c.defaultXauthority = parseBool(value, "false")
+			case confRootlessXorg:
+				c.rootlessXorg = parseBool(value, "false")
 			}
 		})
 		handleErr(err)

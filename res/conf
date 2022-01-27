@@ -60,3 +60,6 @@ VERTICAL_SELECTION=false
 
 # If set true, it will not use `.emptty-xauth` file, but the standard `~/.Xauthority` file. This allows to handle xauth issues.
 #DEFAULT_XAUTHORITY=false
+
+#If set true, Xorg will be started as rootless, if system allows.
+#ROOTLESS_XORG=false
