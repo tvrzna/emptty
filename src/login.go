@@ -199,7 +199,7 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	if conf.rootlessXorg {
 		xorgArgs = []string{"-keeptty", "vt" + conf.strTTY(), usr.getenv(envDisplay)}
 	} else {
-		xorgArgs = []string{"-keeptty", "vt" + conf.strTTY(), usr.getenv(envDisplay)}
+		xorgArgs = []string{"vt" + conf.strTTY(), usr.getenv(envDisplay)}
 	}
 
 	if conf.xorgArgs != "" {
