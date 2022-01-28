@@ -270,9 +270,11 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	endUtmpEntry(utmpEntry)
 	logPrint("Ended utmp entry")
 
-	err = setTTYOwnership(conf, os.Getuid())
-	if err != nil {
-		logPrint(err)
+	if conf.rootlessXorg && conf.daemonMode {
+		err = setTTYOwnership(conf, os.Getuid())
+		if err != nil {
+			logPrint(err)
+		}
 	}
 }
 
