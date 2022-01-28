@@ -1,3 +1,4 @@
+//go:build noxlib
 // +build noxlib
 
 package src
