@@ -24,7 +24,7 @@ type issueVariable struct {
 
 // Starts emptty as daemon spawning emptty on defined TTY.
 func startDaemon(conf *config) *os.File {
-	fTTY, err := os.OpenFile("/dev/tty"+conf.strTTY(), os.O_RDWR, 0700)
+	fTTY, err := os.OpenFile(conf.ttyPath(), os.O_RDWR, 0700)
 	if err != nil {
 		logFatal(err)
 	}

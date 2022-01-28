@@ -190,3 +190,8 @@ func parseTTY(tty, defaultValue string) int {
 func (c *config) strTTY() string {
 	return strconv.Itoa(c.tty)
 }
+
+// Returns path to TTY
+func (c *config) ttyPath() string {
+	return "/dev/tty" + c.strTTY()
+}

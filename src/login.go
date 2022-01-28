@@ -196,7 +196,7 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	logPrint("Starting Xorg")
 
 	var xorgArgs []string
-	if conf.rootlessXorg {
+	if conf.rootlessXorg && conf.daemonMode {
 		xorgArgs = []string{"-keeptty", "vt" + conf.strTTY(), usr.getenv(envDisplay)}
 	} else {
 		xorgArgs = []string{"vt" + conf.strTTY(), usr.getenv(envDisplay)}
@@ -208,9 +208,13 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	}
 
 	var xorg *exec.Cmd
-	if conf.rootlessXorg {
+	if conf.rootlessXorg && conf.daemonMode {
 		xorg = cmdAsUser(usr, "/usr/bin/Xorg", xorgArgs...)
 		xorg.Env = append(usr.environ())
+		err = setTTYOwnership(conf, usr.uid)
+		if err != nil {
+			logPrint(err)
+		}
 	} else {
 		xorg = exec.Command("/usr/bin/Xorg", xorgArgs...)
 		xorg.Env = append(os.Environ())
@@ -265,6 +269,27 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	// End utmp entry
 	endUtmpEntry(utmpEntry)
 	logPrint("Ended utmp entry")
+
+	err = setTTYOwnership(conf, os.Getuid())
+	if err != nil {
+		logPrint(err)
+	}
+}
+
+// Sets TTY ownership to defined uid, but keeps the original gid.
+func setTTYOwnership(conf *config, uid int) error {
+	info, err := os.Stat(conf.ttyPath())
+	if err != nil {
+		return err
+	}
+	stat := info.Sys().(*syscall.Stat_t)
+
+	err = os.Chown(conf.ttyPath(), uid, int(stat.Gid))
+	if err != nil {
+		return err
+	}
+	err = os.Chmod(conf.ttyPath(), 0620)
+	return err
 }
 
 // Prepares command for starting GUI.

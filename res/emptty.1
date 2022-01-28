@@ -131,6 +131,9 @@ If set true, it will not use .emptty-xauth file, but the standard ~/.Xauthority 
 .IP ROOTLESS_XORG
 If set true, Xorg will be started as rootless, if system allows. Possible values are "true" or "false". Default value is false.
 
+.B NOTE:
+If no input works after login, try to add the user into "input" group.
+
 .SH DYNAMIC MOTD
 Optional file stored as /etc/emptty/motd-gen.sh
 
