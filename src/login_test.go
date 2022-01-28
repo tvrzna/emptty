@@ -51,7 +51,7 @@ func TestPrepareGuiCommandXinitrc(t *testing.T) {
 
 	// Should be correct
 	d.env = Xorg
-	c.xinitrcLaunch = true
+	c.XinitrcLaunch = true
 	_, exec = prepareGuiCommand(u, d, c)
 	if !strings.Contains(exec, ".xinitrc") {
 		t.Errorf("TestPrepareGuiCommandXinitrc: result exec command does not contain .xinitrc: '%s'", exec)
@@ -67,14 +67,14 @@ func TestPrepareGuiCommandXinitrc(t *testing.T) {
 	// Does not expects .xinitrc from homedir
 	d.env = Xorg
 	d.exec = ""
-	c.xinitrcLaunch = true
+	c.XinitrcLaunch = true
 	_, exec = prepareGuiCommand(u, d, c)
 	if strings.Contains(exec, "userHome3") {
 		t.Errorf("TestPrepareGuiCommandXinitrc: result exec command should not be from homedir: '%s'", exec)
 	}
 
 	// Expects no dbus-launch
-	c.dbusLaunch = true
+	c.DbusLaunch = true
 	d.exec = "/usr/bin/none dbus-launch"
 	_, exec = prepareGuiCommand(u, d, c)
 	if strings.HasPrefix(exec, "dbus-launch") {
@@ -89,7 +89,7 @@ func TestPrepareGuiCommandXinitrc(t *testing.T) {
 	}
 
 	//  Expects dbus-launch
-	c.xinitrcLaunch = false
+	c.XinitrcLaunch = false
 	d.exec = "/usr/bin/none"
 	_, exec = prepareGuiCommand(u, d, c)
 	if !strings.HasPrefix(exec, "dbus-launch") {

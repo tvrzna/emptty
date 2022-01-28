@@ -31,56 +31,56 @@ func TestPrintHelp(t *testing.T) {
 func TestProcessArgs(t *testing.T) {
 	conf1 := &config{}
 	processArgs([]string{"-d"}, conf1)
-	if !conf1.daemonMode {
+	if !conf1.DaemonMode {
 		t.Error("TestProcessArgs: daemon mode was expected")
 	}
 
-	conf2 := &config{tty: 77}
+	conf2 := &config{Tty: 77}
 	processArgs([]string{"-t"}, conf2)
-	if conf2.daemonMode {
+	if conf2.DaemonMode {
 		t.Error("TestProcessArgs: daemon mode was not expected")
 	}
-	if conf2.tty != 77 {
+	if conf2.Tty != 77 {
 		t.Error("TestProcessArgs: tty number should not be touched")
 	}
 
 	processArgs([]string{"-t", "2"}, conf2)
-	if conf2.tty != 2 {
-		t.Errorf("TestProcessArgs: expected tty number was 2, but was %d", conf2.tty)
+	if conf2.Tty != 2 {
+		t.Errorf("TestProcessArgs: expected tty number was 2, but was %d", conf2.Tty)
 	}
 
 	conf3 := &config{}
 	processArgs([]string{"-u"}, conf3)
-	if conf3.defaultUser != "" {
+	if conf3.DefaultUser != "" {
 		t.Error("TestProcessArgs: no default user was expected")
 	}
 
 	processArgs([]string{"-u", "emptty"}, conf3)
-	if conf3.defaultUser != "emptty" {
-		t.Errorf("TestProcessArgs: expected default user was 'emptty', but was '%s'", conf3.defaultUser)
+	if conf3.DefaultUser != "emptty" {
+		t.Errorf("TestProcessArgs: expected default user was 'emptty', but was '%s'", conf3.DefaultUser)
 	}
 
 	conf4 := &config{}
 	processArgs([]string{}, conf4)
-	if conf4.autologin || conf4.autologinSession != "" {
+	if conf4.Autologin || conf4.AutologinSession != "" {
 		t.Error("TestProcessArgs: unexpected value for autologin or autologinSession")
 	}
 
 	processArgs([]string{"-a"}, conf4)
-	if !conf4.autologin || conf4.autologinSession != "" {
+	if !conf4.Autologin || conf4.AutologinSession != "" {
 		t.Error("TestProcessArgs: unexpected value for autologin or autologinSession")
 	}
 
-	conf4.autologin = false
+	conf4.Autologin = false
 	processArgs([]string{"-a", "-t", "7"}, conf4)
-	if !conf4.autologin || conf4.autologinSession != "" {
+	if !conf4.Autologin || conf4.AutologinSession != "" {
 		t.Error("TestProcessArgs: unexpected value for autologin or autologinSession")
 	}
 
-	conf4.autologin = false
+	conf4.Autologin = false
 	processArgs([]string{"--autologin", "sway"}, conf4)
-	if !conf4.autologin || conf4.autologinSession != "sway" {
-		t.Errorf("TestProcessArgs: unexpected value for autologin (is '%t') or autologinSession (is '%s')", conf4.autologin, conf4.autologinSession)
+	if !conf4.Autologin || conf4.AutologinSession != "sway" {
+		t.Errorf("TestProcessArgs: unexpected value for autologin (is '%t') or autologinSession (is '%s')", conf4.Autologin, conf4.AutologinSession)
 	}
 
 }

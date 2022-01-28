@@ -22,6 +22,20 @@ const (
 	constLogDisabled  = "disabled"
 )
 
+// enLogging defines possible option how to handle configuration.
+type enLogging int
+
+const (
+	// Default represents saving into new file and backing up older with suffix
+	Default enLogging = iota + 1
+
+	// Appending represents saving all logs into same file
+	Appending
+
+	// Disabled represents disabled logging
+	Disabled
+)
+
 // Log simple information
 func logPrint(v ...interface{}) {
 	log.Print(v...)
@@ -59,7 +73,7 @@ func handleErr(err error) {
 
 // Initialize logger to file defined by pathLogFile.
 func initLogger(conf *config) {
-	f, err := prepareLogFile(conf.loggingFile, pathLogFile, conf.logging)
+	f, err := prepareLogFile(conf.LoggingFile, pathLogFile, conf.Logging)
 	if err == nil {
 		log.SetOutput(f)
 	}
@@ -67,7 +81,7 @@ func initLogger(conf *config) {
 
 // Initialize logger to file for session-errors.
 func initSessionErrorLogger(conf *config) (*os.File, error) {
-	return prepareLogFile(conf.sessionErrLogFile, pathLogSessErrFile, conf.sessionErrLog)
+	return prepareLogFile(conf.SessionErrLogFile, pathLogSessErrFile, conf.SessionErrLog)
 }
 
 // Prepares logging file according to defined configuration.

@@ -49,14 +49,14 @@ func TestClearScreenWithOutput(t *testing.T) {
 
 func TestSwitchTTY(t *testing.T) {
 	conf := &config{}
-	conf.switchTTY = false
-	conf.tty = -99
+	conf.SwitchTTY = false
+	conf.Tty = -99
 
 	if switchTTY(conf) {
 		t.Error("TestSwitchTTY: attempt to switch tty, even it is disabled")
 	}
 
-	conf.switchTTY = true
+	conf.SwitchTTY = true
 
 	if switchTTY(conf) {
 		t.Error("TestSwitchTTY: attempt to switch tty with negative number")

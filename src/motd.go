@@ -19,10 +19,10 @@ const (
 
 // Prints dynamic motd, if configured; otherwise prints motd, if pathMotd exists; otherwise it prints default motd.
 func printMotd(conf *config) {
-	if !conf.printMotd {
+	if !conf.PrintMotd {
 		return
 	}
-	if conf.dynamicMotd && fileIsExecutable(pathDynamicMotd) {
+	if conf.DynamicMotd && fileIsExecutable(pathDynamicMotd) {
 		cmd := exec.Command(pathDynamicMotd)
 		dynamicMotd, err := cmd.Output()
 		if err != nil {
@@ -31,8 +31,8 @@ func printMotd(conf *config) {
 			return
 		}
 		fmt.Print(revertColorEscaping(string(dynamicMotd)))
-		if conf.daemonMode {
-			setColors(conf.fgColor, conf.bgColor)
+		if conf.DaemonMode {
+			setColors(conf.FgColor, conf.BgColor)
 		} else {
 			resetColors()
 		}
@@ -53,8 +53,8 @@ func printMotd(conf *config) {
 			}
 		}
 		if !emptyMotd {
-			if conf.daemonMode {
-				setColors(conf.fgColor, conf.bgColor)
+			if conf.DaemonMode {
+				setColors(conf.FgColor, conf.BgColor)
 			} else {
 				resetColors()
 			}

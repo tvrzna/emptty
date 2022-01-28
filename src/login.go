@@ -49,12 +49,12 @@ func login(conf *config) {
 	}
 
 	if usrLang != "" {
-		conf.lang = usrLang
+		conf.Lang = usrLang
 	}
 
 	defineEnvironment(usr, conf, d)
 
-	runDisplayScript(conf.displayStartScript)
+	runDisplayScript(conf.DisplayStartScript)
 
 	switch d.env {
 	case Wayland:
@@ -65,7 +65,7 @@ func login(conf *config) {
 
 	closeAuth()
 
-	runDisplayScript(conf.displayStopScript)
+	runDisplayScript(conf.DisplayStopScript)
 }
 
 // Prepares environment and env variables for authorized user.
@@ -77,17 +77,17 @@ func defineEnvironment(usr *sysuser, conf *config, d *desktop) {
 	usr.setenv(envUser, usr.username)
 	usr.setenv(envLogname, usr.username)
 	usr.setenv(envUid, usr.strUid())
-	if !conf.noXdgFallback {
+	if !conf.NoXdgFallback {
 		usr.setenvIfEmpty(envXdgConfigHome, usr.homedir+"/.config")
 		usr.setenvIfEmpty(envXdgRuntimeDir, "/run/user/"+usr.strUid())
 		usr.setenvIfEmpty(envXdgSeat, "seat0")
 		usr.setenv(envXdgSessionClass, "user")
 	}
 	usr.setenv(envShell, getUserShell(usr))
-	usr.setenvIfEmpty(envLang, conf.lang)
+	usr.setenvIfEmpty(envLang, conf.Lang)
 	usr.setenvIfEmpty(envPath, os.Getenv(envPath))
 
-	if !conf.noXdgFallback {
+	if !conf.NoXdgFallback {
 		if d.name != "" {
 			usr.setenv(envDesktopSession, d.name)
 			usr.setenv(envXdgSessDesktop, d.name)
@@ -100,7 +100,7 @@ func defineEnvironment(usr *sysuser, conf *config, d *desktop) {
 	logPrint("Defined Environment")
 
 	// create XDG folder
-	if !conf.noXdgFallback {
+	if !conf.NoXdgFallback {
 		if !fileExists(usr.getenv(envXdgRuntimeDir)) {
 			err := os.MkdirAll(usr.getenv(envXdgRuntimeDir), 0700)
 			handleErr(err)
@@ -129,7 +129,7 @@ func getUserShell(usr *sysuser) string {
 // Prepares and stars Wayland session for authorized user.
 func wayland(usr *sysuser, d *desktop, conf *config) {
 	// Set environment
-	if !conf.noXdgFallback {
+	if !conf.NoXdgFallback {
 		usr.setenv(envXdgSessionType, "wayland")
 	}
 	logPrint("Defined Wayland environment")
@@ -167,10 +167,10 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	freeDisplay := strconv.Itoa(getFreeXDisplay())
 
 	// Set environment
-	if !conf.noXdgFallback {
+	if !conf.NoXdgFallback {
 		usr.setenv(envXdgSessionType, "x11")
 	}
-	if !conf.defaultXauthority {
+	if !conf.DefaultXauthority {
 		usr.setenv(envXauthority, usr.getenv(envXdgRuntimeDir)+"/.emptty-xauth")
 		os.Setenv(envXauthority, usr.getenv(envXauthority))
 		os.Remove(usr.getenv(envXauthority))
@@ -196,19 +196,19 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	logPrint("Starting Xorg")
 
 	var xorgArgs []string
-	if conf.rootlessXorg && conf.daemonMode {
+	if conf.RootlessXorg && conf.DaemonMode {
 		xorgArgs = []string{"-keeptty", "vt" + conf.strTTY(), usr.getenv(envDisplay)}
 	} else {
 		xorgArgs = []string{"vt" + conf.strTTY(), usr.getenv(envDisplay)}
 	}
 
-	if conf.xorgArgs != "" {
-		arrXorgArgs := strings.Split(conf.xorgArgs, " ")
+	if conf.XorgArgs != "" {
+		arrXorgArgs := strings.Split(conf.XorgArgs, " ")
 		xorgArgs = append(xorgArgs, arrXorgArgs...)
 	}
 
 	var xorg *exec.Cmd
-	if conf.rootlessXorg && conf.daemonMode {
+	if conf.RootlessXorg && conf.DaemonMode {
 		xorg = cmdAsUser(usr, "/usr/bin/Xorg", xorgArgs...)
 		xorg.Env = append(usr.environ())
 		err = setTTYOwnership(conf, usr.uid)
@@ -270,7 +270,7 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 	endUtmpEntry(utmpEntry)
 	logPrint("Ended utmp entry")
 
-	if conf.rootlessXorg && conf.daemonMode {
+	if conf.RootlessXorg && conf.DaemonMode {
 		err = setTTYOwnership(conf, os.Getuid())
 		if err != nil {
 			logPrint(err)
@@ -304,13 +304,13 @@ func prepareGuiCommand(usr *sysuser, d *desktop, conf *config) (cmd *exec.Cmd, s
 		strExec = d.path + " " + d.child.exec
 		startScript = true
 	} else {
-		if d.env == Xorg && conf.xinitrcLaunch && allowStartupPrefix && !strings.Contains(strExec, ".xinitrc") && fileExists(usr.homedir+"/.xinitrc") {
+		if d.env == Xorg && conf.XinitrcLaunch && allowStartupPrefix && !strings.Contains(strExec, ".xinitrc") && fileExists(usr.homedir+"/.xinitrc") {
 			startScript = true
 			allowStartupPrefix = false
 			strExec = usr.homedir + "/.xinitrc " + strExec
 		}
 
-		if conf.dbusLaunch && !strings.Contains(strExec, "dbus-launch") && allowStartupPrefix {
+		if conf.DbusLaunch && !strings.Contains(strExec, "dbus-launch") && allowStartupPrefix {
 			strExec = "dbus-launch " + strExec
 		}
 	}

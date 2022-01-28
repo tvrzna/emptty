@@ -29,7 +29,7 @@ func startDaemon(conf *config) *os.File {
 		logFatal(err)
 	}
 
-	if conf.enableNumlock {
+	if conf.EnableNumlock {
 		setKeyboardLeds(fTTY, false, true, false)
 	}
 
@@ -39,13 +39,13 @@ func startDaemon(conf *config) *os.File {
 	os.Stderr = fTTY
 	os.Stdin = fTTY
 
-	setColors(conf.fgColor, conf.bgColor)
+	setColors(conf.FgColor, conf.BgColor)
 	clearScreen(fTTY)
 
-	if conf.printIssue {
+	if conf.PrintIssue {
 		fmt.Println()
 		printIssue(pathIssue, conf.strTTY())
-		setColors(conf.fgColor, conf.bgColor)
+		setColors(conf.FgColor, conf.BgColor)
 	}
 
 	switchTTY(conf)
@@ -74,7 +74,7 @@ func clearScreen(w io.Writer) {
 
 // Perform switch to defined TTY, if switchTTY is true and tty is greater than 0.
 func switchTTY(conf *config) bool {
-	if conf.switchTTY && conf.tty > 0 {
+	if conf.SwitchTTY && conf.Tty > 0 {
 		runSimpleCmd("chvt", conf.strTTY())
 		return true
 	}

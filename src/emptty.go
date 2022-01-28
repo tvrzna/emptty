@@ -27,7 +27,7 @@ func Main() {
 	processArgs(os.Args, conf)
 
 	var fTTY *os.File
-	if conf.daemonMode {
+	if conf.DaemonMode {
 		fTTY = startDaemon(conf)
 	}
 
@@ -35,7 +35,7 @@ func Main() {
 	printMotd(conf)
 	login(conf)
 
-	if conf.daemonMode {
+	if conf.DaemonMode {
 		stopDaemon(conf, fTTY)
 	}
 }
@@ -69,19 +69,19 @@ func processArgs(args []string, conf *config) {
 			nextArg(args, i, func(val string) {
 				tty := parseTTY(val, "0")
 				if tty > 0 {
-					conf.tty = tty
+					conf.Tty = tty
 				}
 			})
 		case "-u", "--default-user":
 			nextArg(args, i, func(val string) {
-				conf.defaultUser = val
+				conf.DefaultUser = val
 			})
 		case "-d", "--daemon":
-			conf.daemonMode = true
+			conf.DaemonMode = true
 		case "-a", "--autologin":
-			conf.autologin = true
+			conf.Autologin = true
 			nextArg(args, i, func(val string) {
-				conf.autologinSession = val
+				conf.AutologinSession = val
 			})
 		}
 	}

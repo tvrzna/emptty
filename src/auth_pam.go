@@ -23,20 +23,20 @@ var trans *pam.Transaction
 func authUser(conf *config) *sysuser {
 	var err error
 
-	trans, err = pam.StartFunc("emptty", conf.defaultUser, func(s pam.Style, msg string) (string, error) {
+	trans, err = pam.StartFunc("emptty", conf.DefaultUser, func(s pam.Style, msg string) (string, error) {
 		switch s {
 		case pam.PromptEchoOff:
-			if conf.autologin {
+			if conf.Autologin {
 				break
 			}
-			if conf.defaultUser != "" {
+			if conf.DefaultUser != "" {
 				hostname, _ := os.Hostname()
-				fmt.Printf("%s login: %s\n", hostname, conf.defaultUser)
+				fmt.Printf("%s login: %s\n", hostname, conf.DefaultUser)
 			}
 			fmt.Print("Password: ")
 			return readPassword()
 		case pam.PromptEchoOn:
-			if conf.autologin {
+			if conf.Autologin {
 				break
 			}
 			hostname, _ := os.Hostname()

@@ -19,7 +19,7 @@ const (
 )
 
 // propertyFunc defines method to be invoked during readProperties method for each record.
-type propertyFunc func(key string, value string)
+type propertyFunc func(key, value string)
 
 // readProperties reads defined filePath per line and parses each key-value pair.
 // These pairs are used as parameters for invoking propertyFunc
@@ -46,6 +46,19 @@ func readProperties(filePath string, method propertyFunc) error {
 		}
 	}
 	return scanner.Err()
+}
+
+// Reads properties from defined filePath into key-value map pair.
+// The result map is returned, if no error appears.
+func readPropertiesToMap(filePath string) (result map[string]string, err error) {
+	result = make(map[string]string)
+	err = readProperties(filePath, func(key, value string) {
+		result[key] = value
+	})
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }
 
 // Checks, if file on path exists.

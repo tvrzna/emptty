@@ -42,7 +42,7 @@ func TestInitSessionErrorLogger(t *testing.T) {
 	fileName := f.Name()
 	f.Close()
 
-	conf := &config{sessionErrLogFile: f.Name(), sessionErrLog: Default}
+	conf := &config{SessionErrLogFile: f.Name(), SessionErrLog: Default}
 	sessFile, sessErr := initSessionErrorLogger(conf)
 	sessFile.Close()
 	os.Remove(fileName + pathLogFileOldSuffix)
@@ -51,14 +51,14 @@ func TestInitSessionErrorLogger(t *testing.T) {
 		t.Error("TestInitSessionErrorLogger: unexpected error", sessErr)
 	}
 
-	conf.sessionErrLog = Appending
+	conf.SessionErrLog = Appending
 	sessFile, sessErr = initSessionErrorLogger(conf)
 	sessFile.Close()
 	if sessErr != nil {
 		t.Error("TestInitSessionErrorLogger: unexpected error", sessErr)
 	}
 
-	conf.sessionErrLog = Disabled
+	conf.SessionErrLog = Disabled
 	sessFile, sessErr = initSessionErrorLogger(conf)
 	sessFile.Close()
 	os.Remove(fileName)
@@ -72,15 +72,15 @@ func TestInitLogger(t *testing.T) {
 	fileName := f.Name()
 	f.Close()
 
-	conf := &config{loggingFile: f.Name(), logging: Default}
+	conf := &config{LoggingFile: f.Name(), Logging: Default}
 	initLogger(conf)
 	os.Remove(fileName + pathLogFileOldSuffix)
 	os.Remove(fileName)
 
-	conf.logging = Appending
+	conf.Logging = Appending
 	initLogger(conf)
 
-	conf.logging = Disabled
+	conf.Logging = Disabled
 	initLogger(conf)
 	os.Remove(fileName)
 }

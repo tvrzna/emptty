@@ -11,105 +11,105 @@ func TestLoadConfig(t *testing.T) {
 	conf := loadConfig(getTestingPath("conf"))
 	os.Setenv(envLang, lang)
 
-	if conf.lang != "en_US.UTF-8" {
+	if conf.Lang != "en_US.UTF-8" {
 		t.Error("TestLoadConfig: fallback language is not correct")
 	}
 
 	conf = loadConfig(loadConfigPath([]string{"-c", getTestingPath("conf")}))
 
-	if conf.tty != 14 || conf.strTTY() != "14" {
+	if conf.Tty != 14 || conf.strTTY() != "14" {
 		t.Error("TestLoadConfig: TTY value is not correct")
 	}
 
-	if !conf.switchTTY {
+	if !conf.SwitchTTY {
 		t.Error("TestLoadConfig: SWITCH_TTY value is not correct")
 	}
 
-	if !conf.printIssue {
+	if !conf.PrintIssue {
 		t.Error("TestLoadConfig: PRINT_ISSUE value is not correct")
 	}
 
-	if conf.printMotd {
+	if conf.PrintMotd {
 		t.Error("TestLoadConfig: PRINT_MOTD value is not correct")
 	}
 
-	if conf.defaultUser != "emptty-user" {
+	if conf.DefaultUser != "emptty-user" {
 		t.Error("TestLoadConfig: DEFAULT_USER value is not correct")
 	}
 
-	if conf.autologin {
+	if conf.Autologin {
 		t.Error("TestLoadConfig: AUTOLOGIN value is not correct")
 	}
 
-	if conf.autologinSession != "none" {
+	if conf.AutologinSession != "none" {
 		t.Error("TestLoadConfig: AUTOLOGIN_SESSION value is not correct")
 	}
 
-	if conf.lang != "en_US.UTF-8" {
+	if conf.Lang != "en_US.UTF-8" {
 		t.Error("TestLoadConfig: LANG value is not correct")
 	}
 
-	if !conf.dbusLaunch {
+	if !conf.DbusLaunch {
 		t.Error("TestLoadConfig: DBUS_LAUNCH value is not correct")
 	}
 
-	if !conf.xinitrcLaunch {
+	if !conf.XinitrcLaunch {
 		t.Error("TestLoadConfig: XINITRC_LAUNCH value is not correct")
 	}
 
-	if !conf.verticalSelection {
+	if !conf.VerticalSelection {
 		t.Error("TestLoadConfig: VERTICAL_SELECTION value is not correct")
 	}
 
-	if conf.logging != Disabled {
+	if conf.Logging != Disabled {
 		t.Error("TestLoadConfig: LOGGING value is not correct")
 	}
 
-	if conf.xorgArgs != "-none" {
+	if conf.XorgArgs != "-none" {
 		t.Error("TestLoadConfig: XORG_ARGS value is not correct")
 	}
 
-	if conf.loggingFile != "/dev/null" {
+	if conf.LoggingFile != "/dev/null" {
 		t.Error("TestLoadConfig: LOGGING_FILE value is not correct")
 	}
 
-	if !conf.dynamicMotd {
+	if !conf.DynamicMotd {
 		t.Error("TestLoadConfig: DYNAMIC_MOTD value is not correct")
 	}
 
-	if conf.fgColor != "31" {
+	if conf.FgColor != "31" {
 		t.Error("TestLoadConfig: FG_COLOR value is not correct")
 	}
 
-	if conf.bgColor != "44" {
+	if conf.BgColor != "44" {
 		t.Error("TestLoadConfig: BG_COLOR value is not correct")
 	}
 
-	if conf.displayStartScript != "/usr/bin/none-start" {
+	if conf.DisplayStartScript != "/usr/bin/none-start" {
 		t.Error("TestLoadConfig: DISPLAY_START_SCRIPT value is not correct")
 	}
 
-	if conf.displayStopScript != "/usr/bin/none" {
+	if conf.DisplayStopScript != "/usr/bin/none" {
 		t.Error("TestLoadConfig: DISPLAY_STOP_SCRIPT value is not correct")
 	}
 
-	if !conf.enableNumlock {
+	if !conf.EnableNumlock {
 		t.Error("TestLoadConfig: ENABLE_NUMLOCK value is not correct")
 	}
 
-	if conf.sessionErrLog != Appending {
+	if conf.SessionErrLog != Appending {
 		t.Error("TestLoadconfig: SESSION_ERROR_LOGGING value is not correct")
 	}
 
-	if conf.sessionErrLogFile != "/dev/null" {
+	if conf.SessionErrLogFile != "/dev/null" {
 		t.Error("TestLoadconfig: SESSION_ERROR_LOGGING_FILE value is not correct")
 	}
 
-	if conf.noXdgFallback {
+	if conf.NoXdgFallback {
 		t.Error("TestLoadconfig: NO_XDG_FALLBACK value is not correct")
 	}
 
-	if conf.defaultXauthority {
+	if conf.DefaultXauthority {
 		t.Error("TestLoadconfig: DEFAULT_XAUTHORITY value is not correct")
 	}
 }

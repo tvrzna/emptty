@@ -18,6 +18,7 @@ const (
 	desktopExec        = "EXEC"
 	desktopName        = "NAME"
 	desktopEnvironment = "ENVIRONMENT"
+	desktopLang        = "LANG"
 
 	constEnvXorg    = "xorg"
 	constEnvWayland = "wayland"
@@ -69,8 +70,8 @@ func selectDesktop(usr *sysuser, conf *config) *desktop {
 
 	lastDesktop := getLastDesktop(usr, desktops)
 
-	if conf.autologin && conf.autologinSession != "" {
-		d := findAutoselectDesktop(conf.autologinSession, desktops)
+	if conf.Autologin && conf.AutologinSession != "" {
+		d := findAutoselectDesktop(conf.AutologinSession, desktops)
 		if d != nil {
 			if isLastDesktopForSave(usr, desktops[lastDesktop], d) {
 				setUserLastSession(usr, d)
@@ -83,7 +84,7 @@ func selectDesktop(usr *sysuser, conf *config) *desktop {
 		fmt.Printf("\n")
 		for i, v := range desktops {
 			if i > 0 {
-				if conf.verticalSelection {
+				if conf.VerticalSelection {
 					fmt.Print("\n")
 				} else {
 					fmt.Print(", ")
@@ -212,7 +213,7 @@ func loadUserDesktop(homeDir string) (d *desktop, lang string) {
 				d.exec = sanitizeValue(value, "")
 			case desktopEnvironment:
 				d.env = parseEnv(value, constEnvXorg)
-			case confLang:
+			case desktopLang:
 				lang = value
 			case confSelection:
 				d.selection = parseBool(value, "false")

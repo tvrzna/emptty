@@ -2,176 +2,87 @@ package src
 
 import (
 	"os"
+	"reflect"
 	"strconv"
 )
 
 const (
-	confTTYnumber          = "TTY_NUMBER"
-	confSwitchTTY          = "SWITCH_TTY"
-	confPrintIssue         = "PRINT_ISSUE"
-	confPrintMotd          = "PRINT_MOTD"
-	confDefaultUser        = "DEFAULT_USER"
-	confAutologin          = "AUTOLOGIN"
-	confAutologinSession   = "AUTOLOGIN_SESSION"
-	confLang               = "LANG"
-	confDbusLaunch         = "DBUS_LAUNCH"
-	confXinitrcLaunch      = "XINITRC_LAUNCH"
-	confVerticalSelection  = "VERTICAL_SELECTION"
-	confLogging            = "LOGGING"
-	confXorgArgs           = "XORG_ARGS"
-	confLoggingFile        = "LOGGING_FILE"
-	confDynamicMotd        = "DYNAMIC_MOTD"
-	confFgColor            = "FG_COLOR"
-	confBgColor            = "BG_COLOR"
-	confDisplayStartScript = "DISPLAY_START_SCRIPT"
-	confDisplayStopScript  = "DISPLAY_STOP_SCRIPT"
-	confEnableNumlock      = "ENABLE_NUMLOCK"
-	confSessionErrLog      = "SESSION_ERROR_LOGGING"
-	confSessionErrLogFile  = "SESSION_ERROR_LOGGING_FILE"
-	confNoXdgFallback      = "NO_XDG_FALLBACK"
-	confDefaultXauthority  = "DEFAULT_XAUTHORITY"
-	confRootlessXorg       = "ROOTLESS_XORG"
-
 	pathConfigFile = "/etc/emptty/conf"
-)
-
-// enLogging defines possible option how to handle configuration.
-type enLogging int
-
-const (
-	// Default represents saving into new file and backing up older with suffix
-	Default enLogging = iota + 1
-
-	// Appending represents saving all logs into same file
-	Appending
-
-	// Disabled represents disabled logging
-	Disabled
 )
 
 // config defines structure of application configuration.
 type config struct {
-	daemonMode         bool
-	defaultUser        string
-	autologin          bool
-	autologinSession   string
-	tty                int
-	switchTTY          bool
-	printIssue         bool
-	printMotd          bool
-	lang               string
-	dbusLaunch         bool
-	xinitrcLaunch      bool
-	verticalSelection  bool
-	logging            enLogging
-	loggingFile        string
-	xorgArgs           string
-	dynamicMotd        bool
-	fgColor            string
-	bgColor            string
-	displayStartScript string
-	displayStopScript  string
-	enableNumlock      bool
-	sessionErrLog      enLogging
-	sessionErrLogFile  string
-	noXdgFallback      bool
-	defaultXauthority  bool
-	rootlessXorg       bool
+	DaemonMode         bool
+	DefaultUser        string    `config:"DEFAULT_USER" parser:"SanitizeValue" default:""`
+	Autologin          bool      `config:"AUTOLOGIN" parser:"ParseBool" default:"false"`
+	AutologinSession   string    `config:"AUTOLOGIN_SESSION" parser:"SanitizeValue" default:""`
+	Tty                int       `config:"TTY_NUMBER" parser:"ParseTTY" default:"0"`
+	SwitchTTY          bool      `config:"SWITCH_TTY" parser:"ParseBool" default:"true"`
+	PrintIssue         bool      `config:"PRINT_ISSUE" parser:"ParseBool" default:"true"`
+	PrintMotd          bool      `config:"PRINT_MOTD" parser:"ParseBool" default:"true"`
+	Lang               string    `config:"LANG" parser:"SanitizeValue" default:""`
+	DbusLaunch         bool      `config:"DBUS_LAUNCH" parser:"ParseBool" default:"true"`
+	XinitrcLaunch      bool      `config:"XINITRC_LAUNCH" parser:"ParseBool" default:"false"`
+	VerticalSelection  bool      `config:"VERTICAL_SELECTION" parser:"ParseBool" default:"false"`
+	Logging            enLogging `config:"LOGGING" parser:"ParseLogging" default:"default"`
+	LoggingFile        string    `config:"LOGGING_FILE" parser:"SanitizeValue" default:""`
+	XorgArgs           string    `config:"XORG_ARGS" parser:"SanitizeValue" default:""`
+	DynamicMotd        bool      `config:"DYNAMIC_MOTD" parser:"ParseBool" default:"false"`
+	FgColor            string    `config:"FG_COLOR" parser:"ConvertFgColor" default:""`
+	BgColor            string    `config:"BG_COLOR" parser:"ConvertBgColor" default:""`
+	DisplayStartScript string    `config:"DISPLAY_START_SCRIPT" parser:"SanitizeValue" default:""`
+	DisplayStopScript  string    `config:"DISPLAY_STOP_SCRIPT" parser:"SanitizeValue" default:""`
+	EnableNumlock      bool      `config:"ENABLE_NUMLOCK" parser:"ParseBool" default:"false"`
+	SessionErrLog      enLogging `config:"SESSION_ERROR_LOGGING" parser:"ParseLogging" default:"disabled"`
+	SessionErrLogFile  string    `config:"SESSION_ERROR_LOGGING_FILE" parser:"SanitizeValue" default:""`
+	NoXdgFallback      bool      `config:"NO_XDG_FALLBACK" parser:"ParseBool" default:"false"`
+	DefaultXauthority  bool      `config:"DEFAULT_XAUTHORITY" parser:"ParseBool" default:"false"`
+	RootlessXorg       bool      `config:"ROOTLESS_XORG" parser:"ParseBool" default:"false"`
 }
 
 // LoadConfig handles loading of application configuration.
 func loadConfig(path string) *config {
-	c := config{
-		daemonMode:         false,
-		tty:                0,
-		switchTTY:          true,
-		printIssue:         true,
-		printMotd:          true,
-		defaultUser:        "",
-		autologin:          false,
-		autologinSession:   "",
-		dbusLaunch:         true,
-		xinitrcLaunch:      false,
-		verticalSelection:  false,
-		logging:            Default,
-		loggingFile:        "",
-		xorgArgs:           "",
-		dynamicMotd:        false,
-		fgColor:            "",
-		bgColor:            "",
-		displayStartScript: "",
-		displayStopScript:  "",
-		enableNumlock:      false,
-		sessionErrLog:      Disabled,
-		sessionErrLogFile:  "",
-		noXdgFallback:      false,
-		defaultXauthority:  false,
-		rootlessXorg:       false,
-	}
+	c := config{}
 
-	defaultLang := os.Getenv(envLang)
-	if defaultLang != "" {
-		c.lang = defaultLang
-	} else {
-		c.lang = "en_US.UTF-8"
-	}
-
+	var configMap map[string]string
+	var err error
 	if path != "" && fileExists(path) {
-		err := readProperties(path, func(key string, value string) {
-			switch key {
-			case confTTYnumber:
-				c.tty = parseTTY(value, "0")
-			case confSwitchTTY:
-				c.switchTTY = parseBool(value, "true")
-			case confPrintIssue:
-				c.printIssue = parseBool(value, "true")
-			case confPrintMotd:
-				c.printMotd = parseBool(value, "true")
-			case confDefaultUser:
-				c.defaultUser = sanitizeValue(value, "")
-			case confAutologin:
-				c.autologin = parseBool(value, "false")
-			case confAutologinSession:
-				c.autologinSession = sanitizeValue(value, "")
-			case confLang:
-				c.lang = sanitizeValue(value, "en_US.UTF-8")
-			case confDbusLaunch:
-				c.dbusLaunch = parseBool(value, "true")
-			case confXinitrcLaunch:
-				c.xinitrcLaunch = parseBool(value, "false")
-			case confVerticalSelection:
-				c.verticalSelection = parseBool(value, "false")
-			case confLogging:
-				c.logging = parseLogging(value, constLogDefault)
-			case confLoggingFile:
-				c.loggingFile = sanitizeValue(value, "")
-			case confXorgArgs:
-				c.xorgArgs = sanitizeValue(value, "")
-			case confDynamicMotd:
-				c.dynamicMotd = parseBool(value, "false")
-			case confFgColor:
-				c.fgColor = convertColor(sanitizeValue(value, ""), true)
-			case confBgColor:
-				c.bgColor = convertColor(sanitizeValue(value, ""), false)
-			case confDisplayStartScript:
-				c.displayStartScript = sanitizeValue(value, "")
-			case confDisplayStopScript:
-				c.displayStopScript = sanitizeValue(value, "")
-			case confEnableNumlock:
-				c.enableNumlock = parseBool(value, "false")
-			case confSessionErrLog:
-				c.sessionErrLog = parseLogging(value, constLogDisabled)
-			case confSessionErrLogFile:
-				c.sessionErrLogFile = sanitizeValue(value, "")
-			case confNoXdgFallback:
-				c.noXdgFallback = parseBool(value, "false")
-			case confDefaultXauthority:
-				c.defaultXauthority = parseBool(value, "false")
-			case confRootlessXorg:
-				c.rootlessXorg = parseBool(value, "false")
+		configMap, err = readPropertiesToMap(path)
+		if err != nil {
+			logFatal(err)
+		}
+	}
+
+	configType := reflect.TypeOf(c)
+	configValue := reflect.ValueOf(&c)
+
+	for i := 0; i < configType.NumField(); i++ {
+		field := configType.Field(i)
+
+		configParam := field.Tag.Get("config")
+		parserName := field.Tag.Get("parser")
+		defaultValue := field.Tag.Get("default")
+		if parserName != "" && configParam != "" {
+			settingValue, exists := configMap[configParam]
+			if !exists {
+				settingValue = defaultValue
 			}
-		})
-		handleErr(err)
+
+			parser := configValue.MethodByName(parserName)
+			if parser.Kind() != reflect.Invalid {
+				val := parser.Call([]reflect.Value{reflect.ValueOf(settingValue), reflect.ValueOf(defaultValue)})[0]
+				configValue.Elem().Field(i).Set(val)
+			}
+		}
+	}
+
+	if c.Lang == "" {
+		defaultLang := os.Getenv(envLang)
+		if defaultLang != "" {
+			c.Lang = defaultLang
+		} else {
+			c.Lang = "en_US.UTF-8"
+		}
 	}
 
 	return &c
@@ -186,9 +97,39 @@ func parseTTY(tty, defaultValue string) int {
 	return int(val)
 }
 
+// Parses TTY from string to int.
+func (c *config) ParseTTY(value, defaultValue string) int {
+	return parseTTY(value, defaultValue)
+}
+
+// Sanitezes the string value, if value is empty, the defaultValue is returned.
+func (c *config) SanitizeValue(value, defaultValue string) string {
+	return sanitizeValue(value, defaultValue)
+}
+
+// Parses bool value from string.
+func (c *config) ParseBool(value, defaultValue string) bool {
+	return parseBool(value, defaultValue)
+}
+
+// Parses logging type from string.
+func (c *config) ParseLogging(value, defaultValue string) enLogging {
+	return parseLogging(value, defaultValue)
+}
+
+// Coverts string foreground color name into ANSI color value.
+func (c *config) ConvertFgColor(value, defaultValue string) string {
+	return convertColor(sanitizeValue(value, defaultValue), true)
+}
+
+// Converts string background color name into ANSI color value.
+func (c *config) ConvertBgColor(value, defaultValue string) string {
+	return convertColor(sanitizeValue(value, defaultValue), false)
+}
+
 // Returns TTY number converted to string
 func (c *config) strTTY() string {
-	return strconv.Itoa(c.tty)
+	return strconv.Itoa(c.Tty)
 }
 
 // Returns path to TTY

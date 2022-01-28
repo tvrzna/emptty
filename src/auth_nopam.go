@@ -16,15 +16,15 @@ const tagPam = "nopam"
 //
 // If autologin is enabled, it behaves as user has been authorized.
 func authUser(conf *config) *sysuser {
-	if conf.autologin && conf.defaultUser != "" {
+	if conf.Autologin && conf.DefaultUser != "" {
 		usr, err := user.Lookup(conf.defaultUser)
 		handleErr(err)
 		return getSysuser(usr)
 	}
 	hostname, _ := os.Hostname()
 	var username string
-	if conf.defaultUser != "" {
-		fmt.Printf("%s login: %s\n", hostname, conf.defaultUser)
+	if conf.DefaultUser != "" {
+		fmt.Printf("%s login: %s\n", hostname, conf.DefaultUser)
 		username = conf.defaultUser
 	} else {
 		fmt.Printf("%s login: ", hostname)
