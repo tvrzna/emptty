@@ -6,15 +6,7 @@ import (
 )
 
 func TestLoadConfig(t *testing.T) {
-	lang := os.Getenv(envLang)
-	os.Setenv(envLang, "")
 	conf := loadConfig(getTestingPath("conf"))
-	os.Setenv(envLang, lang)
-
-	if conf.Lang != "en_US.UTF-8" {
-		t.Error("TestLoadConfig: fallback language is not correct")
-	}
-
 	conf = loadConfig(loadConfigPath([]string{"-c", getTestingPath("conf")}))
 
 	if conf.Tty != 14 || conf.strTTY() != "14" {
@@ -122,6 +114,22 @@ func TestLoadConfig(t *testing.T) {
 	}
 }
 
+func TestLangLoadConfig(t *testing.T) {
+	lang := os.Getenv(envLang)
+	os.Setenv(envLang, "")
+	conf := loadConfig(getTestingPath("non-existing-conf"))
+	os.Setenv(envLang, lang)
+
+	if conf.Lang != "en_US.UTF-8" {
+		t.Error("TestLangLoadConfig: fallback language is not correct")
+	}
+
+	conf = loadConfig(getTestingPath("non-existing-conf"))
+	if conf.Lang != "en_US.UTF-8" {
+		t.Error("TestLoadConfig: fallback language is not correct")
+	}
+}
+
 func TestParseTTY(t *testing.T) {
 	var tty int
 
@@ -138,5 +146,12 @@ func TestParseTTY(t *testing.T) {
 	tty = parseTTY("aaa", "bbb")
 	if tty != 0 {
 		t.Error("TestParseTTY: wrong fallback value")
+	}
+}
+
+func TestTtyPath(t *testing.T) {
+	c := &config{Tty: 15}
+	if c.ttyPath() != "/dev/tty15" {
+		t.Error("TestTtyPath: unexpected result from ttyPath()")
 	}
 }
