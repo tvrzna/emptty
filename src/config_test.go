@@ -112,6 +112,14 @@ func TestLoadConfig(t *testing.T) {
 	if conf.DefaultXauthority {
 		t.Error("TestLoadconfig: DEFAULT_XAUTHORITY value is not correct")
 	}
+
+	if !conf.RootlessXorg {
+		t.Error("TestLoadconfig: ROOTLESS_XORG value is not correct")
+	}
+
+	if !conf.IdentifyEnvs {
+		t.Error("TestLoadconfig: IDENTIFY_ENVS value is not correct")
+	}
 }
 
 func TestParseTTY(t *testing.T) {

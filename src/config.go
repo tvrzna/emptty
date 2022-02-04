@@ -38,6 +38,7 @@ type config struct {
 	NoXdgFallback      bool      `config:"NO_XDG_FALLBACK" parser:"ParseBool" default:"false"`
 	DefaultXauthority  bool      `config:"DEFAULT_XAUTHORITY" parser:"ParseBool" default:"false"`
 	RootlessXorg       bool      `config:"ROOTLESS_XORG" parser:"ParseBool" default:"false"`
+	IdentifyEnvs       bool      `config:"IDENTIFY_ENVS" parser:"ParseBool" default:"false"`
 }
 
 // LoadConfig handles loading of application configuration.

@@ -23,6 +23,12 @@ const (
 	constEnvXorg    = "xorg"
 	constEnvWayland = "wayland"
 
+	constEnvSUndefined  = "Undefined"
+	constEnvSXorg       = "Xorg"
+	constEnvSWayland    = "Wayland"
+	constEnvSCustom     = "Custom"
+	constEnvSUserCustom = "User Custom"
+
 	pathLastSession       = "/.cache/emptty/last-session"
 	pathXorgSessions      = "/usr/share/xsessions/"
 	pathWaylandSessions   = "/usr/share/wayland-sessions/"
@@ -34,14 +40,20 @@ const (
 type enEnvironment int
 
 const (
+	// Undefined represents no environment
+	Undefined enEnvironment = iota
+
 	// Xorg represents Xorg environment
-	Xorg enEnvironment = iota + 1
+	Xorg
 
 	// Wayland represents Wayland environment
 	Wayland
 
-	// Custom represents user's custom desktops, only helper before real env is loaded
+	// Custom represents custom desktops, only helper before real env is loaded
 	Custom
+
+	// UserCustom represents user's desktops, only helper before real env is loaded
+	UserCustom
 )
 
 // desktop defines structure for display environments and window managers.
@@ -49,6 +61,7 @@ type desktop struct {
 	name      string
 	exec      string
 	env       enEnvironment
+	envOrigin enEnvironment
 	isUser    bool
 	path      string
 	selection bool
@@ -82,16 +95,7 @@ func selectDesktop(usr *sysuser, conf *config) *desktop {
 
 	for true {
 		fmt.Printf("\n")
-		for i, v := range desktops {
-			if i > 0 {
-				if conf.VerticalSelection {
-					fmt.Print("\n")
-				} else {
-					fmt.Print(", ")
-				}
-			}
-			fmt.Printf("[%d] %s", i, v.name)
-		}
+		printDesktops(conf, desktops)
 		fmt.Printf("\nSelect [%d]: ", lastDesktop)
 
 		selection, _ := bufio.NewReader(os.Stdin).ReadString('\n')
@@ -113,6 +117,35 @@ func selectDesktop(usr *sysuser, conf *config) *desktop {
 		}
 	}
 	return nil
+}
+
+// Prints list of desktops on screen
+func printDesktops(conf *config, desktops []*desktop) {
+	dSeparator := ", "
+	eSeparator := " "
+	if conf.VerticalSelection {
+		dSeparator = "\n"
+		eSeparator = "\n"
+	}
+
+	lastEnv := Undefined
+	for i, v := range desktops {
+		printSeparator := true
+		if conf.IdentifyEnvs && v.envOrigin != lastEnv {
+			if i > 0 {
+				fmt.Print(eSeparator)
+				fmt.Print(eSeparator)
+			}
+			lastEnv = v.envOrigin
+			fmt.Printf("|%s|%s", lastEnv.string(), eSeparator)
+			printSeparator = false
+		}
+
+		if printSeparator && i > 0 {
+			fmt.Print(dSeparator)
+		}
+		fmt.Printf("[%d] %s", i, v.name)
+	}
 }
 
 // Finds defined autologinSession in array of desktops by its exec or its name
@@ -148,7 +181,7 @@ func listAllDesktops(usr *sysuser, pathXorgDesktops, pathWaylandDesktops string)
 	}
 
 	// load custom user desktops
-	customUserDesktops := listDesktops(usr.homedir+pathUserCustomSession, Custom)
+	customUserDesktops := listDesktops(usr.homedir+pathUserCustomSession, UserCustom)
 	if customUserDesktops != nil && len(customUserDesktops) > 0 {
 		result = append(result, customUserDesktops...)
 	}
@@ -176,7 +209,7 @@ func listDesktops(path string, env enEnvironment) []*desktop {
 
 // Inits desktop object from .desktop file on defined path.
 func getDesktop(path string, env enEnvironment) *desktop {
-	d := desktop{env: env, isUser: false, path: path}
+	d := desktop{env: env, envOrigin: env, isUser: false, path: path}
 	if env == Custom {
 		d.env = Xorg
 	}
@@ -318,4 +351,10 @@ func (e enEnvironment) stringify() string {
 		return constEnvWayland
 	}
 	return constEnvXorg
+}
+
+// String value of enEnvironment
+func (env enEnvironment) string() string {
+	strings := []string{constEnvSUndefined, constEnvSXorg, constEnvSWayland, constEnvSCustom, constEnvSUserCustom}
+	return strings[env]
 }

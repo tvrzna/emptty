@@ -78,6 +78,9 @@ If set true, it will not use `.emptty-xauth` file, but the standard `~/.Xauthori
 `ROOTLESS_XORG`
 If set true, Xorg will be started as rootless, if system allows. Possible values are "true" or "false". Default value is false.
 
+`IDENTIFY_ENVS`
+If set true, environemntal groups are printed to differ Xorg/Wayland/Custom/UserCustom desktops. Possible values are "true" or "false". Default value is false.
+
 #### /etc/emptty/motd-gen.sh
 If `DYNAMIC_MOTD` is set to `true`, this file exists and is executable for its owner, the result is printed as your own MOTD. Be very careful with this script!
 

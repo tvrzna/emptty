@@ -21,6 +21,75 @@ func TestStringifyEnv(t *testing.T) {
 	}
 }
 
+func TestStringEnv(t *testing.T) {
+	if Undefined.string() != constEnvSUndefined {
+		t.Error("TestStringEnv: wrong value for Xorg env")
+	}
+
+	if Xorg.string() != constEnvSXorg {
+		t.Error("TestStringEnv: wrong value for Xorg env")
+	}
+
+	if Wayland.string() != constEnvSWayland {
+		t.Error("TestStringEnv: wrong value for Xorg env")
+	}
+
+	if Custom.string() != constEnvSCustom {
+		t.Error("TestStringEnv: wrong value for Xorg env")
+	}
+
+	if UserCustom.string() != constEnvSUserCustom {
+		t.Error("TestStringEnv: wrong value for Xorg env")
+	}
+}
+
+func TestPrintDesktops(t *testing.T) {
+	desktops := []*desktop{&desktop{name: "a", envOrigin: Xorg},
+		&desktop{name: "b", envOrigin: Wayland},
+		&desktop{name: "c", envOrigin: Custom},
+		&desktop{name: "d", envOrigin: UserCustom}}
+
+	var result string
+	conf := &config{}
+
+	conf.VerticalSelection = false
+	conf.IdentifyEnvs = false
+	result = readOutput(func() {
+		printDesktops(conf, desktops)
+	})
+	if result != "[0] a, [1] b, [2] c, [3] d" {
+		t.Error("TestPrintDesktops: wrong output for VerticalSelection=false, IdentifyEnvs=false")
+	}
+
+	conf.VerticalSelection = true
+	conf.IdentifyEnvs = false
+	result = readOutput(func() {
+		printDesktops(conf, desktops)
+	})
+	if result != "[0] a\n[1] b\n[2] c\n[3] d" {
+		t.Error("TestPrintDesktops: wrong output for VerticalSelection=true, IdentifyEnvs=false")
+	}
+
+	conf.VerticalSelection = false
+	conf.IdentifyEnvs = true
+	result = readOutput(func() {
+		printDesktops(conf, desktops)
+	})
+	if result != "|Xorg| [0] a  |Wayland| [1] b  |Custom| [2] c  |User Custom| [3] d" {
+		t.Error("TestPrintDesktops: wrong output for VerticalSelection=false, IdentifyEnvs=true")
+	}
+
+	conf.VerticalSelection = true
+	conf.IdentifyEnvs = true
+	result = readOutput(func() {
+		printDesktops(conf, desktops)
+	})
+	if result != "|Xorg|\n[0] a\n\n|Wayland|\n[1] b\n\n|Custom|\n[2] c\n\n|User Custom|\n[3] d" {
+		t.Error("TestPrintDesktops: wrong output for VerticalSelection=true, IdentifyEnvs=true")
+	}
+
+}
+
 func TestParseEnv(t *testing.T) {
 	var env enEnvironment
 
