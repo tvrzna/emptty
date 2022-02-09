@@ -83,7 +83,7 @@ func defineEnvironment(usr *sysuser, conf *config, d *desktop) {
 		usr.setenvIfEmpty(envXdgSeat, "seat0")
 		usr.setenv(envXdgSessionClass, "user")
 	}
-	usr.setenv(envShell, getUserShell(usr))
+	usr.setenv(envShell, usr.getShell())
 	usr.setenvIfEmpty(envLang, conf.Lang)
 	usr.setenvIfEmpty(envPath, os.Getenv(envPath))
 
@@ -115,15 +115,6 @@ func defineEnvironment(usr *sysuser, conf *config, d *desktop) {
 	}
 
 	os.Chdir(usr.getenv(envPwd))
-}
-
-// Reads default shell of authorized user.
-func getUserShell(usr *sysuser) string {
-	out, err := exec.Command("/usr/bin/getent", "passwd", usr.strUid()).Output()
-	handleErr(err)
-
-	ent := strings.Split(strings.TrimSuffix(string(out), "\n"), ":")
-	return ent[6]
 }
 
 // Prepares and stars Wayland session for authorized user.
