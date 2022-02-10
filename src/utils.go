@@ -6,6 +6,7 @@ import (
 	"net"
 	"os"
 	"os/exec"
+	"os/user"
 	"strconv"
 	"strings"
 	"syscall"
@@ -249,4 +250,16 @@ func getOsReleaseValue(name string) string {
 		return values[osReleaseName]
 	}
 	return values[name]
+}
+
+// Do operation as user and then reverts to previous user.
+func doAsUser(usr *sysuser, fce func()) {
+	currentUser, _ := user.Current()
+	previousUser := getSysuser(currentUser)
+
+	setFsUser(usr)
+
+	fce()
+
+	setFsUser(previousUser)
 }

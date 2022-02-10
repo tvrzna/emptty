@@ -16,6 +16,7 @@ type config struct {
 	DefaultUser        string    `config:"DEFAULT_USER" parser:"SanitizeValue" default:""`
 	Autologin          bool      `config:"AUTOLOGIN" parser:"ParseBool" default:"false"`
 	AutologinSession   string    `config:"AUTOLOGIN_SESSION" parser:"SanitizeValue" default:""`
+	AutologinMaxRetry  int       `config:"AUTOLOGIN_MAX_RETRY" parser:"ParseInt" default:"2"`
 	Tty                int       `config:"TTY_NUMBER" parser:"ParseTTY" default:"0"`
 	SwitchTTY          bool      `config:"SWITCH_TTY" parser:"ParseBool" default:"true"`
 	PrintIssue         bool      `config:"PRINT_ISSUE" parser:"ParseBool" default:"true"`
@@ -111,6 +112,12 @@ func (c *config) SanitizeValue(value, defaultValue string) string {
 // Parses bool value from string.
 func (c *config) ParseBool(value, defaultValue string) bool {
 	return parseBool(value, defaultValue)
+}
+
+// Parses int value from string.
+func (c *config) ParseInt(value, defaultValue string) int {
+	result, _ := strconv.Atoi(sanitizeValue(value, defaultValue))
+	return result
 }
 
 // Parses logging type from string.

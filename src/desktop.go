@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"os/user"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -307,23 +306,18 @@ func getUserLastSession(usr *sysuser) *lastSession {
 
 // Sets Last session for declared sysuser and saves it into user's home directory.
 func setUserLastSession(usr *sysuser, d *desktop) {
-	currentUser, _ := user.Current()
-	previousUser := getSysuser(currentUser)
-
-	setFsUser(usr)
-
-	path := usr.homedir + pathLastSession
-	data := fmt.Sprintf("%s;%s\n", d.exec, d.env.stringify())
-	err := mkDirsForFile(path, 0744)
-	if err != nil {
-		logPrint(err)
-	}
-	err = ioutil.WriteFile(path, []byte(data), 0600)
-	if err != nil {
-		logPrint(err)
-	}
-
-	setFsUser(previousUser)
+	doAsUser(usr, func() {
+		path := usr.homedir + pathLastSession
+		data := fmt.Sprintf("%s;%s\n", d.exec, d.env.stringify())
+		err := mkDirsForFile(path, 0744)
+		if err != nil {
+			logPrint(err)
+		}
+		err = ioutil.WriteFile(path, []byte(data), 0600)
+		if err != nil {
+			logPrint(err)
+		}
+	})
 }
 
 // Checks, if user last session file already exists.

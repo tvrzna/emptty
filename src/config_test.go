@@ -112,6 +112,10 @@ func TestLoadConfig(t *testing.T) {
 	if !conf.IdentifyEnvs {
 		t.Error("TestLoadconfig: IDENTIFY_ENVS value is not correct")
 	}
+
+	if conf.AutologinMaxRetry != -1 {
+		t.Error("TestLoadconfig: AUTOLOGIN_MAX_RETRY value is not correct")
+	}
 }
 
 func TestLangLoadConfig(t *testing.T) {

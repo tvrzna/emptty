@@ -1,13 +1,16 @@
 package src
 
 import (
+	"errors"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"os/signal"
 	"strconv"
 	"strings"
 	"syscall"
+	"time"
 )
 
 const (
@@ -37,6 +40,12 @@ var interrupted bool
 func login(conf *config) {
 	interrupted = false
 	usr := authUser(conf)
+
+	if err := handleLoginRetries(conf, usr); err != nil {
+		closeAuth()
+		handleErr(err)
+		return
+	}
 
 	var d *desktop
 	d, usrLang := loadUserDesktop(usr.homedir)
@@ -387,4 +396,52 @@ func runDisplayScript(scriptPath string) {
 			logPrint(scriptPath + " is not executable.")
 		}
 	}
+}
+
+// Handles keeping informations about last login with retry.
+func handleLoginRetries(conf *config, usr *sysuser) (result error) {
+	// infinite allowed retries, return to avoid writing into file
+	if conf.AutologinMaxRetry < 0 {
+		return nil
+	}
+
+	retries := 0
+
+	if conf.Autologin && conf.AutologinSession != "" && conf.AutologinMaxRetry >= 0 {
+		err := mkDirsForFile(usr.getLoginRetryPath(), 0744)
+		if err != nil {
+			logPrint(err)
+		}
+
+		file, err := os.Open(usr.getLoginRetryPath())
+		if err != nil {
+			logPrint(err)
+		}
+		defer file.Close()
+
+		// Check if last retry was within last 2 seconds
+		limit := time.Now().Add(-2 * time.Second)
+		info, err := file.Stat()
+		if err == nil {
+			if info.ModTime().After(limit) {
+				content, err := ioutil.ReadFile(usr.getLoginRetryPath())
+				if err == nil {
+					retries, _ = strconv.Atoi(strings.TrimSpace(string(content)))
+				}
+				retries++
+
+				if retries >= conf.AutologinMaxRetry {
+					result = errors.New("Exceeded maximum number of allowed login retries in short period.")
+				}
+			}
+		}
+	}
+
+	doAsUser(usr, func() {
+		err := ioutil.WriteFile(usr.getLoginRetryPath(), []byte(strconv.Itoa(retries)), 0600)
+		if err != nil {
+			logPrint(err)
+		}
+	})
+	return result
 }
