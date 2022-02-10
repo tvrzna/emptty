@@ -31,8 +31,11 @@ const (
 	envUid             = "UID"
 )
 
+var interrupted bool
+
 // Login into graphical environment
 func login(conf *config) {
+	interrupted = false
 	usr := authUser(conf)
 
 	var d *desktop
@@ -145,12 +148,16 @@ func wayland(usr *sysuser, d *desktop, conf *config) {
 	utmpEntry := addUtmpEntry(usr.username, wsession.Process.Pid, conf.strTTY(), "")
 	logPrint("Added utmp entry")
 
-	wsession.Wait()
 	logPrint(strExec + " finished")
 
 	// end utmp entry
 	endUtmpEntry(utmpEntry)
 	logPrint("Ended utmp entry")
+
+	if err = wsession.Wait(); !interrupted && err != nil {
+		logPrint(strExec + " finished with error: " + err.Error() + ". For more details see `SESSION_ERROR_LOGGING` in configuration.")
+		handleStrErr("Wayland session finished with error, please check logs")
+	}
 }
 
 // Prepares and starts Xorg session for authorized user.
@@ -245,12 +252,12 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 		handleErr(err)
 	}
 
-	xsession.Wait()
+	errXsession := xsession.Wait()
 	logPrint(strExec + " finished")
 
 	// Stop Xorg
 	xorg.Process.Signal(os.Interrupt)
-	xorg.Wait()
+	errXorg := xorg.Wait()
 	logPrint("Interrupted Xorg")
 
 	// Remove auth
@@ -266,6 +273,16 @@ func xorg(usr *sysuser, d *desktop, conf *config) {
 		if err != nil {
 			logPrint(err)
 		}
+	}
+
+	if !interrupted && errXsession != nil {
+		logPrint(strExec + " finished with error: " + errXsession.Error() + ". For more details see `SESSION_ERROR_LOGGING` in configuration.")
+		handleStrErr("Xorg session finished with error, please check logs")
+	}
+
+	if !interrupted && errXorg != nil {
+		logPrint("Xorg finished with error: " + errXsession.Error())
+		handleStrErr("Xorg finished with error, please check logs")
 	}
 }
 
@@ -342,7 +359,7 @@ func getFreeXDisplay() int {
 
 // Registers interrupt handler, that interrupts all mentioned Cmds.
 func registerInterruptHandler(cmds ...*exec.Cmd) {
-	c := make(chan os.Signal)
+	c := make(chan os.Signal, 10)
 	signal.Notify(c, os.Interrupt, syscall.SIGHUP, syscall.SIGINT, syscall.SIGKILL, syscall.SIGQUIT, syscall.SIGTERM)
 	go handleInterrupt(c, cmds...)
 }
@@ -350,6 +367,7 @@ func registerInterruptHandler(cmds ...*exec.Cmd) {
 // Catch interrupt signal chan and interrupts all mentioned Cmds.
 func handleInterrupt(c chan os.Signal, cmds ...*exec.Cmd) {
 	<-c
+	interrupted = true
 	logPrint("Catched interrupt signal")
 	for _, cmd := range cmds {
 		cmd.Process.Signal(os.Interrupt)
