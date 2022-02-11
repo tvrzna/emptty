@@ -44,7 +44,7 @@ Enables switching to defined TTY number. Default is true.
 .IP PRINT_ISSUE
 Enables printing of /etc/issue in daemon mode.
 .IP PRINT_MOTD
-Enables printing of default motd, /etc/emptty/motd or /etc/emptty/motd-gen.sh.
+Enables printing of default motd, static motd or dynamic motd.
 .IP DEFAULT_USER
 Preselected user, if AUTOLOGIN is enabled, this user is logged in.
 .IP AUTOLOGIN
@@ -84,11 +84,17 @@ It expects existence of directories to defined logging file.
 .IP XORG_ARGS
 Arguments passed to Xorg server.
 .IP DYNAMIC_MOTD
-Allows to use /etc/emptty/motd-gen.sh script to generate custom MOTD. Possible values are "true" or "false". Default value is false.
+Allows to use dynamic motd script to generate custom MOTD. Possible values are "true" or "false". Default value is false.
 
 .B NOTE:
-Be sure, that /etc/emptty/motd-gen.sh has correct content and permissions (e.g. 744), the script is started as default user; in daemon mode it means
+Be sure, that dynamic motd has correct content and permissions (e.g. 744), the script is started as default user; in daemon mode it means
 .I root
+
+.IP DYNAMIC_MOTD_PATH
+Allows to override default path to dynamic motd. Default value is "/etc/emptty/motd-gen.sh".
+
+.IP MOTD_PATH
+Allows to override default path to static motd. Default value is "/etc/emptty/motd".
 
 .IP FG_COLOR
 Foreground color, available only in daemon mode. List of colors is listed below.
@@ -137,14 +143,14 @@ If set true, Xorg will be started as rootless, if system allows. Possible values
 If set true, environemntal groups are printed to differ Xorg/Wayland/Custom/UserCustom desktops. Possible values are "true" or "false". Default value is false.
 
 .SH DYNAMIC MOTD
-Optional file stored as /etc/emptty/motd-gen.sh
+Optional file stored by default as /etc/emptty/motd-gen.sh. Could be overriden.
 
 If
 .IDYNAMIC_MOTD
 is set to true, this file exists and is executable for its owner, the result is printed as your own MOTD. Be very careful with this script!
 
 .SH CUSTOM MOTD
-Optional file stored as /etc/emptty/motd
+Optional file stored by default as /etc/emptty/motd. Could be overriden.
 
 Custom file, that prints your own MOTD. Reading this file supports colors (e.g.
 .I \\\x1b[31m

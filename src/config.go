@@ -29,6 +29,8 @@ type config struct {
 	LoggingFile        string    `config:"LOGGING_FILE" parser:"SanitizeValue" default:"/var/log/emptty/[TTY_NUMBER].log"`
 	XorgArgs           string    `config:"XORG_ARGS" parser:"SanitizeValue" default:""`
 	DynamicMotd        bool      `config:"DYNAMIC_MOTD" parser:"ParseBool" default:"false"`
+	DynamicMotdPath    string    `config:"DYNAMIC_MOTD_PATH" parser:"SanitizeValue" default:"/etc/emptty/motd-gen.sh"`
+	MotdPath           string    `config:"MOTD_PATH" parser:"SanitizeValue" default:"/etc/emptty/motd"`
 	FgColor            string    `config:"FG_COLOR" parser:"ConvertFgColor" default:""`
 	BgColor            string    `config:"BG_COLOR" parser:"ConvertBgColor" default:""`
 	DisplayStartScript string    `config:"DISPLAY_START_SCRIPT" parser:"SanitizeValue" default:""`

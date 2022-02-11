@@ -24,7 +24,7 @@ Default startup configuration. On each change it requires to restart emptty.
 
 `PRINT_ISSUE` Enables printing of /etc/issue in daemon mode.
 
-`PRINT_MOTD` Enables printing of default motd, `/etc/emptty/motd` or `/etc/emptty/motd-gen.sh`.
+`PRINT_MOTD` Enables printing of default motd, static motd or dynamic motd.
 
 `DEFAULT_USER` Preselected user, if AUTOLOGIN is enabled, this user is logged in.
 
@@ -50,8 +50,12 @@ __NOTE:__ It expects existence of directories to defined logging file.
 
 `XORG_ARGS` Arguments passed to Xorg server.
 
-`DYNAMIC_MOTD` Allows to use /etc/emptty/motd-gen.sh script to generate custom MOTD. Possible values are "true" or "false". Default value is false.
-__NOTE:__ Be sure, that /etc/emptty/motd-gen.sh has correct content and permissions (e.g. 744), the script is started as default user; in daemon mode it means `root`.
+`DYNAMIC_MOTD` Allows to use dynamic motd script to generate custom MOTD. Possible values are "true" or "false". Default value is false.
+__NOTE:__ Be sure, that dynamic motd has correct content and permissions (e.g. 744), the script is started as default user; in daemon mode it means `root`.
+
+`DYNAMIC_MOTD_PATH` Allows to override default path to dynamic motd. Default value is `/etc/emptty/motd-gen.sh`
+
+`MOTD_PATH` Allows to override default path to static motd. Default value is `/etc/emptty/motd`
 
 `FG_COLOR` Foreground color, available only in daemon mode. List of colors is listed below.
 
@@ -83,11 +87,11 @@ If set true, Xorg will be started as rootless, if system allows. Possible values
 `IDENTIFY_ENVS`
 If set true, environemntal groups are printed to differ Xorg/Wayland/Custom/UserCustom desktops. Possible values are "true" or "false". Default value is false.
 
-#### /etc/emptty/motd-gen.sh
+#### Dynamic MOTD
 If `DYNAMIC_MOTD` is set to `true`, this file exists and is executable for its owner, the result is printed as your own MOTD. Be very careful with this script!
 
-#### /etc/emptty/motd
-Custom file, that prints your own MOTD. Reading this file supports colors (e.g. `\x1b[31m` or `\033[32m`). Is skipped, if `DYNAMIC_MOTD` is defined and `/etc/emptty/motd-gen.sh` is executable.
+#### Static MOTD
+Custom file, that prints your own MOTD. Reading this file supports colors (e.g. `\x1b[31m` or `\033[32m`).
 
 #### ${HOME}/.config/emptty or ${HOME}/.emptty
 Optional configuration file, that could be also handled as shell script. If is not presented, emptty shows selection of installed desktops.

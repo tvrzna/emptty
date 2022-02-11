@@ -1,9 +1,8 @@
 package src
 
 import (
-	"bufio"
 	"fmt"
-	"os"
+	"io/ioutil"
 	"os/exec"
 	"strings"
 )
@@ -12,9 +11,6 @@ const (
 	defaultMotd = `┌─┐┌┬┐┌─┐┌┬┐┌┬┐┬ ┬
 ├┤ │││├─┘ │  │ └┬┘
 └─┘┴ ┴┴   ┴  ┴  ┴   ` + version
-
-	pathDynamicMotd = "/etc/emptty/motd-gen.sh"
-	pathMotd        = "/etc/emptty/motd"
 )
 
 // Prints dynamic motd, if configured; otherwise prints motd, if pathMotd exists; otherwise it prints default motd.
@@ -22,46 +18,46 @@ func printMotd(conf *config) {
 	if !conf.PrintMotd {
 		return
 	}
-	if conf.DynamicMotd && fileIsExecutable(pathDynamicMotd) {
-		cmd := exec.Command(pathDynamicMotd)
-		dynamicMotd, err := cmd.Output()
-		if err != nil {
-			logPrint(err)
+	if !printDynamicMotd(conf) {
+		if !printStaticMotd(conf) {
 			printDefaultMotd()
-			return
 		}
-		fmt.Print(revertColorEscaping(string(dynamicMotd)))
+	}
+}
+
+// Prints dynamic motd. If something was printed, returns true.
+func printDynamicMotd(conf *config) bool {
+	if conf.DynamicMotd && fileIsExecutable(conf.DynamicMotdPath) {
+		motd, err := exec.Command(conf.DynamicMotdPath).Output()
+		return printCommonMotd(conf, motd, err)
+	}
+	return false
+}
+
+// Prints static motd. If something was printed, returns true.
+func printStaticMotd(conf *config) bool {
+	if fileExists(conf.MotdPath) {
+		motd, err := ioutil.ReadFile(conf.MotdPath)
+		return printCommonMotd(conf, motd, err)
+	}
+	return false
+}
+
+// Handles common part of printing motd
+func printCommonMotd(conf *config, motd []byte, err error) bool {
+	if err != nil {
+		logPrint(err)
+		return false
+	}
+	if len(motd) > 0 {
+		fmt.Println(revertColorEscaping(string(motd)))
 		if conf.DaemonMode {
 			setColors(conf.FgColor, conf.BgColor)
 		} else {
 			resetColors()
 		}
-	} else if fileExists(pathMotd) {
-		emptyMotd := true
-		file, err := os.Open(pathMotd)
-		defer file.Close()
-		if err != nil {
-			logPrint(err)
-			printDefaultMotd()
-			return
-		}
-		scan := bufio.NewScanner(file)
-		for scan.Scan() {
-			if scan.Text() != "" {
-				emptyMotd = false
-				fmt.Println(revertColorEscaping(scan.Text()))
-			}
-		}
-		if !emptyMotd {
-			if conf.DaemonMode {
-				setColors(conf.FgColor, conf.BgColor)
-			} else {
-				resetColors()
-			}
-		}
-	} else {
-		printDefaultMotd()
 	}
+	return true
 }
 
 // Prints default motd.

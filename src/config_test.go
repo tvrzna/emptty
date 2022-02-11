@@ -116,6 +116,14 @@ func TestLoadConfig(t *testing.T) {
 	if conf.AutologinMaxRetry != -1 {
 		t.Error("TestLoadconfig: AUTOLOGIN_MAX_RETRY value is not correct")
 	}
+
+	if conf.MotdPath != "/dev/null/static" {
+		t.Error("TestLoadconfig: MOTD_PATH value is not correct")
+	}
+
+	if conf.DynamicMotdPath != "/dev/null/dynamic" {
+		t.Error("TestLoadconfig: DYNAMIC_MOTD_PATH value is not correct")
+	}
 }
 
 func TestLangLoadConfig(t *testing.T) {
