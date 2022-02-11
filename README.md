@@ -45,7 +45,7 @@ __NOTE:__ to enable autologin DEFAULT_USER must be in group nopasswdlogin, other
 
 `LOGGING` Defines the way, how is logging handled. Possible values are "default", "appending" or "disabled". Default value is "default".
 
-`LOGGING_FILE` Overrides path of log file. Default value is `/var/log/emptty`.
+`LOGGING_FILE` Overrides path of log file. Default value is `/var/log/emptty/[TTY_NUMBER].log`.
 __NOTE:__ It expects existence of directories to defined logging file.
 
 `XORG_ARGS` Arguments passed to Xorg server.
@@ -67,7 +67,7 @@ __NOTE:__ The script is started as default user; in daemon mode it means `root`.
 
 `SESSION_ERROR_LOGGING` Defines how logging of session errors is handled. Possible values are "default", "appending" or "disabled". Default value is "disabled".
 
-`SESSION_ERROR_LOGGING_FILE` Overrides path of session errors log file. Default value is `/var/log/emptty-session-errors`.
+`SESSION_ERROR_LOGGING_FILE` Overrides path of session errors log file. Default value is `/var/log/emptty/session-errors.[TTY_NUMBER].log`.
 __NOTE:__ It expects existence of directories to defined logging file.
 
 `NO_XDG_FALLBACK`
@@ -146,12 +146,12 @@ As it is mentioned in configuration, there are three options to handle logging o
 Described log location could differ according configuration `LOGGING_FILE`, that is stored in `/etc/emptty/conf`.
 
 #### default
-This option provides simple solution, when current instance of `emptty` logs into `/var/log/emptty` and the previous version is stored as `/var/log/emptty.old`.
+This option provides simple solution, when current instance of `emptty` logs into `/var/log/emptty/[TTY_NUMBER].log` and the previous version is stored as `/var/log/emptty/[TTY_NUMBER].log.old`.
 
-__NOTE:__ Current instance always move previous log into old file, if `emptty` crashes and is started again, previous log is in `/var/log/emptty.old`.
+__NOTE:__ Current instance always move previous log into old file, if `emptty` crashes and is started again, previous log is in `/var/log/emptty/[TTY_NUMBER].log.old`.
 
 #### appending
-This option provides functionality that logs everything into `/var/log/emptty` and does not handle log rotation by itself. It leaves the option for user to handle it themselves (e.g. with logrotate).
+This option provides functionality that logs everything into `/var/log/emptty/[TTY_NUMBER].log` and does not handle log rotation by itself. It leaves the option for user to handle it themselves (e.g. with logrotate).
 
 __NOTE:__ Appending without roration could cause large log file, be sure that log file is rotated.
 

@@ -38,7 +38,7 @@ VERTICAL_SELECTION=false
 #LOGGING=default
 
 # Overrides path of log file
-#LOGGING_FILE=/var/log/emptty
+#LOGGING_FILE=/var/log/emptty/[TTY_NUMBER].log
 
 # Arguments passed to Xorg server.
 #XORG_ARGS=
@@ -59,7 +59,7 @@ VERTICAL_SELECTION=false
 #SESSION_ERROR_LOGGING=disabled
 
 # Overrides path of session errors log file
-#SESSION_ERROR_LOGGING_FILE=/var/log/emptty-session-errors
+#SESSION_ERROR_LOGGING_FILE=/var/log/emptty/session-errors.[TTY_NUMBER].log
 
 # If set true, it will not use `.emptty-xauth` file, but the standard `~/.Xauthority` file. This allows to handle xauth issues.
 #DEFAULT_XAUTHORITY=false

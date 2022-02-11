@@ -26,7 +26,7 @@ type config struct {
 	XinitrcLaunch      bool      `config:"XINITRC_LAUNCH" parser:"ParseBool" default:"false"`
 	VerticalSelection  bool      `config:"VERTICAL_SELECTION" parser:"ParseBool" default:"false"`
 	Logging            enLogging `config:"LOGGING" parser:"ParseLogging" default:"default"`
-	LoggingFile        string    `config:"LOGGING_FILE" parser:"SanitizeValue" default:""`
+	LoggingFile        string    `config:"LOGGING_FILE" parser:"SanitizeValue" default:"/var/log/emptty/[TTY_NUMBER].log"`
 	XorgArgs           string    `config:"XORG_ARGS" parser:"SanitizeValue" default:""`
 	DynamicMotd        bool      `config:"DYNAMIC_MOTD" parser:"ParseBool" default:"false"`
 	FgColor            string    `config:"FG_COLOR" parser:"ConvertFgColor" default:""`
@@ -35,7 +35,7 @@ type config struct {
 	DisplayStopScript  string    `config:"DISPLAY_STOP_SCRIPT" parser:"SanitizeValue" default:""`
 	EnableNumlock      bool      `config:"ENABLE_NUMLOCK" parser:"ParseBool" default:"false"`
 	SessionErrLog      enLogging `config:"SESSION_ERROR_LOGGING" parser:"ParseLogging" default:"disabled"`
-	SessionErrLogFile  string    `config:"SESSION_ERROR_LOGGING_FILE" parser:"SanitizeValue" default:""`
+	SessionErrLogFile  string    `config:"SESSION_ERROR_LOGGING_FILE" parser:"SanitizeValue" default:"/var/log/emptty/session-errors.[TTY_NUMBER].log"`
 	NoXdgFallback      bool      `config:"NO_XDG_FALLBACK" parser:"ParseBool" default:"false"`
 	DefaultXauthority  bool      `config:"DEFAULT_XAUTHORITY" parser:"ParseBool" default:"false"`
 	RootlessXorg       bool      `config:"ROOTLESS_XORG" parser:"ParseBool" default:"false"`

@@ -1,4 +1,4 @@
-.TH EMPTTY 1 "January 2022" "emptty 0.6.2" emptty
+.TH EMPTTY 1 "February 2022" "emptty 0.6.2" emptty
 
 .SH NAME
 emptty \- Dead simple CLI Display Manager on TTY
@@ -76,7 +76,7 @@ Prints available WM/DE each on new line instead of printing on single line.
 Defines how logging is handled. Possible values are "default", "appending" or "disabled". Default value is "default".
 .IP LOGGING_FILE
 Overrides path of log file. Default value is
-.I /var/log/emptty
+.I /var/log/emptty/[TTY_NUMBER].log
 
 .B NOTE:
 It expects existence of directories to defined logging file.
@@ -117,7 +117,7 @@ Enables numlock in daemon mode. Possible values are "true" or "false". Default v
 Defines how logging of session errors is handled. Possible values are "default", "appending" or "disabled". Default value is "disabled".
 .IP SESSION_ERROR_LOGGING_FILE
 Overrides path of session errors log file. Default value is
-.I /var/log/emptty-session-errors
+.I /var/log/emptty/session-errors.[TTY_NUMBER].log
 
 .B NOTE:
 It expects existence of directories to defined logging file.
@@ -195,17 +195,17 @@ Described log location could differ according configuration
 
 .IP default
 This option provides simple solution, when current instance of emptty logs into
-.I /var/log/emptty
+.I /var/log/emptty/[TTY_NUMBER].log
 and the previous version is stored as
-.I /var/log/emptty.old
+.I /var/log/emptty/[TTY_NUMBER].log.old
 
 .B NOTE:
 Current instance always move previous log into old file, if emptty crashes and is started again, previous log is in
-.I /var/log/emptty.old
+.I /var/log/emptty/[TTY_NUMBER].log.old
 
 .IP appending
 This option provides functionality that logs everything into
-.I /var/log/emptty
+.I /var/log/emptty/[TTY_NUMBER].log
 and does not handle log rotation by itself. It leaves the option for user to handle it themselves (e.g. with logrotate).
 
 .B NOTE:

@@ -68,7 +68,7 @@ func TestInitSessionErrorLogger(t *testing.T) {
 }
 
 func TestInitLogger(t *testing.T) {
-	f, _ := ioutil.TempFile(os.TempDir(), "emptty-log-file")
+	f, _ := ioutil.TempFile(os.TempDir(), "emptty-log-file.[TTY_NUMBER]")
 	fileName := f.Name()
 	f.Close()
 
@@ -141,4 +141,15 @@ func TestHandleStrErr(t *testing.T) {
 	if !strings.Contains(output, "THIS IS ERROR") {
 		t.Errorf("TestHandleStrErr: 'THIS IS ERROR' was expected, but was '%s'", output)
 	}
+}
+
+func TestBackupFileIfNotFolder(t *testing.T) {
+	f, _ := ioutil.TempFile(os.TempDir(), "emptty-data")
+	fileName := f.Name()
+	f.Close()
+
+	backupFileIfNotFolder(fileName + "/file")
+	backupFileIfNotFolder(fileName + "/file")
+
+	os.Remove(fileName)
 }

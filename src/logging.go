@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 )
 
@@ -15,9 +16,9 @@ var TEST_MODE bool
 
 const (
 	pathLogFileNull      = "/dev/null"
-	pathLogFile          = "/var/log/emptty"
-	pathLogSessErrFile   = "/var/log/emptty-session-errors"
 	pathLogFileOldSuffix = ".old"
+
+	constTTYplaceholder = "[TTY_NUMBER]"
 
 	constLogDefault   = "default"
 	constLogAppending = "appending"
@@ -82,25 +83,30 @@ func handleErr(err error) {
 
 // Initialize logger to file defined by pathLogFile.
 func initLogger(conf *config) {
-	f, err := prepareLogFile(conf.LoggingFile, pathLogFile, conf.Logging)
+	f, err := prepareLogFile(conf.LoggingFile, conf.strTTY(), conf.Logging)
 	if err == nil {
 		log.SetOutput(f)
+	} else {
+		fmt.Println(err)
 	}
 }
 
 // Initialize logger to file for session-errors.
 func initSessionErrorLogger(conf *config) (*os.File, error) {
-	return prepareLogFile(conf.SessionErrLogFile, pathLogSessErrFile, conf.SessionErrLog)
+	return prepareLogFile(conf.SessionErrLogFile, conf.strTTY(), conf.SessionErrLog)
 }
 
 // Prepares logging file according to defined configuration.
-func prepareLogFile(path, defaultPath string, method enLogging) (*os.File, error) {
-	logFilePath := defaultPath
-	if path != "" {
-		logFilePath = path
-	}
+func prepareLogFile(path, tty string, method enLogging) (*os.File, error) {
+	logFilePath := strings.ReplaceAll(path, constTTYplaceholder, tty)
 
 	if method == Default && logFilePath != pathLogFileNull {
+		// Temporary workaround to allow create new folder
+		backupFileIfNotFolder(logFilePath)
+
+		if err := mkDirsForFile(logFilePath, 0755); err != nil {
+			return nil, err
+		}
 		if fileExists(logFilePath) {
 			os.Remove(logFilePath + pathLogFileOldSuffix)
 			os.Rename(logFilePath, logFilePath+pathLogFileOldSuffix)
@@ -110,6 +116,16 @@ func prepareLogFile(path, defaultPath string, method enLogging) (*os.File, error
 	}
 
 	return os.OpenFile(logFilePath, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0644)
+}
+
+// Temporal solution to avoid issues with names of logging folder, if there is already file with same name.
+func backupFileIfNotFolder(path string) {
+	fileName := path[:strings.LastIndex(path, "/")]
+	f, err := os.Stat(fileName)
+	if err == nil && f != nil && !f.IsDir() {
+		os.Remove(fileName + pathLogFileOldSuffix)
+		os.Rename(fileName, fileName+pathLogFileOldSuffix)
+	}
 }
 
 // Parse logging option
