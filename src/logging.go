@@ -86,8 +86,6 @@ func initLogger(conf *config) {
 	f, err := prepareLogFile(conf.LoggingFile, conf.strTTY(), conf.Logging)
 	if err == nil {
 		log.SetOutput(f)
-	} else {
-		fmt.Println(err)
 	}
 }
 
