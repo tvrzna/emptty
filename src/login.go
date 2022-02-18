@@ -31,8 +31,6 @@ const (
 	envUid             = "UID"
 )
 
-var interrupted bool
-
 // Login into graphical environment
 func login(conf *config) {
 	interrupted = false

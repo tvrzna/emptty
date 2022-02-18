@@ -10,6 +10,8 @@ import (
 	"syscall"
 )
 
+var interrupted bool
+
 // Prepares and stars Wayland session for authorized user.
 func wayland(usr *sysuser, d *desktop, conf *config) {
 	// Set environment
