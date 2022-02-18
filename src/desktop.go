@@ -170,28 +170,16 @@ func listAllDesktops(usr *sysuser, pathXorgDesktops, pathWaylandDesktops string)
 	var result []*desktop
 
 	// load Xorg desktops
-	xorgDesktops := listDesktops(pathXorgDesktops, Xorg)
-	if xorgDesktops != nil && len(xorgDesktops) > 0 {
-		result = append(result, xorgDesktops...)
-	}
+	result = append(result, listDesktops(pathXorgDesktops, Xorg)...)
 
 	// load Wayland desktops
-	waylandDesktops := listDesktops(pathWaylandDesktops, Wayland)
-	if waylandDesktops != nil && len(waylandDesktops) > 0 {
-		result = append(result, waylandDesktops...)
-	}
+	result = append(result, listDesktops(pathWaylandDesktops, Wayland)...)
 
 	// load custom desktops
-	customDesktops := listDesktops(pathCustomSessions, Custom)
-	if customDesktops != nil && len(customDesktops) > 0 {
-		result = append(result, customDesktops...)
-	}
+	result = append(result, listDesktops(pathCustomSessions, Custom)...)
 
 	// load custom user desktops
-	customUserDesktops := listDesktops(usr.homedir+pathUserCustomSession, UserCustom)
-	if customUserDesktops != nil && len(customUserDesktops) > 0 {
-		result = append(result, customUserDesktops...)
-	}
+	result = append(result, listDesktops(usr.homedir+pathUserCustomSession, UserCustom)...)
 
 	return result
 }
