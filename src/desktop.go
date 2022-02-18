@@ -67,6 +67,14 @@ type desktop struct {
 	child     *desktop
 }
 
+// Gets exec path from desktop and returns true, if command allows dbus-launch.
+func (d *desktop) getStrExec() (string, bool) {
+	if d.exec != "" {
+		return d.exec, true
+	}
+	return d.path, false
+}
+
 // lastSession defines structure for last used session on user login.
 type lastSession struct {
 	exec string

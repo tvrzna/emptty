@@ -313,7 +313,7 @@ func setTTYOwnership(conf *config, uid int) error {
 
 // Prepares command for starting GUI.
 func prepareGuiCommand(usr *sysuser, d *desktop, conf *config) (cmd *exec.Cmd, strExec string) {
-	strExec, allowStartupPrefix := getStrExec(d)
+	strExec, allowStartupPrefix := d.getStrExec()
 
 	startScript := false
 
@@ -345,14 +345,6 @@ func prepareGuiCommand(usr *sysuser, d *desktop, conf *config) (cmd *exec.Cmd, s
 	}
 
 	return cmd, strExec
-}
-
-// Gets exec path from desktop and returns true, if command allows dbus-launch.
-func getStrExec(d *desktop) (string, bool) {
-	if d.exec != "" {
-		return d.exec, true
-	}
-	return d.path, false
 }
 
 // Finds free display for spawning Xorg instance.

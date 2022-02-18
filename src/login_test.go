@@ -6,21 +6,6 @@ import (
 	"testing"
 )
 
-func TestGetStrExec(t *testing.T) {
-	d := &desktop{path: "/dev/null", exec: "/usr/bin/none"}
-
-	cmd, isExec := getStrExec(d)
-	if !isExec || cmd != "/usr/bin/none" {
-		t.Errorf("TestGetStrExec: unexpected result: %s; %t", cmd, isExec)
-	}
-
-	d.exec = ""
-	cmd, isExec = getStrExec(d)
-	if isExec || cmd != "/dev/null" {
-		t.Errorf("TestGetStrExec: unexpected result: %s; %t", cmd, isExec)
-	}
-}
-
 func TestPrepareGuiCommandWithChild(t *testing.T) {
 	c := &config{}
 	u := &sysuser{uid: 3000, gid: 2000}

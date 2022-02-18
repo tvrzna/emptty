@@ -301,3 +301,18 @@ func TestFindAutoselectDesktop(t *testing.T) {
 		t.Error("TestFindAutoselectDesktop: found desktop, that should be uknown")
 	}
 }
+
+func TestGetStrExec(t *testing.T) {
+	d := &desktop{path: "/dev/null", exec: "/usr/bin/none"}
+
+	cmd, isExec := d.getStrExec()
+	if !isExec || cmd != "/usr/bin/none" {
+		t.Errorf("TestGetStrExec: unexpected result: %s; %t", cmd, isExec)
+	}
+
+	d.exec = ""
+	cmd, isExec = d.getStrExec()
+	if isExec || cmd != "/dev/null" {
+		t.Errorf("TestGetStrExec: unexpected result: %s; %t", cmd, isExec)
+	}
+}
