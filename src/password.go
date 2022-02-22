@@ -5,16 +5,13 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
-	"syscall"
 )
 
 // Reads password without echoing it
 func readPassword() (string, error) {
-	c := make(chan os.Signal, 10)
-
 	fd := os.Stdout.Fd()
 
-	signal.Notify(c, syscall.SIGHUP, syscall.SIGINT, syscall.SIGKILL, syscall.SIGQUIT, syscall.SIGTERM)
+	c := makeInterruptChannel()
 
 	go handlePasswordInterrupt(c, fd)
 

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"os/signal"
 	"strconv"
 	"strings"
 	"syscall"
@@ -243,8 +242,7 @@ func getFreeXDisplay() int {
 
 // Registers interrupt handler, that interrupts all mentioned Cmds.
 func registerInterruptHandler(cmds ...*exec.Cmd) {
-	c := make(chan os.Signal, 10)
-	signal.Notify(c, os.Interrupt, syscall.SIGHUP, syscall.SIGINT, syscall.SIGKILL, syscall.SIGQUIT, syscall.SIGTERM)
+	c := makeInterruptChannel()
 	go handleInterrupt(c, cmds...)
 }
 

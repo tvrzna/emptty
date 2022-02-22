@@ -6,9 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/signal"
 	"strings"
-	"syscall"
 )
 
 // TEST_MODE Defines if logging is in test mode
@@ -68,8 +66,7 @@ func handleErr(err error) {
 		fmt.Printf("Error: %s\n", err)
 		fmt.Printf("\nPress Enter to continue...")
 		if !TEST_MODE {
-			c := make(chan os.Signal, 10)
-			signal.Notify(c, syscall.SIGHUP, syscall.SIGINT, syscall.SIGKILL, syscall.SIGQUIT, syscall.SIGTERM)
+			c := makeInterruptChannel()
 			go func(c chan os.Signal) {
 				<-c
 				os.Exit(1)
