@@ -12,7 +12,7 @@ import (
 func readPassword() (string, error) {
 	c := make(chan os.Signal, 10)
 
-	fd := []uintptr{os.Stdin.Fd(), os.Stdout.Fd(), os.Stderr.Fd()}
+	fd := os.Stdout.Fd()
 
 	signal.Notify(c, syscall.SIGHUP, syscall.SIGINT, syscall.SIGKILL, syscall.SIGQUIT, syscall.SIGTERM)
 
@@ -33,21 +33,8 @@ func readPassword() (string, error) {
 	return input[:len(input)-1], nil
 }
 
-// Enables or disables echo depending on status
-func setTerminalEcho(fd []uintptr, status bool) error {
-	flag := ""
-	if !status {
-		flag = "-"
-	}
-	pid, err := syscall.ForkExec("/bin/stty", []string{"stty", flag + "echo"}, &syscall.ProcAttr{Dir: "", Files: fd})
-	if err == nil {
-		syscall.Wait4(pid, nil, 0, nil)
-	}
-	return err
-}
-
 // Enables echo on interruption and provide interrupt.
-func handlePasswordInterrupt(c chan os.Signal, fd []uintptr) {
+func handlePasswordInterrupt(c chan os.Signal, fd uintptr) {
 	<-c
 	setTerminalEcho(fd, true)
 	os.Exit(-1)
