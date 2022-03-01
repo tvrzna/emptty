@@ -6,8 +6,8 @@ import (
 )
 
 func TestLoadConfig(t *testing.T) {
-	conf := loadConfig(getTestingPath("conf"))
-	conf = loadConfig(loadConfigPath([]string{"-c", getTestingPath("conf")}))
+	loadConfig(getTestingPath("conf"))
+	conf := loadConfig(loadConfigPath([]string{"-c", getTestingPath("conf")}))
 
 	if conf.Tty != 14 || conf.strTTY() != "14" {
 		t.Error("TestLoadConfig: TTY value is not correct")

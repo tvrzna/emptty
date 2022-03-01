@@ -115,8 +115,8 @@ func TestParseEnv(t *testing.T) {
 }
 
 func TestLoadUserDesktop(t *testing.T) {
-	d, _ := loadUserDesktop(getTestingPath("userHome2"))
-	d, _ = loadUserDesktop(getTestingPath("userHome"))
+	loadUserDesktop(getTestingPath("userHome2"))
+	d, _ := loadUserDesktop(getTestingPath("userHome"))
 
 	fmt.Println(d.exec)
 
@@ -180,10 +180,10 @@ func TestGetDesktop(t *testing.T) {
 func TestGetUserLastSession(t *testing.T) {
 	usr := &sysuser{}
 	usr.homedir = getTestingPath("userHome2")
-	s := getUserLastSession(usr)
+	getUserLastSession(usr)
 
 	usr.homedir = getTestingPath("userHome")
-	s = getUserLastSession(usr)
+	s := getUserLastSession(usr)
 
 	if s.env != Wayland {
 		t.Error("TestGetUserLastSession: wrong env value")

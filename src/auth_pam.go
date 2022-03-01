@@ -22,9 +22,7 @@ var trans *pam.Transaction
 //
 // If autologin is enabled, it behaves as user has been authorized.
 func authUser(conf *config) *sysuser {
-	var err error
-
-	trans, err = pam.StartFunc("emptty", conf.DefaultUser, func(s pam.Style, msg string) (string, error) {
+	trans, _ = pam.StartFunc("emptty", conf.DefaultUser, func(s pam.Style, msg string) (string, error) {
 		switch s {
 		case pam.PromptEchoOff:
 			if conf.Autologin {
@@ -57,7 +55,7 @@ func authUser(conf *config) *sysuser {
 		return "", errors.New("Unrecognized message style")
 	})
 
-	err = trans.Authenticate(pam.Silent)
+	err := trans.Authenticate(pam.Silent)
 	if err != nil {
 		bkpErr := errors.New(err.Error())
 		username, _ := trans.GetItem(pam.User)
