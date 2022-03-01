@@ -44,10 +44,10 @@ func TestStringEnv(t *testing.T) {
 }
 
 func TestPrintDesktops(t *testing.T) {
-	desktops := []*desktop{&desktop{name: "a", envOrigin: Xorg},
-		&desktop{name: "b", envOrigin: Wayland},
-		&desktop{name: "c", envOrigin: Custom},
-		&desktop{name: "d", envOrigin: UserCustom}}
+	desktops := []*desktop{{name: "a", envOrigin: Xorg},
+		{name: "b", envOrigin: Wayland},
+		{name: "c", envOrigin: Custom},
+		{name: "d", envOrigin: UserCustom}}
 
 	var result string
 	conf := &config{}

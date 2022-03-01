@@ -1,5 +1,5 @@
-// +build !noutmp
-// +build !openbsd
+//go:build !noutmp && !openbsd
+// +build !noutmp,!openbsd
 
 package src
 
