@@ -344,7 +344,7 @@ func (e enEnvironment) stringify() string {
 }
 
 // String value of enEnvironment
-func (env enEnvironment) string() string {
+func (e enEnvironment) string() string {
 	strings := []string{constEnvSUndefined, constEnvSXorg, constEnvSWayland, constEnvSCustom, constEnvSUserCustom}
-	return strings[env]
+	return strings[e]
 }
