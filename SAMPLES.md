@@ -15,8 +15,9 @@ Selection=true
 xrandr --output eDP1 --mode 1920x1080
 xrdb -merge ~/.Xresources
 
-source /etc/profile
-source ~/.bashrc
+# source /etc/profile does not have any effect
+. /etc/profile
+. ~/.bashrc
 
 export BROWSER=firefox
 export EDITOR=vim
@@ -48,8 +49,9 @@ In your .config folder you have to create 'emptty' file or in your home folder y
 #!/bin/sh
 Environment=xorg
 
-source /etc/profile
-source ~/.bashrc
+# source /etc/profile does not have any effect
+. /etc/profile
+. ~/.bashrc
 
 exec dbus-launch i3
 ```
