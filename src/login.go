@@ -62,12 +62,7 @@ func login(conf *config) {
 
 	runDisplayScript(conf.DisplayStartScript)
 
-	switch d.env {
-	case Wayland:
-		wayland(usr, d, conf)
-	case Xorg:
-		xorg(usr, d, conf)
-	}
+	startSession(usr, d, conf)
 
 	closeAuth()
 

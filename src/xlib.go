@@ -15,22 +15,13 @@ import (
 
 const tagXlib = ""
 
-type xdisplay struct {
-	disp     *C.Display
-	dispName string
-}
-
 // Opens XDisplay with xlib.
-func (c *xdisplay) openXDisplay() error {
-	if c.disp != nil {
-		return errors.New("X Display is already opened")
-	}
-	displayName := C.CString(c.dispName)
+func openXDisplay(dispName string) error {
+	displayName := C.CString(dispName)
 	defer C.free(unsafe.Pointer(displayName))
 	for i := 0; i < 50; i++ {
 		d := C.XOpenDisplay(displayName)
 		if d != nil {
-			c.disp = d
 			return nil
 		}
 		time.Sleep(50 * time.Millisecond)

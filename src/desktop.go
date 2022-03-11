@@ -28,6 +28,9 @@ const (
 	constEnvSCustom     = "Custom"
 	constEnvSUserCustom = "User Custom"
 
+	constEnvSTXorg    = "x11"
+	constEnvSTWayland = "wayland"
+
 	pathLastSession       = "/.cache/emptty/last-session"
 	pathXorgSessions      = "/usr/share/xsessions/"
 	pathWaylandSessions   = "/usr/share/wayland-sessions/"
@@ -346,5 +349,11 @@ func (e enEnvironment) stringify() string {
 // String value of enEnvironment
 func (e enEnvironment) string() string {
 	strings := []string{constEnvSUndefined, constEnvSXorg, constEnvSWayland, constEnvSCustom, constEnvSUserCustom}
+	return strings[e]
+}
+
+// Session type of enEnvironment
+func (e enEnvironment) sessionType() string {
+	strings := []string{"", constEnvSTXorg, constEnvSTWayland, "", ""}
 	return strings[e]
 }

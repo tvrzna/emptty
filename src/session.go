@@ -1,201 +1,110 @@
 package src
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
-	"strconv"
 	"strings"
-	"syscall"
 )
 
 var interrupted bool
 
-// Prepares and stars Wayland session for authorized user.
-func wayland(usr *sysuser, d *desktop, conf *config) {
-	// Set environment
-	if !conf.NoXdgFallback {
-		usr.setenv(envXdgSessionType, "wayland")
+// session defines basic functions expected from desktop session
+type session interface {
+	startCarrier()
+	getCarrierPid() int
+	finishCarrier() error
+}
+
+// commonSession defines structure with data required for starting the session
+type commonSession struct {
+	session
+	usr  *sysuser
+	d    *desktop
+	conf *config
+}
+
+// Starts user's session
+func startSession(usr *sysuser, d *desktop, conf *config) {
+	s := &commonSession{nil, usr, d, conf}
+
+	switch d.env {
+	case Wayland:
+		s.session = &waylandSession{s}
+	case Xorg:
+		s.session = &xorgSession{s, nil}
 	}
-	logPrint("Defined Wayland environment")
 
-	// start Wayland
-	wsession, strExec := prepareGuiCommand(usr, d, conf)
-	registerInterruptHandler(wsession)
+	s.start()
+}
 
-	sessionErrLog, sessionErrLogErr := initSessionErrorLogger(conf)
+// Performs common start of session
+func (s *commonSession) start() {
+	s.startCarrier()
+
+	if !s.conf.NoXdgFallback {
+		s.usr.setenv(envXdgSessionType, s.d.env.sessionType())
+	}
+
+	session, strExec := s.prepareGuiCommand()
+	go handleInterrupt(makeInterruptChannel(), session)
+
+	sessionErrLog, sessionErrLogErr := initSessionErrorLogger(s.conf)
 	if sessionErrLogErr == nil {
-		wsession.Stderr = sessionErrLog
+		session.Stderr = sessionErrLog
 		defer sessionErrLog.Close()
 	} else {
 		logPrint(sessionErrLogErr)
 	}
 
 	logPrint("Starting " + strExec)
-	err := wsession.Start()
-	handleErr(err)
+	if err := session.Start(); err != nil {
+		s.finishCarrier()
+		handleErr(err)
+	}
 
-	// make utmp entry
-	utmpEntry := addUtmpEntry(usr.username, wsession.Process.Pid, conf.strTTY(), "")
+	pid := s.getCarrierPid()
+	if pid <= 0 {
+		pid = session.Process.Pid
+	}
+
+	utmpEntry := addUtmpEntry(s.usr.username, pid, s.conf.strTTY(), s.usr.getenv(envDisplay))
 	logPrint("Added utmp entry")
 
-	logPrint(strExec + " finished")
+	err := session.Wait()
 
-	err = wsession.Wait()
+	carrierErr := s.finishCarrier()
 
-	// end utmp entry
 	endUtmpEntry(utmpEntry)
 	logPrint("Ended utmp entry")
 
 	if !interrupted && err != nil {
 		logPrint(strExec + " finished with error: " + err.Error() + ". For more details see `SESSION_ERROR_LOGGING` in configuration.")
-		handleStrErr("Wayland session finished with error, please check logs")
-	}
-}
-
-// Prepares and starts Xorg session for authorized user.
-func xorg(usr *sysuser, d *desktop, conf *config) {
-	freeDisplay := strconv.Itoa(getFreeXDisplay())
-
-	// Set environment
-	if !conf.NoXdgFallback {
-		usr.setenv(envXdgSessionType, "x11")
-	}
-	if !conf.DefaultXauthority {
-		usr.setenv(envXauthority, usr.getenv(envXdgRuntimeDir)+"/.emptty-xauth")
-		os.Setenv(envXauthority, usr.getenv(envXauthority))
-		os.Remove(usr.getenv(envXauthority))
-	}
-	usr.setenv(envDisplay, ":"+freeDisplay)
-	os.Setenv(envDisplay, usr.getenv(envDisplay))
-	logPrint("Defined Xorg environment")
-
-	// generate mcookie
-	cmd := cmdAsUser(usr, "/usr/bin/mcookie")
-	mcookie, err := cmd.Output()
-	handleErr(err)
-	logPrint("Generated mcookie")
-
-	// generate xauth
-	cmd = cmdAsUser(usr, "/usr/bin/xauth", "add", usr.getenv(envDisplay), ".", string(mcookie))
-	_, err = cmd.Output()
-	handleErr(err)
-
-	logPrint("Generated xauthority")
-
-	// start X
-	logPrint("Starting Xorg")
-
-	var xorgArgs []string
-	if conf.RootlessXorg && conf.DaemonMode {
-		xorgArgs = []string{"-keeptty", "vt" + conf.strTTY(), usr.getenv(envDisplay)}
-	} else {
-		xorgArgs = []string{"vt" + conf.strTTY(), usr.getenv(envDisplay)}
+		handleStrErr(s.d.env.string() + " session finished with error, please check logs")
 	}
 
-	if conf.XorgArgs != "" {
-		arrXorgArgs := strings.Split(conf.XorgArgs, " ")
-		xorgArgs = append(xorgArgs, arrXorgArgs...)
-	}
-
-	var xorg *exec.Cmd
-	if conf.RootlessXorg && conf.DaemonMode {
-		xorg = cmdAsUser(usr, "/usr/bin/Xorg", xorgArgs...)
-		xorg.Env = append(usr.environ())
-		err = setTTYOwnership(conf, usr.uid)
-		if err != nil {
-			logPrint(err)
-		}
-	} else {
-		xorg = exec.Command("/usr/bin/Xorg", xorgArgs...)
-		xorg.Env = append(os.Environ())
-	}
-
-	xorg.Start()
-	if xorg.Process == nil {
-		handleStrErr("Xorg is not running")
-	}
-	logPrint("Started Xorg")
-
-	disp := &xdisplay{}
-	disp.dispName = usr.getenv(envDisplay)
-	handleErr(disp.openXDisplay())
-
-	// make utmp entry
-	utmpEntry := addUtmpEntry(usr.username, xorg.Process.Pid, conf.strTTY(), usr.getenv(envDisplay))
-	logPrint("Added utmp entry")
-
-	// start xsession
-	xsession, strExec := prepareGuiCommand(usr, d, conf)
-	registerInterruptHandler(xsession, xorg)
-
-	sessionErrLog, sessionErrLogErr := initSessionErrorLogger(conf)
-	if sessionErrLogErr == nil {
-		xsession.Stderr = sessionErrLog
-		defer sessionErrLog.Close()
-	} else {
-		logPrint(sessionErrLogErr)
-	}
-
-	logPrint("Starting " + strExec)
-	err = xsession.Start()
-	if err != nil {
-		xorg.Process.Signal(os.Interrupt)
-		xorg.Wait()
-		handleErr(err)
-	}
-
-	errXsession := xsession.Wait()
-	logPrint(strExec + " finished")
-
-	// Stop Xorg
-	xorg.Process.Signal(os.Interrupt)
-	errXorg := xorg.Wait()
-	logPrint("Interrupted Xorg")
-
-	// Remove auth
-	os.Remove(usr.getenv(envXauthority))
-	logPrint("Cleaned up xauthority")
-
-	// End utmp entry
-	endUtmpEntry(utmpEntry)
-	logPrint("Ended utmp entry")
-
-	if conf.RootlessXorg && conf.DaemonMode {
-		err = setTTYOwnership(conf, os.Getuid())
-		if err != nil {
-			logPrint(err)
-		}
-	}
-
-	if !interrupted && errXsession != nil {
-		logPrint(strExec + " finished with error: " + errXsession.Error() + ". For more details see `SESSION_ERROR_LOGGING` in configuration.")
-		handleStrErr("Xorg session finished with error, please check logs")
-	}
-
-	if !interrupted && errXorg != nil {
-		logPrint("Xorg finished with error: " + errXsession.Error())
-		handleStrErr("Xorg finished with error, please check logs")
+	if !interrupted && carrierErr != nil {
+		logPrint(s.d.env.string() + " finished with error: " + carrierErr.Error())
+		handleStrErr(s.d.env.string() + " finished with error, please check logs")
 	}
 }
 
 // Prepares command for starting GUI.
-func prepareGuiCommand(usr *sysuser, d *desktop, conf *config) (cmd *exec.Cmd, strExec string) {
-	strExec, allowStartupPrefix := d.getStrExec()
+func (s *commonSession) prepareGuiCommand() (cmd *exec.Cmd, strExec string) {
+	strExec, allowStartupPrefix := s.d.getStrExec()
 
 	startScript := false
 
-	if d.selection && d.child != nil {
-		strExec = d.path + " " + d.child.exec
+	if s.d.selection && s.d.child != nil {
+		strExec = s.d.path + " " + s.d.child.exec
 		startScript = true
 	} else {
-		if d.env == Xorg && conf.XinitrcLaunch && allowStartupPrefix && !strings.Contains(strExec, ".xinitrc") && fileExists(usr.homedir+"/.xinitrc") {
+		if s.d.env == Xorg && s.conf.XinitrcLaunch && allowStartupPrefix && !strings.Contains(strExec, ".xinitrc") && fileExists(s.usr.homedir+"/.xinitrc") {
 			startScript = true
 			allowStartupPrefix = false
-			strExec = usr.homedir + "/.xinitrc " + strExec
+			strExec = s.usr.homedir + "/.xinitrc " + strExec
 		}
 
-		if conf.DbusLaunch && !strings.Contains(strExec, "dbus-launch") && allowStartupPrefix {
+		if s.conf.DbusLaunch && !strings.Contains(strExec, "dbus-launch") && allowStartupPrefix {
 			strExec = "dbus-launch " + strExec
 		}
 	}
@@ -204,57 +113,22 @@ func prepareGuiCommand(usr *sysuser, d *desktop, conf *config) (cmd *exec.Cmd, s
 
 	if len(arrExec) > 1 {
 		if startScript {
-			cmd = cmdAsUser(usr, "/bin/sh", arrExec...)
+			cmd = cmdAsUser(s.usr, "/bin/sh", arrExec...)
 		} else {
-			cmd = cmdAsUser(usr, arrExec[0], arrExec...)
+			cmd = cmdAsUser(s.usr, arrExec[0], arrExec...)
 		}
 	} else {
-		cmd = cmdAsUser(usr, arrExec[0])
+		cmd = cmdAsUser(s.usr, arrExec[0])
 	}
 
 	return cmd, strExec
 }
 
-// Sets TTY ownership to defined uid, but keeps the original gid.
-func setTTYOwnership(conf *config, uid int) error {
-	info, err := os.Stat(conf.ttyPath())
-	if err != nil {
-		return err
-	}
-	stat := info.Sys().(*syscall.Stat_t)
-
-	err = os.Chown(conf.ttyPath(), uid, int(stat.Gid))
-	if err != nil {
-		return err
-	}
-	err = os.Chmod(conf.ttyPath(), 0620)
-	return err
-}
-
-// Finds free display for spawning Xorg instance.
-func getFreeXDisplay() int {
-	for i := 0; i < 32; i++ {
-		filename := fmt.Sprintf("/tmp/.X%d-lock", i)
-		if !fileExists(filename) {
-			return i
-		}
-	}
-	return 0
-}
-
-// Registers interrupt handler, that interrupts all mentioned Cmds.
-func registerInterruptHandler(cmds ...*exec.Cmd) {
-	c := makeInterruptChannel()
-	go handleInterrupt(c, cmds...)
-}
-
-// Catch interrupt signal chan and interrupts all mentioned Cmds.
-func handleInterrupt(c chan os.Signal, cmds ...*exec.Cmd) {
+// Catch interrupt signal chan and interrupts Cmd.
+func handleInterrupt(c chan os.Signal, cmd *exec.Cmd) {
 	<-c
 	interrupted = true
 	logPrint("Catched interrupt signal")
-	for _, cmd := range cmds {
-		cmd.Process.Signal(os.Interrupt)
-		cmd.Wait()
-	}
+	cmd.Process.Signal(os.Interrupt)
+	cmd.Wait()
 }
