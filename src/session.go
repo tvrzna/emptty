@@ -41,11 +41,13 @@ func wayland(usr *sysuser, d *desktop, conf *config) {
 
 	logPrint(strExec + " finished")
 
+	err = wsession.Wait()
+
 	// end utmp entry
 	endUtmpEntry(utmpEntry)
 	logPrint("Ended utmp entry")
 
-	if err = wsession.Wait(); !interrupted && err != nil {
+	if !interrupted && err != nil {
 		logPrint(strExec + " finished with error: " + err.Error() + ". For more details see `SESSION_ERROR_LOGGING` in configuration.")
 		handleStrErr("Wayland session finished with error, please check logs")
 	}
