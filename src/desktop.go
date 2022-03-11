@@ -205,7 +205,7 @@ func listDesktops(path string, env enEnvironment) []*desktop {
 // Inits desktop object from .desktop file on defined path.
 func getDesktop(path string, env enEnvironment) *desktop {
 	d := desktop{env: env, envOrigin: env, isUser: false, path: path}
-	if env == Custom {
+	if env == Custom || env == UserCustom {
 		d.env = Xorg
 	}
 
