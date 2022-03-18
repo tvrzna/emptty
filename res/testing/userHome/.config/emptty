@@ -3,3 +3,4 @@ COMMAND=none
 SELECTION=false
 EXEC=none
 NAME=window-manager
+LOGINSHELL=/bin/bash --login

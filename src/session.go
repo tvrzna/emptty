@@ -111,17 +111,26 @@ func (s *commonSession) prepareGuiCommand() (cmd *exec.Cmd, strExec string) {
 
 	arrExec := strings.Split(strExec, " ")
 
-	if len(arrExec) > 1 {
-		if startScript {
-			cmd = cmdAsUser(s.usr, "/bin/sh", arrExec...)
-		} else {
-			cmd = cmdAsUser(s.usr, arrExec[0], arrExec...)
-		}
+
+	if startScript {
+		cmd = cmdAsUser(s.usr, s.getLoginShell(), arrExec...)
 	} else {
-		cmd = cmdAsUser(s.usr, arrExec[0])
+		if len(arrExec) > 1 {
+			cmd = cmdAsUser(s.usr, arrExec[0], arrExec...)
+		} else {
+			cmd = cmdAsUser(s.usr, arrExec[0])
+		}
 	}
 
 	return cmd, strExec
+}
+
+// Gets preffered login shell
+func (s *commonSession) getLoginShell() string {
+	if s.d.loginShell != "" {
+		return s.d.loginShell
+	}
+	return "/bin/sh"
 }
 
 // Catch interrupt signal chan and interrupts Cmd.

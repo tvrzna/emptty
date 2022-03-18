@@ -135,6 +135,11 @@ func convertColor(name string, isForeground bool) string {
 
 // Prepares *exec.Cmd to be started as sysuser.
 func cmdAsUser(usr *sysuser, name string, arg ...string) *exec.Cmd {
+	if strings.Contains(name, " ") {
+		nameArgs := strings.Split(name, " ")
+		name = nameArgs[0]
+		arg = append(nameArgs[1:], arg...)
+	}
 	cmd := exec.Command(name, arg...)
 	cmd.Env = append(usr.environ())
 	cmd.SysProcAttr = &syscall.SysProcAttr{}

@@ -140,6 +140,10 @@ func TestLoadUserDesktop(t *testing.T) {
 		t.Error("TestLoadUserDesktop: wrong isUser value")
 	}
 
+	if d.loginShell == "" {
+		t.Error("TestLoadUserDesktop: wrong loginShell value")
+	}
+
 	readOutput(func() {
 		d, _ = loadUserDesktop(getTestingPath("userHome3"))
 		if d == nil || d.exec != "" || d.name != "" {

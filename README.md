@@ -108,6 +108,8 @@ See [samples](SAMPLES.md#emptty-as-config)
 
 `Selection` Requires selection of desktop, basically turns `emptty` file into `.xinitrc` for Xorg and Wayland. In this case `Exec` is skipped.
 
+`LoginShell` Defines custom shell to be used to start the session. This allows to start the session with non-interactive shell e.g. `/bin/bash --login`
+
 #### /etc/emptty/custom-sessions/ or ${HOME}/.config/emptty-custom-sessions/
 Optional folders for custom sessions, that could be available system-wide (in case of `/etc/emptty/custom-sessions/`) or user-specific (in case of `${HOME}/.config/emptty-custom-sessions/`), but do not have .desktop file stored on standard paths for Xorg or Wayland sessions. Expected suffix of each file is ".desktop".
 See [samples](SAMPLES.md#custom-sessions)

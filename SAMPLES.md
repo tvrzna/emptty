@@ -7,7 +7,7 @@ This variant allows to treat your script in similar way as your `.xinitrc`, howe
 
 As it is mentioned in [README](README.md), no `.profile` scripts are sourced by default. However following scripts contains few examples, how it could be done inside `emptty` file.
 
-#### Script
+#### Script with sourced `/etc/profile`
 ```
 #!/bin/sh
 Selection=true
@@ -25,6 +25,16 @@ export EDITOR=vim
 exec dbus-launch $@
 ```
 
+#### Script with sourced `/etc/profile` using LoginShell
+```
+#!/bin/sh
+Selection=true
+LoginShell=/bin/bash --login
+
+# /etc/profile is sourced by using non-interactive shell
+
+exec dbus-launch $@
+```
 
 ## \~/.config/emptty or \~/.emptty as config
 In your .config folder you have to create 'emptty' file or in your home folder you have to create `.emptty` file. If `environment` is not defined, it assumes xorg.
