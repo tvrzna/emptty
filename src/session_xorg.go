@@ -39,11 +39,9 @@ func (x *xorgSession) startCarrier() {
 	// start X
 	logPrint("Starting Xorg")
 
-	var xorgArgs []string
+	xorgArgs := []string{"vt" + x.conf.strTTY(), x.usr.getenv(envDisplay)}
 	if x.conf.RootlessXorg && x.conf.DaemonMode {
-		xorgArgs = []string{"-keeptty", "vt" + x.conf.strTTY(), x.usr.getenv(envDisplay)}
-	} else {
-		xorgArgs = []string{"vt" + x.conf.strTTY(), x.usr.getenv(envDisplay)}
+		xorgArgs = append(xorgArgs, "-keeptty")
 	}
 
 	if x.conf.XorgArgs != "" {
