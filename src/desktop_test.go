@@ -319,4 +319,10 @@ func TestGetStrExec(t *testing.T) {
 	if isExec || cmd != "/dev/null" {
 		t.Errorf("TestGetStrExec: unexpected result: %s; %t", cmd, isExec)
 	}
+
+	d = &desktop{path: "/dev/null", exec: "/usr/bin/none", selection: true, child: d}
+	cmd, isExec = d.getStrExec()
+	if isExec || cmd != d.path+" "+d.child.exec {
+		t.Errorf("TestGetStrExec: unexpected result: %s; %t", cmd, isExec)
+	}
 }

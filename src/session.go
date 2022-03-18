@@ -92,34 +92,19 @@ func (s *commonSession) start() {
 func (s *commonSession) prepareGuiCommand() (cmd *exec.Cmd, strExec string) {
 	strExec, allowStartupPrefix := s.d.getStrExec()
 
-	startScript := false
+	startScript := s.d.isUser && !allowStartupPrefix
 
-	if s.d.selection && s.d.child != nil {
-		strExec = s.d.path + " " + s.d.child.exec
+	if allowStartupPrefix && s.conf.XinitrcLaunch && s.d.env == Xorg && !strings.Contains(strExec, ".xinitrc") && fileExists(s.usr.homedir+"/.xinitrc") {
 		startScript = true
-	} else {
-		if s.d.env == Xorg && s.conf.XinitrcLaunch && allowStartupPrefix && !strings.Contains(strExec, ".xinitrc") && fileExists(s.usr.homedir+"/.xinitrc") {
-			startScript = true
-			allowStartupPrefix = false
-			strExec = s.usr.homedir + "/.xinitrc " + strExec
-		}
-
-		if s.conf.DbusLaunch && !strings.Contains(strExec, "dbus-launch") && allowStartupPrefix {
-			strExec = "dbus-launch " + strExec
-		}
+		strExec = s.usr.homedir + "/.xinitrc " + strExec
+	} else if allowStartupPrefix && s.conf.DbusLaunch && !strings.Contains(strExec, "dbus-launch") {
+		strExec = "dbus-launch " + strExec
 	}
 
-	arrExec := strings.Split(strExec, " ")
-
-
 	if startScript {
-		cmd = cmdAsUser(s.usr, s.getLoginShell(), arrExec...)
+		cmd = cmdAsUser(s.usr, s.getLoginShell(), strings.Split(strExec, " ")...)
 	} else {
-		if len(arrExec) > 1 {
-			cmd = cmdAsUser(s.usr, arrExec[0], arrExec...)
-		} else {
-			cmd = cmdAsUser(s.usr, arrExec[0])
-		}
+		cmd = cmdAsUser(s.usr, strExec)
 	}
 
 	return cmd, strExec

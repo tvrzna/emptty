@@ -74,7 +74,9 @@ type desktop struct {
 
 // Gets exec path from desktop and returns true, if command allows dbus-launch.
 func (d *desktop) getStrExec() (string, bool) {
-	if d.exec != "" {
+	if d.selection && d.child != nil {
+		return d.path + " " + d.child.exec, false
+	} else if d.exec != "" {
 		return d.exec, true
 	}
 	return d.path, false
@@ -256,11 +258,6 @@ func loadUserDesktop(homeDir string) (d *desktop, lang string) {
 		})
 		handleErr(err)
 
-		if d.exec == "" && !d.selection && !fileIsExecutable(d.path) {
-			fmt.Printf("\nMissing Exec value/Using selection and your '%s' is not executable.\n", d.path)
-			logPrintf("Missing Exec value/Using selection and your '%s' is not executable.\n", d.path)
-			return nil, lang
-		}
 		if d.selection {
 			d.exec = ""
 			d.name = ""
