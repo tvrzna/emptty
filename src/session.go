@@ -6,6 +6,27 @@ import (
 	"strings"
 )
 
+const (
+	envXdgConfigHome   = "XDG_CONFIG_HOME"
+	envXdgRuntimeDir   = "XDG_RUNTIME_DIR"
+	envXdgSessionId    = "XDG_SESSION_ID"
+	envXdgSessionType  = "XDG_SESSION_TYPE"
+	envXdgSessionClass = "XDG_SESSION_CLASS"
+	envXdgSeat         = "XDG_SEAT"
+	envHome            = "HOME"
+	envPwd             = "PWD"
+	envUser            = "USER"
+	envLogname         = "LOGNAME"
+	envXauthority      = "XAUTHORITY"
+	envDisplay         = "DISPLAY"
+	envShell           = "SHELL"
+	envLang            = "LANG"
+	envPath            = "PATH"
+	envDesktopSession  = "DESKTOP_SESSION"
+	envXdgSessDesktop  = "XDG_SESSION_DESKTOP"
+	envUid             = "UID"
+)
+
 var interrupted bool
 
 // session defines basic functions expected from desktop session
@@ -39,6 +60,8 @@ func startSession(usr *sysuser, d *desktop, conf *config) {
 
 // Performs common start of session
 func (s *commonSession) start() {
+	s.defineEnvironment()
+
 	s.startCarrier()
 
 	if !s.conf.NoXdgFallback {
@@ -86,6 +109,55 @@ func (s *commonSession) start() {
 		logPrint(s.d.env.string() + " finished with error: " + carrierErr.Error())
 		handleStrErr(s.d.env.string() + " finished with error, please check logs")
 	}
+}
+
+// Prepares environment and env variables for authorized user.
+func (s *commonSession) defineEnvironment() {
+	defineSpecificEnvVariables(s.usr)
+
+	s.usr.setenv(envHome, s.usr.homedir)
+	s.usr.setenv(envPwd, s.usr.homedir)
+	s.usr.setenv(envUser, s.usr.username)
+	s.usr.setenv(envLogname, s.usr.username)
+	s.usr.setenv(envUid, s.usr.strUid())
+	if !s.conf.NoXdgFallback {
+		s.usr.setenvIfEmpty(envXdgConfigHome, s.usr.homedir+"/.config")
+		s.usr.setenvIfEmpty(envXdgRuntimeDir, "/run/user/"+s.usr.strUid())
+		s.usr.setenvIfEmpty(envXdgSeat, "seat0")
+		s.usr.setenv(envXdgSessionClass, "user")
+	}
+	s.usr.setenv(envShell, s.usr.getShell())
+	s.usr.setenvIfEmpty(envLang, s.conf.Lang)
+	s.usr.setenvIfEmpty(envPath, os.Getenv(envPath))
+
+	if !s.conf.NoXdgFallback {
+		if s.d.name != "" {
+			s.usr.setenv(envDesktopSession, s.d.name)
+			s.usr.setenv(envXdgSessDesktop, s.d.name)
+		} else if s.d.child != nil && s.d.child.name != "" {
+			s.usr.setenv(envDesktopSession, s.d.child.name)
+			s.usr.setenv(envXdgSessDesktop, s.d.child.name)
+		}
+	}
+
+	logPrint("Defined Environment")
+
+	// create XDG folder
+	if !s.conf.NoXdgFallback {
+		if !fileExists(s.usr.getenv(envXdgRuntimeDir)) {
+			err := os.MkdirAll(s.usr.getenv(envXdgRuntimeDir), 0700)
+			handleErr(err)
+
+			// Set owner of XDG folder
+			os.Chown(s.usr.getenv(envXdgRuntimeDir), s.usr.uid, s.usr.gid)
+
+			logPrint("Created XDG folder")
+		} else {
+			logPrint("XDG folder already exists, no need to create")
+		}
+	}
+
+	os.Chdir(s.usr.getenv(envPwd))
 }
 
 // Prepares command for starting GUI.

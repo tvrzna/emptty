@@ -10,27 +10,6 @@ import (
 	"time"
 )
 
-const (
-	envXdgConfigHome   = "XDG_CONFIG_HOME"
-	envXdgRuntimeDir   = "XDG_RUNTIME_DIR"
-	envXdgSessionId    = "XDG_SESSION_ID"
-	envXdgSessionType  = "XDG_SESSION_TYPE"
-	envXdgSessionClass = "XDG_SESSION_CLASS"
-	envXdgSeat         = "XDG_SEAT"
-	envHome            = "HOME"
-	envPwd             = "PWD"
-	envUser            = "USER"
-	envLogname         = "LOGNAME"
-	envXauthority      = "XAUTHORITY"
-	envDisplay         = "DISPLAY"
-	envShell           = "SHELL"
-	envLang            = "LANG"
-	envPath            = "PATH"
-	envDesktopSession  = "DESKTOP_SESSION"
-	envXdgSessDesktop  = "XDG_SESSION_DESKTOP"
-	envUid             = "UID"
-)
-
 // Login into graphical environment
 func login(conf *config) {
 	interrupted = false
@@ -58,8 +37,6 @@ func login(conf *config) {
 		conf.Lang = usrLang
 	}
 
-	defineEnvironment(usr, conf, d)
-
 	runDisplayScript(conf.DisplayStartScript)
 
 	startSession(usr, d, conf)
@@ -67,55 +44,6 @@ func login(conf *config) {
 	closeAuth()
 
 	runDisplayScript(conf.DisplayStopScript)
-}
-
-// Prepares environment and env variables for authorized user.
-func defineEnvironment(usr *sysuser, conf *config, d *desktop) {
-	defineSpecificEnvVariables(usr)
-
-	usr.setenv(envHome, usr.homedir)
-	usr.setenv(envPwd, usr.homedir)
-	usr.setenv(envUser, usr.username)
-	usr.setenv(envLogname, usr.username)
-	usr.setenv(envUid, usr.strUid())
-	if !conf.NoXdgFallback {
-		usr.setenvIfEmpty(envXdgConfigHome, usr.homedir+"/.config")
-		usr.setenvIfEmpty(envXdgRuntimeDir, "/run/user/"+usr.strUid())
-		usr.setenvIfEmpty(envXdgSeat, "seat0")
-		usr.setenv(envXdgSessionClass, "user")
-	}
-	usr.setenv(envShell, usr.getShell())
-	usr.setenvIfEmpty(envLang, conf.Lang)
-	usr.setenvIfEmpty(envPath, os.Getenv(envPath))
-
-	if !conf.NoXdgFallback {
-		if d.name != "" {
-			usr.setenv(envDesktopSession, d.name)
-			usr.setenv(envXdgSessDesktop, d.name)
-		} else if d.child != nil && d.child.name != "" {
-			usr.setenv(envDesktopSession, d.child.name)
-			usr.setenv(envXdgSessDesktop, d.child.name)
-		}
-	}
-
-	logPrint("Defined Environment")
-
-	// create XDG folder
-	if !conf.NoXdgFallback {
-		if !fileExists(usr.getenv(envXdgRuntimeDir)) {
-			err := os.MkdirAll(usr.getenv(envXdgRuntimeDir), 0700)
-			handleErr(err)
-
-			// Set owner of XDG folder
-			os.Chown(usr.getenv(envXdgRuntimeDir), usr.uid, usr.gid)
-
-			logPrint("Created XDG folder")
-		} else {
-			logPrint("XDG folder already exists, no need to create")
-		}
-	}
-
-	os.Chdir(usr.getenv(envPwd))
 }
 
 // Runs display script, if defined
