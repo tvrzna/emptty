@@ -90,39 +90,40 @@ func TestLoadConfig(t *testing.T) {
 	}
 
 	if conf.SessionErrLog != Appending {
-		t.Error("TestLoadconfig: SESSION_ERROR_LOGGING value is not correct")
+		t.Error("TestLoadConfig: SESSION_ERROR_LOGGING value is not correct")
 	}
 
 	if conf.SessionErrLogFile != "/dev/null" {
-		t.Error("TestLoadconfig: SESSION_ERROR_LOGGING_FILE value is not correct")
+		t.Error("TestLoadConfig: SESSION_ERROR_LOGGING_FILE value is not correct")
 	}
 
 	if conf.NoXdgFallback {
-		t.Error("TestLoadconfig: NO_XDG_FALLBACK value is not correct")
+		t.Error("TestLoadConfig: NO_XDG_FALLBACK value is not correct")
 	}
 
 	if conf.DefaultXauthority {
-		t.Error("TestLoadconfig: DEFAULT_XAUTHORITY value is not correct")
+		t.Error("TestLoadConfig: DEFAULT_XAUTHORITY value is not correct")
 	}
 
 	if !conf.RootlessXorg {
-		t.Error("TestLoadconfig: ROOTLESS_XORG value is not correct")
+		t.Error("TestLoadConfig: ROOTLESS_XORG value is not correct")
 	}
 
 	if !conf.IdentifyEnvs {
-		t.Error("TestLoadconfig: IDENTIFY_ENVS value is not correct")
+		t.Error("TestLoadConfig: IDENTIFY_ENVS value is not correct")
 	}
 
 	if conf.AutologinMaxRetry != -1 {
-		t.Error("TestLoadconfig: AUTOLOGIN_MAX_RETRY value is not correct")
+		t.Error("TestLoadConfig: AUTOLOGIN_MAX_RETRY value is not correct")
 	}
 
 	if conf.MotdPath != "/dev/null/static" {
-		t.Error("TestLoadconfig: MOTD_PATH value is not correct")
+		t.Error("TestLoadConfig: MOTD_PATH value is not correct")
 	}
 
 	if conf.DynamicMotdPath != "/dev/null/dynamic" {
-		t.Error("TestLoadconfig: DYNAMIC_MOTD_PATH value is not correct")
+		t.Error("TestLoadConfig: DYNAMIC_MOTD_PATH value is not correct")
+	}
 	}
 }
 
