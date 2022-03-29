@@ -5,6 +5,7 @@ SWITCH_TTY=true
 PRINT_ISSUE=true
 PRINT_MOTD=false
 DEFAULT_USER=emptty-user
+DEFAULT_SESSION=/usr/bin/no-login
 AUTOLOGIN=false
 AUTOLOGIN_SESSION=none
 LANG=en_US.UTF-8

@@ -24,7 +24,11 @@ func login(conf *config) {
 	d, usrLang := loadUserDesktop(usr.homedir)
 
 	if d == nil || (d != nil && d.selection) {
-		selectedDesktop := selectDesktop(usr, conf)
+		selectedDesktop, lastDesktop := selectDesktop(usr, conf, d == nil || (d != nil && !d.selection))
+		if isLastDesktopForSave(usr, lastDesktop, selectedDesktop) {
+			setUserLastSession(usr, selectedDesktop)
+		}
+
 		if d != nil && d.selection {
 			d.child = selectedDesktop
 			d.env = d.child.env

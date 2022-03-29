@@ -124,6 +124,9 @@ func TestLoadConfig(t *testing.T) {
 	if conf.DynamicMotdPath != "/dev/null/dynamic" {
 		t.Error("TestLoadConfig: DYNAMIC_MOTD_PATH value is not correct")
 	}
+
+	if conf.DefaultSession != "/usr/bin/no-login" {
+		t.Error("TestLoadConfig: DEFAULT_SESSION value is not correct")
 	}
 }
 

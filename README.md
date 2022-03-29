@@ -28,6 +28,8 @@ Default startup configuration. On each change it requires to restart emptty.
 
 `DEFAULT_USER` Preselected user, if AUTOLOGIN is enabled, this user is logged in.
 
+`DEFAULT_SESSION` Preselected desktop session, if user does not use `emptty` file. Has lower priority than `AUTOLOGIN_SESSION`
+
 `AUTOLOGIN` Enables Autologin, if DEFAULT_USER is defined. Possible values are "true" or "false". Default value is false.
 __NOTE:__ to enable autologin DEFAULT_USER must be in group nopasswdlogin, otherwise user will NOT be authorized.
 

@@ -14,6 +14,7 @@ const (
 type config struct {
 	DaemonMode         bool
 	DefaultUser        string    `config:"DEFAULT_USER" parser:"SanitizeValue" default:""`
+	DefaultSession     string    `config:"DEFAULT_SESSION" parser:"SanitizeValue" default:""`
 	Autologin          bool      `config:"AUTOLOGIN" parser:"ParseBool" default:"false"`
 	AutologinSession   string    `config:"AUTOLOGIN_SESSION" parser:"SanitizeValue" default:""`
 	AutologinMaxRetry  int       `config:"AUTOLOGIN_MAX_RETRY" parser:"ParseInt" default:"2"`

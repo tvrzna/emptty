@@ -1,4 +1,4 @@
-.TH EMPTTY 1 "February 2022" "emptty 0.7.0" emptty
+.TH EMPTTY 1 "March 2022" "emptty 0.7.0" emptty
 
 .SH NAME
 emptty \- Dead simple CLI Display Manager on TTY
@@ -47,6 +47,9 @@ Enables printing of /etc/issue in daemon mode.
 Enables printing of default motd, static motd or dynamic motd.
 .IP DEFAULT_USER
 Preselected user, if AUTOLOGIN is enabled, this user is logged in.
+.IP DEFAULT_SESSION
+Preselected desktop session, if user does not use `emptty` file. Has lower priority than
+.I AUTOLOGIN_SESSION
 .IP AUTOLOGIN
 Enables Autologin, if DEFAULT_USER is defined. Possible values are "true" or "false". Default value is false.
 

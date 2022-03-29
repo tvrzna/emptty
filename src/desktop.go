@@ -89,7 +89,7 @@ type lastSession struct {
 }
 
 // Allows to select desktop, which could be selected.
-func selectDesktop(usr *sysuser, conf *config) *desktop {
+func selectDesktop(usr *sysuser, conf *config, allowAutoselectDesktop bool) (*desktop, *desktop) {
 	desktops := listAllDesktops(usr, pathXorgSessions, pathWaylandSessions)
 	if len(desktops) == 0 {
 		handleStrErr("Not found any installed desktop.")
@@ -98,12 +98,14 @@ func selectDesktop(usr *sysuser, conf *config) *desktop {
 	lastDesktop := getLastDesktop(usr, desktops)
 
 	if conf.Autologin && conf.AutologinSession != "" {
-		d := findAutoselectDesktop(conf.AutologinSession, desktops)
-		if d != nil {
-			if isLastDesktopForSave(usr, desktops[lastDesktop], d) {
-				setUserLastSession(usr, d)
-			}
-			return d
+		if d := findAutoselectDesktop(conf.AutologinSession, desktops); d != nil {
+			return d, desktops[lastDesktop]
+		}
+	}
+
+	if conf.DefaultSession != "" && allowAutoselectDesktop {
+		if d := findAutoselectDesktop(conf.DefaultSession, desktops); d != nil {
+			return d, desktops[lastDesktop]
 		}
 	}
 
@@ -123,14 +125,10 @@ func selectDesktop(usr *sysuser, conf *config) *desktop {
 			continue
 		}
 		if int(id) < len(desktops) {
-			d := desktops[id]
-			if isLastDesktopForSave(usr, desktops[lastDesktop], d) {
-				setUserLastSession(usr, d)
-			}
-			return d
+			return desktops[id], desktops[lastDesktop]
 		}
 	}
-	return nil
+	return nil, nil
 }
 
 // Prints list of desktops on screen
