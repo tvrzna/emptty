@@ -144,13 +144,13 @@ func handleLoginRetries(conf *config, usr *sysuser) (result error) {
 		return nil
 	}
 
-	retries := 0
-
 	if conf.Autologin && conf.AutologinSession != "" && conf.AutologinMaxRetry >= 0 {
-		err := mkDirsForFile(usr.getLoginRetryPath(), 0744)
-		if err != nil {
-			logPrint(err)
-		}
+		retries := 0
+		doAsUser(usr, func() {
+			if err := mkDirsForFile(usr.getLoginRetryPath(), 0744); err != nil {
+				logPrint(err)
+			}
+		})
 
 		file, err := os.Open(usr.getLoginRetryPath())
 		if err != nil {
@@ -160,8 +160,7 @@ func handleLoginRetries(conf *config, usr *sysuser) (result error) {
 
 		// Check if last retry was within last 2 seconds
 		limit := time.Now().Add(-2 * time.Second)
-		info, err := file.Stat()
-		if err == nil {
+		if info, err := file.Stat(); err == nil {
 			if info.ModTime().After(limit) {
 				content, err := ioutil.ReadFile(usr.getLoginRetryPath())
 				if err == nil {
@@ -171,16 +170,16 @@ func handleLoginRetries(conf *config, usr *sysuser) (result error) {
 
 				if retries >= conf.AutologinMaxRetry {
 					result = errors.New("Exceeded maximum number of allowed login retries in short period.")
+					retries = 0
 				}
 			}
 		}
+		doAsUser(usr, func() {
+			if err := ioutil.WriteFile(usr.getLoginRetryPath(), []byte(strconv.Itoa(retries)), 0600); err != nil {
+				logPrint(err)
+			}
+		})
 	}
 
-	doAsUser(usr, func() {
-		err := ioutil.WriteFile(usr.getLoginRetryPath(), []byte(strconv.Itoa(retries)), 0600)
-		if err != nil {
-			logPrint(err)
-		}
-	})
 	return result
 }
