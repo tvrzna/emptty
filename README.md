@@ -84,7 +84,7 @@ __NOTE:__ Be aware, that setting to "true" could lead to unexpected behaviour.
 If set true, it will not use `.emptty-xauth` file, but the standard `~/.Xauthority` file. This allows to handle xauth issues. Possible values are "true" or "false". Default value is false.
 
 `ROOTLESS_XORG`
-If set true, Xorg will be started as rootless, if system allows. Possible values are "true" or "false". Default value is false.
+If set true, Xorg will be started as rootless, if system allows and emptty is running in daemon mode. Possible values are "true" or "false". Default value is false.
 
 `IDENTIFY_ENVS`
 If set true, environemntal groups are printed to differ Xorg/Wayland/Custom/UserCustom desktops. Possible values are "true" or "false". Default value is false.
