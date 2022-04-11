@@ -3,12 +3,17 @@ package src
 import (
 	"fmt"
 	"os"
+	"runtime"
 	"strings"
 )
 
 const version = "0.7.1"
 
 var buildVersion string
+
+func init() {
+	runtime.LockOSThread()
+}
 
 // Main handles the functionality of whole application.
 func Main() {
