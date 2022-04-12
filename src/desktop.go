@@ -162,11 +162,14 @@ func printDesktops(conf *config, desktops []*desktop) {
 
 // Finds defined autologinSession in array of desktops by its exec or its name and environment, if defined.
 func findAutoselectDesktop(autologinSession string, env enEnvironment, desktops []*desktop) *desktop {
-	exec, _ := getDesktopBaseExec(autologinSession)
+	exec, args := getDesktopBaseExec(autologinSession)
 	for _, d := range desktops {
 		desktopExec, _ := getDesktopBaseExec(d.exec)
 		if (exec == desktopExec || autologinSession == d.name) &&
 			(env == Undefined || env == d.env) {
+			if args != "" {
+				d.exec = d.exec + " " + args
+			}
 			return d
 		}
 	}
