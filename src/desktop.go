@@ -306,13 +306,11 @@ func getUserLastSession(usr *sysuser) *lastSession {
 			strContent := strings.TrimSpace(string(content))
 
 			arrContent := strings.Split(strContent, ";")
-			if len(arrContent) > 0 {
-				l := lastSession{}
-				l.exec = strings.TrimSpace(arrContent[0])
-				if len(arrContent) > 1 {
-					l.env = parseEnv(arrContent[1], constEnvXorg)
-					return &l
-				}
+			l := lastSession{}
+			l.exec = strings.TrimSpace(arrContent[0])
+			if len(arrContent) > 1 {
+				l.env = parseEnv(arrContent[1], constEnvXorg)
+				return &l
 			}
 		}
 	}
