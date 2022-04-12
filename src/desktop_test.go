@@ -290,18 +290,23 @@ func TestFindAutoselectDesktop(t *testing.T) {
 
 	desktops := listAllDesktops(usr, getTestingPath("desktops"), getTestingPath("desktops"))
 
-	d1 := findAutoselectDesktop("CustomDesktop1", desktops)
+	d1 := findAutoselectDesktop("CustomDesktop1", Undefined, desktops)
 	if d1 == nil || d1.name != "CustomDesktop1" {
 		t.Error("TestFindAutoselectDesktop: could not find desktop by its name")
 	}
 
-	d2 := findAutoselectDesktop("custom-desktop2", desktops)
+	d2 := findAutoselectDesktop("custom-desktop2", Xorg, desktops)
 	if d2 == nil || d2.name != "CustomDesktop2" {
 		t.Error("TestFindAutoselectDesktop: could not find desktop by its exec")
 	}
 
-	d3 := findAutoselectDesktop("UnknownDesktop", desktops)
+	d3 := findAutoselectDesktop("UnknownDesktop", Undefined, desktops)
 	if d3 != nil {
+		t.Error("TestFindAutoselectDesktop: found desktop, that should be uknown")
+	}
+
+	d4 := findAutoselectDesktop("UnknownDesktop", Wayland, desktops)
+	if d4 != nil {
 		t.Error("TestFindAutoselectDesktop: found desktop, that should be uknown")
 	}
 }

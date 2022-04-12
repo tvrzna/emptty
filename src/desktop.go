@@ -98,13 +98,13 @@ func selectDesktop(usr *sysuser, conf *config, allowAutoselectDesktop bool) (*de
 	lastDesktop := getLastDesktop(usr, desktops)
 
 	if conf.Autologin && conf.AutologinSession != "" {
-		if d := findAutoselectDesktop(conf.AutologinSession, desktops); d != nil {
+		if d := findAutoselectDesktop(conf.AutologinSession, conf.AutologinSessionEnv, desktops); d != nil {
 			return d, desktops[lastDesktop]
 		}
 	}
 
 	if conf.DefaultSession != "" && allowAutoselectDesktop {
-		if d := findAutoselectDesktop(conf.DefaultSession, desktops); d != nil {
+		if d := findAutoselectDesktop(conf.DefaultSession, conf.DefaultSessionEnv, desktops); d != nil {
 			return d, desktops[lastDesktop]
 		}
 	}
@@ -160,10 +160,11 @@ func printDesktops(conf *config, desktops []*desktop) {
 	}
 }
 
-// Finds defined autologinSession in array of desktops by its exec or its name
-func findAutoselectDesktop(autologinSession string, desktops []*desktop) *desktop {
+// Finds defined autologinSession in array of desktops by its exec or its name and environment, if defined.
+func findAutoselectDesktop(autologinSession string, env enEnvironment, desktops []*desktop) *desktop {
 	for _, d := range desktops {
-		if strings.HasSuffix(d.exec, autologinSession) || autologinSession == d.name {
+		if (strings.HasSuffix(d.exec, autologinSession) || autologinSession == d.name) &&
+			(env == Undefined || env == d.env) {
 			return d
 		}
 	}

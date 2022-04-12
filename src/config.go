@@ -12,37 +12,39 @@ const (
 
 // config defines structure of application configuration.
 type config struct {
-	DaemonMode         bool
-	DefaultUser        string    `config:"DEFAULT_USER" parser:"SanitizeValue" default:""`
-	DefaultSession     string    `config:"DEFAULT_SESSION" parser:"SanitizeValue" default:""`
-	Autologin          bool      `config:"AUTOLOGIN" parser:"ParseBool" default:"false"`
-	AutologinSession   string    `config:"AUTOLOGIN_SESSION" parser:"SanitizeValue" default:""`
-	AutologinMaxRetry  int       `config:"AUTOLOGIN_MAX_RETRY" parser:"ParseInt" default:"2"`
-	Tty                int       `config:"TTY_NUMBER" parser:"ParseTTY" default:"0"`
-	SwitchTTY          bool      `config:"SWITCH_TTY" parser:"ParseBool" default:"true"`
-	PrintIssue         bool      `config:"PRINT_ISSUE" parser:"ParseBool" default:"true"`
-	PrintMotd          bool      `config:"PRINT_MOTD" parser:"ParseBool" default:"true"`
-	Lang               string    `config:"LANG" parser:"SanitizeValue" default:""`
-	DbusLaunch         bool      `config:"DBUS_LAUNCH" parser:"ParseBool" default:"true"`
-	XinitrcLaunch      bool      `config:"XINITRC_LAUNCH" parser:"ParseBool" default:"false"`
-	VerticalSelection  bool      `config:"VERTICAL_SELECTION" parser:"ParseBool" default:"false"`
-	Logging            enLogging `config:"LOGGING" parser:"ParseLogging" default:"default"`
-	LoggingFile        string    `config:"LOGGING_FILE" parser:"SanitizeValue" default:"/var/log/emptty/[TTY_NUMBER].log"`
-	XorgArgs           string    `config:"XORG_ARGS" parser:"SanitizeValue" default:""`
-	DynamicMotd        bool      `config:"DYNAMIC_MOTD" parser:"ParseBool" default:"false"`
-	DynamicMotdPath    string    `config:"DYNAMIC_MOTD_PATH" parser:"SanitizeValue" default:"/etc/emptty/motd-gen.sh"`
-	MotdPath           string    `config:"MOTD_PATH" parser:"SanitizeValue" default:"/etc/emptty/motd"`
-	FgColor            string    `config:"FG_COLOR" parser:"ConvertFgColor" default:""`
-	BgColor            string    `config:"BG_COLOR" parser:"ConvertBgColor" default:""`
-	DisplayStartScript string    `config:"DISPLAY_START_SCRIPT" parser:"SanitizeValue" default:""`
-	DisplayStopScript  string    `config:"DISPLAY_STOP_SCRIPT" parser:"SanitizeValue" default:""`
-	EnableNumlock      bool      `config:"ENABLE_NUMLOCK" parser:"ParseBool" default:"false"`
-	SessionErrLog      enLogging `config:"SESSION_ERROR_LOGGING" parser:"ParseLogging" default:"disabled"`
-	SessionErrLogFile  string    `config:"SESSION_ERROR_LOGGING_FILE" parser:"SanitizeValue" default:"/var/log/emptty/session-errors.[TTY_NUMBER].log"`
-	NoXdgFallback      bool      `config:"NO_XDG_FALLBACK" parser:"ParseBool" default:"false"`
-	DefaultXauthority  bool      `config:"DEFAULT_XAUTHORITY" parser:"ParseBool" default:"false"`
-	RootlessXorg       bool      `config:"ROOTLESS_XORG" parser:"ParseBool" default:"false"`
-	IdentifyEnvs       bool      `config:"IDENTIFY_ENVS" parser:"ParseBool" default:"false"`
+	DaemonMode          bool
+	DefaultUser         string        `config:"DEFAULT_USER" parser:"SanitizeValue" default:""`
+	DefaultSession      string        `config:"DEFAULT_SESSION" parser:"SanitizeValue" default:""`
+	DefaultSessionEnv   enEnvironment `config:"DEFAULT_SESSION_ENV" parser:"ParseEnv" default:""`
+	Autologin           bool          `config:"AUTOLOGIN" parser:"ParseBool" default:"false"`
+	AutologinSession    string        `config:"AUTOLOGIN_SESSION" parser:"SanitizeValue" default:""`
+	AutologinSessionEnv enEnvironment `config:"AUTOLOGIN_SESSION_ENV" parser:"ParseEnv" default:""`
+	AutologinMaxRetry   int           `config:"AUTOLOGIN_MAX_RETRY" parser:"ParseInt" default:"2"`
+	Tty                 int           `config:"TTY_NUMBER" parser:"ParseTTY" default:"0"`
+	SwitchTTY           bool          `config:"SWITCH_TTY" parser:"ParseBool" default:"true"`
+	PrintIssue          bool          `config:"PRINT_ISSUE" parser:"ParseBool" default:"true"`
+	PrintMotd           bool          `config:"PRINT_MOTD" parser:"ParseBool" default:"true"`
+	Lang                string        `config:"LANG" parser:"SanitizeValue" default:""`
+	DbusLaunch          bool          `config:"DBUS_LAUNCH" parser:"ParseBool" default:"true"`
+	XinitrcLaunch       bool          `config:"XINITRC_LAUNCH" parser:"ParseBool" default:"false"`
+	VerticalSelection   bool          `config:"VERTICAL_SELECTION" parser:"ParseBool" default:"false"`
+	Logging             enLogging     `config:"LOGGING" parser:"ParseLogging" default:"default"`
+	LoggingFile         string        `config:"LOGGING_FILE" parser:"SanitizeValue" default:"/var/log/emptty/[TTY_NUMBER].log"`
+	XorgArgs            string        `config:"XORG_ARGS" parser:"SanitizeValue" default:""`
+	DynamicMotd         bool          `config:"DYNAMIC_MOTD" parser:"ParseBool" default:"false"`
+	DynamicMotdPath     string        `config:"DYNAMIC_MOTD_PATH" parser:"SanitizeValue" default:"/etc/emptty/motd-gen.sh"`
+	MotdPath            string        `config:"MOTD_PATH" parser:"SanitizeValue" default:"/etc/emptty/motd"`
+	FgColor             string        `config:"FG_COLOR" parser:"ConvertFgColor" default:""`
+	BgColor             string        `config:"BG_COLOR" parser:"ConvertBgColor" default:""`
+	DisplayStartScript  string        `config:"DISPLAY_START_SCRIPT" parser:"SanitizeValue" default:""`
+	DisplayStopScript   string        `config:"DISPLAY_STOP_SCRIPT" parser:"SanitizeValue" default:""`
+	EnableNumlock       bool          `config:"ENABLE_NUMLOCK" parser:"ParseBool" default:"false"`
+	SessionErrLog       enLogging     `config:"SESSION_ERROR_LOGGING" parser:"ParseLogging" default:"disabled"`
+	SessionErrLogFile   string        `config:"SESSION_ERROR_LOGGING_FILE" parser:"SanitizeValue" default:"/var/log/emptty/session-errors.[TTY_NUMBER].log"`
+	NoXdgFallback       bool          `config:"NO_XDG_FALLBACK" parser:"ParseBool" default:"false"`
+	DefaultXauthority   bool          `config:"DEFAULT_XAUTHORITY" parser:"ParseBool" default:"false"`
+	RootlessXorg        bool          `config:"ROOTLESS_XORG" parser:"ParseBool" default:"false"`
+	IdentifyEnvs        bool          `config:"IDENTIFY_ENVS" parser:"ParseBool" default:"false"`
 }
 
 // LoadConfig handles loading of application configuration.
@@ -126,6 +128,14 @@ func (c *config) ParseInt(value, defaultValue string) int {
 // Parses logging type from string.
 func (c *config) ParseLogging(value, defaultValue string) enLogging {
 	return parseLogging(value, defaultValue)
+}
+
+// Parses environment type from string
+func (c *config) ParseEnv(value, defaultValue string) enEnvironment {
+	if value == "" {
+		return Undefined
+	}
+	return parseEnv(value, defaultValue)
 }
 
 // Coverts string foreground color name into ANSI color value.

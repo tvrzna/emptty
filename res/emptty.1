@@ -50,6 +50,8 @@ Preselected user, if AUTOLOGIN is enabled, this user is logged in.
 .IP DEFAULT_SESSION
 Preselected desktop session, if user does not use `emptty` file. Has lower priority than
 .I AUTOLOGIN_SESSION
+.IP DEFAULT_SESSION_ENV
+Optional environment of preselected desktop session, if user does not use `emptty` file. Possible values are "xorg" and "wayland".
 .IP AUTOLOGIN
 Enables Autologin, if DEFAULT_USER is defined. Possible values are "true" or "false". Default value is false.
 
@@ -59,6 +61,8 @@ to enable autologin DEFAULT_USER must be in group
 , otherwise user will NOT be authorized.
 .IP AUTOLOGIN_SESSION
 The default session used, if Autologin is enabled. If session is not found in list of session, it proceeds to manual selection.
+.IP AUTOLOGIN_SESSION_ENV
+Optional environment of autologin desktop session. Possible values are "xorg" and "wayland".
 .IP AUTOLOGIN_MAX_RETRY
 If Autologin is enabled and session does not start correctly, the number of retries in short period is kept to eventually stop the infinite loop of restarts. -1 is for infinite retries, 0 is for no retry. Default value is 2.
 .IP LANG

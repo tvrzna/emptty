@@ -37,6 +37,10 @@ func TestLoadConfig(t *testing.T) {
 		t.Error("TestLoadConfig: AUTOLOGIN_SESSION value is not correct")
 	}
 
+	if conf.AutologinSessionEnv != Undefined {
+		t.Error("TestLoadConfig: AUTOLOGIN_SESSION_ENV value is not correct")
+	}
+
 	if conf.Lang != "en_US.UTF-8" {
 		t.Error("TestLoadConfig: LANG value is not correct")
 	}
@@ -127,6 +131,10 @@ func TestLoadConfig(t *testing.T) {
 
 	if conf.DefaultSession != "/usr/bin/no-login" {
 		t.Error("TestLoadConfig: DEFAULT_SESSION value is not correct")
+	}
+
+	if conf.DefaultSessionEnv != Xorg {
+		t.Error("TestLoadConfig: DEFAULT_SESSION_ENV value is not correct")
 	}
 }
 
