@@ -331,3 +331,30 @@ func TestGetStrExec(t *testing.T) {
 		t.Errorf("TestGetStrExec: unexpected result: %s; %t", cmd, isExec)
 	}
 }
+
+func TestGetDesktopBaseExec(t *testing.T) {
+	exec1, args1 := getDesktopBaseExec("/usr/bin/shell ")
+	if exec1 != "shell" || args1 != "" {
+		t.Error("TestGetDesktopBaseExec: wrong value for exec1")
+	}
+
+	exec2, args2 := getDesktopBaseExec("/usr/bin/shell --argument1 --argument2='none' -a3 some")
+	if exec2 != "shell" || args2 != "--argument1 --argument2='none' -a3 some" {
+		t.Error("TestGetDesktopBaseExec: wrong value for exec2")
+	}
+
+	exec3, args3 := getDesktopBaseExec("shell --argument1 --argument2='none' -a3 some")
+	if exec3 != "shell" || args3 != "--argument1 --argument2='none' -a3 some" {
+		t.Error("TestGetDesktopBaseExec: wrong value for exec3")
+	}
+
+	exec4, args4 := getDesktopBaseExec("shell")
+	if exec4 != "shell" || args4 != "" {
+		t.Error("TestGetDesktopBaseExec: wrong value for exec4")
+	}
+
+	exec5, args5 := getDesktopBaseExec(" / ")
+	if exec5 != "" || args5 != "" {
+		t.Error("TestGetDesktopBaseExec: wrong value for exec5")
+	}
+}

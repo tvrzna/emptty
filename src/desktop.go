@@ -162,13 +162,26 @@ func printDesktops(conf *config, desktops []*desktop) {
 
 // Finds defined autologinSession in array of desktops by its exec or its name and environment, if defined.
 func findAutoselectDesktop(autologinSession string, env enEnvironment, desktops []*desktop) *desktop {
+	exec, _ := getDesktopBaseExec(autologinSession)
 	for _, d := range desktops {
-		if (strings.HasSuffix(d.exec, autologinSession) || autologinSession == d.name) &&
+		desktopExec, _ := getDesktopBaseExec(d.exec)
+		if (exec == desktopExec || autologinSession == d.name) &&
 			(env == Undefined || env == d.env) {
 			return d
 		}
 	}
 	return nil
+}
+
+// Gets base executable name of desktop
+func getDesktopBaseExec(exec string) (string, string) {
+	parts := strings.Split(strings.TrimSpace(exec), "/")
+	value := strings.TrimSpace(parts[len(parts)-1])
+	sep := strings.Index(value, " ")
+	if sep > -1 {
+		return value[:sep], value[sep+1:]
+	}
+	return value, ""
 }
 
 // List all installed desktops and return their exec commands.
