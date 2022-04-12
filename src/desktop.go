@@ -301,11 +301,8 @@ func getLastDesktop(usr *sysuser, desktops []*desktop) int {
 func getUserLastSession(usr *sysuser) *lastSession {
 	path := usr.homedir + pathLastSession
 	if fileExists(path) {
-		content, err := ioutil.ReadFile(path)
-		if err == nil {
-			strContent := strings.TrimSpace(string(content))
-
-			arrContent := strings.Split(strContent, ";")
+		if content, err := ioutil.ReadFile(path); err == nil {
+			arrContent := strings.Split(strings.TrimSpace(string(content)), ";")
 			l := lastSession{}
 			l.exec = strings.TrimSpace(arrContent[0])
 			if len(arrContent) > 1 {
@@ -322,12 +319,10 @@ func setUserLastSession(usr *sysuser, d *desktop) {
 	doAsUser(usr, func() {
 		path := usr.homedir + pathLastSession
 		data := fmt.Sprintf("%s;%s\n", d.exec, d.env.stringify())
-		err := mkDirsForFile(path, 0744)
-		if err != nil {
+		if err := mkDirsForFile(path, 0744); err != nil {
 			logPrint(err)
 		}
-		err = ioutil.WriteFile(path, []byte(data), 0600)
-		if err != nil {
+		if err := ioutil.WriteFile(path, []byte(data), 0600); err != nil {
 			logPrint(err)
 		}
 	})
