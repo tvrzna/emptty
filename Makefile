@@ -20,7 +20,7 @@ clean:
 build:
 	@echo "Building${TAGS_ARGS}..."
 	@mkdir -p dist
-	@go build ${TAGS_ARGS} -o dist/${DISTFILE} -ldflags "-X github.com/tvrzna/emptty/src.buildVersion=${BUILD_VERSION}"
+	@go build ${TAGS_ARGS} -o dist/${DISTFILE} -ldflags "-X github.com/tvrzna/emptty/src.buildVersion=${BUILD_VERSION}" -buildvcs=false
 	@gzip -cn res/emptty.1 > dist/emptty.1.gz
 	@echo "Done"
 

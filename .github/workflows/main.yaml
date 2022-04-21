@@ -36,8 +36,9 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          set-safe-directory: '*'
+
+      - name: Git Safe Directory
+        run: git config --global --add safe.directory /__w/emptty/emptty
 
       - name: Test without tags
         run: make test
