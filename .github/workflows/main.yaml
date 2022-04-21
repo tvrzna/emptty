@@ -30,6 +30,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Git set Safe directory
+        run: git config --global --add safe.directory *
+
       - name: Test without tags
         run: make test
 
