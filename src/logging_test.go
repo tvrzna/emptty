@@ -21,12 +21,12 @@ func TestParseLogging(t *testing.T) {
 		t.Error("TestParseLogging: wrong parsed value for default")
 	}
 
-	logging = parseLogging(constLogAppending, constLogDefault)
+	logging = parseLogging("APPending", constLogDefault)
 	if logging != Appending {
 		t.Error("TestParseLogging: wrong parsed value for appending")
 	}
 
-	logging = parseLogging(constLogDisabled, constLogDefault)
+	logging = parseLogging("DISABLED", constLogDefault)
 	if logging != Disabled {
 		t.Error("TestParseLogging: wrong parsed value for disabled")
 	}

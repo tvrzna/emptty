@@ -125,8 +125,7 @@ func backupFileIfNotFolder(path string) {
 
 // Parse logging option
 func parseLogging(strLogging, defaultValue string) enLogging {
-	val := sanitizeValue(strLogging, defaultValue)
-	switch val {
+	switch strings.ToLower(sanitizeValue(strLogging, defaultValue)) {
 	case constLogDisabled:
 		return Disabled
 	case constLogAppending:
