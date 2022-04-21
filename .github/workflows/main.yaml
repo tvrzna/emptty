@@ -27,11 +27,11 @@ jobs:
           # Install dependencies
           xbps-install -y git make gcc go pam-devel libX11-devel
 
-      - name: Checkout
-        uses: actions/checkout@v2
 
-      - name: Git set Safe directory
-        run: git config --global --add safe.directory *
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          set-safe-directory: '*'
 
       - name: Test without tags
         run: make test
