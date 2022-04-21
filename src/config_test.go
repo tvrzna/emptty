@@ -133,7 +133,7 @@ func TestLoadConfig(t *testing.T) {
 		t.Error("TestLoadConfig: DEFAULT_SESSION value is not correct")
 	}
 
-	if conf.DefaultSessionEnv != Xorg {
+	if conf.DefaultSessionEnv != Wayland {
 		t.Error("TestLoadConfig: DEFAULT_SESSION_ENV value is not correct")
 	}
 }

@@ -1,2 +1,3 @@
 Name=Desktop2
 Exec=/usr/bin/desktop2
+environment=waylAND

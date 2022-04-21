@@ -335,7 +335,7 @@ func isLastDesktopForSave(usr *sysuser, lastDesktop, currentDesktop *desktop) bo
 
 // Parse input env and selects corresponding environment.
 func parseEnv(env, defaultValue string) enEnvironment {
-	switch sanitizeValue(env, defaultValue) {
+	switch strings.ToLower(sanitizeValue(env, defaultValue)) {
 	case constEnvXorg:
 		return Xorg
 	case constEnvWayland:
