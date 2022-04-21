@@ -1,8 +1,15 @@
 DISTFILE=emptty
 BUILD_VERSION=`git describe --tags`
+GOVERSION=`go version | grep -Eo 'go[0-9]+\.[0-9]+'`
 
 ifdef TAGS
 	TAGS_ARGS = -tags ${TAGS}
+endif
+
+ifeq ($(shell expr ${GOVERSION} \>= 'go1.18'), 1)
+	GOVCS = -buildvcs=false
+else
+	GOVCS=
 endif
 
 test:
@@ -20,7 +27,7 @@ clean:
 build:
 	@echo "Building${TAGS_ARGS}..."
 	@mkdir -p dist
-	@go build ${TAGS_ARGS} -o dist/${DISTFILE} -ldflags "-X github.com/tvrzna/emptty/src.buildVersion=${BUILD_VERSION}" -buildvcs=false
+	@go build ${TAGS_ARGS} -o dist/${DISTFILE} -ldflags "-X github.com/tvrzna/emptty/src.buildVersion=${BUILD_VERSION}" ${GOVCS}
 	@gzip -cn res/emptty.1 > dist/emptty.1.gz
 	@echo "Done"
 
