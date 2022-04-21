@@ -303,7 +303,7 @@ func TestFindAutoselectDesktop(t *testing.T) {
 		t.Error("TestFindAutoselectDesktop: could not find desktop by its exec")
 	}
 
-	d3 := findAutoselectDesktop("UnknownDesktop", Undefined, desktops)
+	d3 := findAutoselectDesktop("unknowndESktop", Undefined, desktops)
 	if d3 != nil {
 		t.Error("TestFindAutoselectDesktop: found desktop, that should be uknown")
 	}

@@ -166,7 +166,7 @@ func findAutoselectDesktop(autologinSession string, env enEnvironment, desktops 
 	exec, args := getDesktopBaseExec(autologinSession)
 	for _, d := range desktops {
 		desktopExec, _ := getDesktopBaseExec(d.exec)
-		if (exec == desktopExec || autologinSession == d.name) &&
+		if (exec == desktopExec || strings.ToLower(autologinSession) == strings.ToLower(d.name)) &&
 			(env == Undefined || env == d.env) {
 			if args != "" {
 				d.exec = d.exec + " " + args
