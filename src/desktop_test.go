@@ -128,7 +128,7 @@ func TestLoadUserDesktop(t *testing.T) {
 		t.Error("TestLoadUserDesktop: wrong SELECTION value")
 	}
 
-	if d.env != Xorg {
+	if d.env != Wayland {
 		t.Error("TestLoadUserDesktop: wrong ENVIRONMENT value")
 	}
 
@@ -168,7 +168,7 @@ func TestGetDesktop(t *testing.T) {
 		t.Error("TestLoadUserDesktop: wrong SELECTION value")
 	}
 
-	if d.env != Xorg {
+	if d.env != Wayland {
 		t.Error("TestLoadUserDesktop: wrong ENVIRONMENT value")
 	}
 

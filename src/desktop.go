@@ -17,6 +17,7 @@ const (
 	desktopExec        = "EXEC"
 	desktopName        = "NAME"
 	desktopEnvironment = "ENVIRONMENT"
+	desktopEnv         = "ENV"
 	desktopLang        = "LANG"
 	desktopLoginShell  = "LOGINSHELL"
 
@@ -237,7 +238,7 @@ func getDesktop(path string, env enEnvironment) *desktop {
 			d.name = value
 		case desktopExec:
 			d.exec = value
-		case desktopEnvironment:
+		case desktopEnvironment, desktopEnv:
 			d.env = parseEnv(value, constEnvXorg)
 		}
 	})
@@ -261,7 +262,7 @@ func loadUserDesktop(homeDir string) (d *desktop, lang string) {
 				d.name = value
 			case desktopExec, confCommand:
 				d.exec = sanitizeValue(value, "")
-			case desktopEnvironment:
+			case desktopEnvironment, desktopEnv:
 				d.env = parseEnv(value, constEnvXorg)
 			case desktopLang:
 				lang = value
