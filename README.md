@@ -89,6 +89,7 @@ If set true, it will not use `.emptty-xauth` file, but the standard `~/.Xauthori
 
 `ROOTLESS_XORG`
 If set true, Xorg will be started as rootless, if system allows and emptty is running in daemon mode. Possible values are "true" or "false". Default value is false.
+__NOTE:__ Rootless Xorg requires additional [changes](#rootless-xorg) changes in Xorg config.
 
 `IDENTIFY_ENVS`
 If set true, environemntal groups are printed to differ Xorg/Wayland/Custom/UserCustom desktops. Possible values are "true" or "false". Default value is false.
@@ -152,6 +153,14 @@ Please, be aware that `LIGHT_` colors could be unavailable as background color.
 	<li>LIGHT_WHITE</li>
  </ul>
 </details>
+
+
+#### Rootless Xorg
+If Rootless Xorg does not work as expected, make sure you have set following lines in your `/etc/X11/Xwrapper.config`.
+```
+needs_root_rights = no
+allowed_users = anybody
+```
 
 ## Logging
 As it is mentioned in configuration, there are three options to handle logging of emptty. The logs contains not just logs from emptty, but also from Xorg (if used) and user's WM/DE.
