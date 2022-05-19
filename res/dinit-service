@@ -1,0 +1,7 @@
+type = process
+command = /etc/dinit.d/scripts/emptty
+restart = true
+smooth-recovery = true
+depends-on = logind
+waits-for = loginready
+waits-for = rclocal

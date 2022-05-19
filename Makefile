@@ -98,6 +98,12 @@ install-s6:
 	@install -DZ res/s6-run -m 755 -T ${DESTDIR}/etc/s6/sv/${DISTFILE}/run
 	@echo "Done. Please recompile your S6 database."
 
+install-dinit:
+	@echo "Installing dinit service..."
+	@install -DZ res/dinit-service -m 644 -T ${DESTDIR}/etc/dinit.d/${DISTFILE}
+	@install -DZ res/dinit-script -m 755 -T ${DESTDIR}/etc/dinit.d/scripts/${DISTFILE}
+	@echo "Done"
+
 install-all: install install-manual install-pam
 
 uninstall:
@@ -110,4 +116,6 @@ uninstall:
 	@rm -f ${DESTDIR}/etc/pam.d/emptty
 	@rm -rf ${DESTDIR}/etc/s6/sv/${DISTFILE}
 	@rm -rf ${DESTDIR}/usr/bin/${DISTFILE}
+	@rm -rf ${DESTDIR}/etc/dinit.d/${DISTFILE}
+	@rm -rf ${DESTDIR}/etc/dinit.d/scripts/${DISTFILE}
 	@echo "Done"
