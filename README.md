@@ -212,6 +212,7 @@ __NOTE:__ If any issue starts to appear and you want to report it, ensure you do
 - `make install-all` to install binary, pam module and man page.
 ---
 - `make install-config` to create default conf file in /etc/emptty/.
+- `make install-dinit` to install dinit service.
 - `make install-runit` to install runit service.
 - `make install-runit-artix` to install runit to Artix service folder.
 - `make install-openrc` to install openrc service.
