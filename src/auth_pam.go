@@ -70,9 +70,6 @@ func authUser(conf *config) *sysuser {
 	err = trans.SetItem(pam.Tty, "tty"+conf.strTTY())
 	handleErr(err)
 
-	err = trans.OpenSession(pam.Silent)
-	handleErr(err)
-
 	pamUsr, _ := trans.GetItem(pam.User)
 	usr, _ := user.Lookup(pamUsr)
 
@@ -98,4 +95,15 @@ func defineSpecificEnvVariables(usr *sysuser) {
 			usr.setenv(key, value)
 		}
 	}
+}
+
+// Opens session with XDG_SESSION_TYPE set directly into PAM environmentals
+func openSession(sessionType string) error {
+	if trans != nil {
+		if err := trans.PutEnv(fmt.Sprintf("XDG_SESSION_TYPE=%s", sessionType)); err != nil {
+			return err
+		}
+		return trans.OpenSession(pam.Silent)
+	}
+	return errors.New("No active transaction")
 }

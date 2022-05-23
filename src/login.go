@@ -43,6 +43,12 @@ func login(conf *config) {
 
 	runDisplayScript(conf.DisplayStartScript)
 
+	if err := openSession(d.env.sessionType()); err != nil {
+		closeAuth()
+		handleErr(err)
+		return
+	}
+
 	startSession(usr, d, conf)
 
 	closeAuth()

@@ -59,3 +59,9 @@ func closeAuth() {
 func defineSpecificEnvVariables(usr *sysuser) {
 	// Nothing to do here
 }
+
+// Opens session with XDG_SESSION_TYPE set directly into PAM environmentals
+func openSession(sessionType string) error {
+	// Nothing to do here
+	return nil
+}
