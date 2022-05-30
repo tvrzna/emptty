@@ -28,18 +28,22 @@ func authUser(conf *config) *sysuser {
 			if conf.Autologin {
 				break
 			}
-			if conf.DefaultUser != "" {
+			if conf.DefaultUser != "" && !conf.HideEnterLogin {
 				hostname, _ := os.Hostname()
 				fmt.Printf("%s login: %s\n", hostname, conf.DefaultUser)
 			}
-			fmt.Print("Password: ")
+			if !conf.HideEnterPassword {
+				fmt.Print("Password: ")
+			}
 			return readPassword()
 		case pam.PromptEchoOn:
 			if conf.Autologin {
 				break
 			}
-			hostname, _ := os.Hostname()
-			fmt.Printf("%s login: ", hostname)
+			if !conf.HideEnterLogin {
+				hostname, _ := os.Hostname()
+				fmt.Printf("%s login: ", hostname)
+			}
 			input, err := bufio.NewReader(os.Stdin).ReadString('\n')
 			if err != nil {
 				return "", err

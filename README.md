@@ -94,6 +94,12 @@ __NOTE:__ Rootless Xorg requires additional [changes](#rootless-xorg) changes in
 `IDENTIFY_ENVS`
 If set true, environemntal groups are printed to differ Xorg/Wayland/Custom/UserCustom desktops. Possible values are "true" or "false". Default value is false.
 
+`HIDE_ENTER_LOGIN`
+If set true, "hostname login:" is not displayed. Possible values are "true" or "false". Default value is false.
+
+`HIDE_ENTER_PASSWORD`
+If set true, "Password:" is not displayed. Possible values are "true" or "false". Default value is false.
+
 #### Dynamic MOTD
 If `DYNAMIC_MOTD` is set to `true`, this file exists and is executable for its owner, the result is printed as your own MOTD. Be very careful with this script!
 

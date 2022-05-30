@@ -136,6 +136,15 @@ func TestLoadConfig(t *testing.T) {
 	if conf.DefaultSessionEnv != Wayland {
 		t.Error("TestLoadConfig: DEFAULT_SESSION_ENV value is not correct")
 	}
+
+	if !conf.HideEnterLogin {
+		t.Error("TestLoadConfig: HIDE_ENTER_LOGIN value is not correct")
+	}
+
+	if conf.HideEnterPassword {
+		t.Error("TestLoadConfig: HIDE_ENTER_PASSWORD value is not correct")
+	}
+
 }
 
 func TestLangLoadConfig(t *testing.T) {

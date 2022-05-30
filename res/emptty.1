@@ -1,4 +1,4 @@
-.TH EMPTTY 1 "April 2022" "emptty 0.8.0" emptty
+.TH EMPTTY 1 "May 2022" "emptty 0.8.0" emptty
 
 .SH NAME
 emptty \- Dead simple CLI Display Manager on TTY
@@ -148,6 +148,12 @@ If set true, Xorg will be started as rootless, if system allows and emptty is ru
 
 .IP IDENTIFY_ENVS
 If set true, environemntal groups are printed to differ Xorg/Wayland/Custom/UserCustom desktops. Possible values are "true" or "false". Default value is false.
+
+.IP HIDE_ENTER_LOGIN
+If set true, "hostname login:" is not displayed. Possible values are "true" or "false". Default value is false.
+
+.IP HIDE_ENTER_PASSWORD
+If set true, "Password:" is not displayed. Possible values are "true" or "false". Default value is false.
 
 .SH DYNAMIC MOTD
 Optional file stored by default as /etc/emptty/motd-gen.sh. Could be overriden.

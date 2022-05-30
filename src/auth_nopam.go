@@ -25,15 +25,21 @@ func authUser(conf *config) *sysuser {
 	hostname, _ := os.Hostname()
 	var username string
 	if conf.DefaultUser != "" {
-		fmt.Printf("%s login: %s\n", hostname, conf.DefaultUser)
+		if !conf.HideEnterLogin {
+			fmt.Printf("%s login: %s\n", hostname, conf.DefaultUser)
+		}
 		username = conf.DefaultUser
 	} else {
-		fmt.Printf("%s login: ", hostname)
+		if !conf.HideEnterLogin {
+			fmt.Printf("%s login: ", hostname)
+		}
 		input, err := bufio.NewReader(os.Stdin).ReadString('\n')
 		handleErr(err)
 		username = input[:len(input)-1]
 	}
-	fmt.Print("Password: ")
+	if !conf.HideEnterPassword {
+		fmt.Print("Password: ")
+	}
 	password, err := readPassword()
 	handleErr(err)
 
