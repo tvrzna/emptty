@@ -25,7 +25,7 @@ jobs:
           # Update system xbps
           xbps-install -Syu xbps
           # Update system
-          xbps-install -yu
+          xbps-install -Syu
           # Install dependencies
           xbps-install -y git make gcc pam-devel libX11-devel
 
