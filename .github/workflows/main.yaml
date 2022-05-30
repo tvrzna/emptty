@@ -22,9 +22,9 @@ jobs:
     steps:
       - name: Prepare container
         run: |
+          # Update system xbps
+          xbps-install -Syu xbps
           # Update system
-          xbps-install -Syu || xbps-install -yu xbps
-          # Update system for sure (in case XBPS has been updated)
           xbps-install -yu
           # Install dependencies
           xbps-install -y git make gcc pam-devel libX11-devel
