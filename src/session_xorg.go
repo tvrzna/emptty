@@ -40,7 +40,7 @@ func (x *xorgSession) startCarrier() {
 	logPrint("Starting Xorg")
 
 	xorgArgs := []string{"vt" + x.conf.strTTY(), x.usr.getenv(envDisplay)}
-	if x.conf.RootlessXorg && x.conf.DaemonMode {
+	if x.allowRootlessX() {
 		xorgArgs = append(xorgArgs, "-keeptty")
 	}
 
@@ -49,7 +49,7 @@ func (x *xorgSession) startCarrier() {
 		xorgArgs = append(xorgArgs, arrXorgArgs...)
 	}
 
-	if x.conf.RootlessXorg && x.conf.DaemonMode {
+	if x.allowRootlessX() {
 		x.xorg = cmdAsUser(x.usr, "/usr/bin/Xorg", xorgArgs...)
 		x.xorg.Env = append(x.usr.environ())
 		if err := x.setTTYOwnership(x.conf, x.usr.uid); err != nil {
@@ -91,7 +91,7 @@ func (x *xorgSession) finishCarrier() error {
 	logPrint("Cleaned up xauthority")
 
 	// Revert rootless TTY ownership
-	if x.conf.RootlessXorg && x.conf.DaemonMode {
+	if x.allowRootlessX() {
 		if err := x.setTTYOwnership(x.conf, os.Getuid()); err != nil {
 			logPrint(err)
 		}
@@ -125,4 +125,9 @@ func (x *xorgSession) getFreeXDisplay() string {
 		}
 	}
 	return "0"
+}
+
+// Checks is rootless Xorg is allowed to be used
+func (x *xorgSession) allowRootlessX() bool {
+	return x.conf.RootlessXorg && (x.conf.DaemonMode || x.conf.ttyPath() == getCurrentTTYName("", true))
 }
