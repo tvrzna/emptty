@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"os"
 	"sort"
-	"strconv"
 	"strings"
 )
 
@@ -156,10 +155,7 @@ func evaluateIssueVars(issue string, issueVars []*issueVariable, strTTY string) 
 		case 'd':
 			output = runSimpleCmd("date")
 		case 'l':
-			output = "tty" + strTTY
-			if strTTY == "" {
-				output = runSimpleCmd("ps", "-p", strconv.Itoa(os.Getpid()), "-o", "tty", "--no-headers")
-			}
+			output = getCurrentTTYName(strTTY, false)
 		case 'm':
 			output = runSimpleCmd("uname", "-m")
 		case 'n':

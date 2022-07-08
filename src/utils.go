@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"os/signal"
 	"os/user"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"syscall"
@@ -18,6 +19,8 @@ const (
 
 	osReleasePrettyName = "PRETTY_NAME"
 	osReleaseName       = "NAME"
+
+	devPath = "/dev/"
 )
 
 // propertyFunc defines method to be invoked during readProperties method for each record.
@@ -275,4 +278,25 @@ func makeInterruptChannel() chan os.Signal {
 	c := make(chan os.Signal, 10)
 	signal.Notify(c, os.Interrupt, syscall.SIGHUP, syscall.SIGINT, syscall.SIGKILL, syscall.SIGQUIT, syscall.SIGTERM)
 	return c
+}
+
+// Gets current TTY name
+func getCurrentTTYName(fallback string, fullname bool) string {
+	if name, err := filepath.EvalSymlinks(os.Stdout.Name()); err == nil {
+		if fullname {
+			return name
+		}
+		return name[strings.LastIndex(name, devPath)+len(devPath):]
+	}
+	// if tty name fails, try to run ps command
+	if result := runSimpleCmd("ps", "-p", strconv.Itoa(os.Getpid()), "-o", "tty", "--no-headers"); result != "" {
+		if fullname {
+			return filepath.Join(devPath, result)
+		}
+		return result
+	}
+	if fullname {
+		return filepath.Join(devPath, fallback)
+	}
+	return fallback
 }
