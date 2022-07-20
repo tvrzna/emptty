@@ -3,6 +3,7 @@
 
 package src
 
+// #include <pwd.h>
 // #include <crypt.h>
 // #include <shadow.h>
 // #include <string.h>
@@ -19,12 +20,27 @@ func authPassword(username string, password string) bool {
 	passwd := C.CString(password)
 	defer C.free(unsafe.Pointer(passwd))
 
+	var passhash *C.char
+
 	pwd := C.getspnam(usr)
-	if pwd == nil {
+	if pwd != nil {
+		passhash = pwd.sp_pwdp
+	}
+
+	if passhash == nil {
+		pwd := C.getpwnam(usr)
+
+		if pwd != nil {
+			passhash = pwd.pw_passwd
+		}
+	}
+
+	if passhash == nil {
 		return false
 	}
-	crypted := C.crypt(passwd, pwd.sp_pwdp)
-	if C.strcmp(crypted, pwd.sp_pwdp) != 0 {
+
+	crypted := C.crypt(passwd, passhash)
+	if C.strcmp(crypted, passhash) != 0 {
 		return false
 	}
 	return true
