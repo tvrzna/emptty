@@ -149,17 +149,20 @@ func TestLoadConfig(t *testing.T) {
 
 func TestLangLoadConfig(t *testing.T) {
 	lang := os.Getenv(envLang)
+	if lang == "" {
+		lang = "C.UTF-8"
+	}
+
 	os.Setenv(envLang, "")
 	conf := loadConfig(getTestingPath("non-existing-conf"))
-
 	if conf.Lang != "en_US.UTF-8" {
-		t.Error("TestLangLoadConfig: fallback language is not correct - ", conf.Lang)
+		t.Error("TestLangLoadConfig: fallback language is not correct -", conf.Lang)
 	}
 
 	os.Setenv(envLang, lang)
 	conf = loadConfig(getTestingPath("non-existing-conf"))
 	if conf.Lang != lang {
-		t.Error("TestLangLoadConfig: fallback language is not correct - ", conf.Lang)
+		t.Error("TestLangLoadConfig: fallback language is not correct -", conf.Lang)
 	}
 }
 
