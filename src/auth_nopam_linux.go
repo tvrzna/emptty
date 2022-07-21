@@ -22,15 +22,12 @@ func authPassword(username string, password string) bool {
 
 	var passhash *C.char
 
-	pwd := C.getspnam(usr)
-	if pwd != nil {
+	if pwd := C.getspnam(usr); pwd != nil {
 		passhash = pwd.sp_pwdp
 	}
 
 	if passhash == nil {
-		pwd := C.getpwnam(usr)
-
-		if pwd != nil {
+		if pwd := C.getpwnam(usr); pwd != nil {
 			passhash = pwd.pw_passwd
 		}
 	}
@@ -40,7 +37,7 @@ func authPassword(username string, password string) bool {
 	}
 
 	crypted := C.crypt(passwd, passhash)
-	if C.strcmp(crypted, passhash) != 0 {
+	if crypted == nil || C.strcmp(crypted, passhash) != 0 {
 		return false
 	}
 	return true
