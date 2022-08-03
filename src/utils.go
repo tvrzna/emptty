@@ -38,19 +38,25 @@ func readProperties(filePath string, method propertyFunc) error {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
-		if !strings.HasPrefix(line, "#") && strings.Index(line, "=") >= 0 {
-			splitIndex := strings.Index(line, "=")
-			key := strings.ReplaceAll(line[:splitIndex], "export ", "")
-			value := line[splitIndex+1:]
-			if strings.Index(value, "#") >= 0 {
-				value = value[:strings.Index(value, "#")]
-			}
-			key = strings.ToUpper(strings.TrimSpace(key))
-			value = strings.TrimSpace(value)
-			method(key, value)
-		}
+		readPropertyLine(line, method)
 	}
 	return scanner.Err()
+}
+
+// Reads single property line and parses its content into key-value pair.
+// The pair is used as parameter for invoking propertyFunc.
+func readPropertyLine(line string, method propertyFunc) {
+	if !strings.HasPrefix(line, "#") && strings.Index(line, "=") >= 0 {
+		splitIndex := strings.Index(line, "=")
+		key := strings.ReplaceAll(line[:splitIndex], "export ", "")
+		value := line[splitIndex+1:]
+		if strings.Index(value, "#") >= 0 {
+			value = value[:strings.Index(value, "#")]
+		}
+		key = strings.ToUpper(strings.TrimSpace(key))
+		value = strings.TrimSpace(value)
+		method(key, value)
+	}
 }
 
 // Reads properties from defined filePath into key-value map pair.
@@ -171,13 +177,26 @@ func parseBool(strBool, defaultValue string) bool {
 
 // Runs simple command and returns its output as string
 func runSimpleCmd(cmd ...string) string {
+	return runSimpleCmdAsUser(nil, cmd...)
+}
+
+// Runs simple command as user and returns its output as string
+func runSimpleCmdAsUser(usr *sysuser, cmd ...string) string {
 	path, err := exec.LookPath(cmd[0])
 	if err != nil {
 		logPrintf("Could not find command '%s' on PATH", cmd[0])
 		return ""
 	}
 
-	output, err := exec.Command(path, cmd[1:]...).Output()
+	execCmd := exec.Command(path, cmd[1:]...)
+
+	if usr != nil {
+		execCmd.Env = append(usr.environ())
+		execCmd.SysProcAttr = &syscall.SysProcAttr{}
+		execCmd.SysProcAttr.Credential = &syscall.Credential{Uid: usr.uidu32(), Gid: usr.gidu32(), Groups: usr.gidsu32}
+	}
+
+	output, err := execCmd.Output()
 	if err == nil {
 		return strings.TrimSpace(string(output))
 	}

@@ -11,7 +11,7 @@ func TestPrepareGuiCommandWithChild(t *testing.T) {
 	d := &desktop{path: "/dev/null", exec: "/usr/bin/none"}
 	d.child = d
 
-	s := &commonSession{nil, u, d, c}
+	s := &commonSession{nil, u, d, c, nil}
 
 	_, exec := s.prepareGuiCommand()
 	if exec != "/usr/bin/none" {
@@ -30,7 +30,7 @@ func TestPrepareGuiCommandXinitrc(t *testing.T) {
 	u := &sysuser{uid: 3000, gid: 2000, homedir: getTestingPath("userHome3")}
 	d := &desktop{path: "/dev/null", exec: "/usr/bin/none", loginShell: "/bin/login-shell"}
 
-	s := &commonSession{nil, u, d, c}
+	s := &commonSession{nil, u, d, c, nil}
 
 	// No config
 	_, exec := s.prepareGuiCommand()
@@ -66,7 +66,7 @@ func TestPrepareGuiCommandXinitrc(t *testing.T) {
 	c.DbusLaunch = true
 	d.exec = "/usr/bin/none dbus-launch"
 	cmd, exec := s.prepareGuiCommand()
-	if strings.HasPrefix(exec, "dbus-launch") {
+	if strings.HasPrefix(exec, "dbus-launch") || s.dbus != nil {
 		t.Errorf("TestPrepareGuiCommandXinitrc: result exec command should not start with dbus-launch: '%s'", exec)
 	}
 	if !strings.HasPrefix(cmd.String(), d.loginShell) {
@@ -77,7 +77,7 @@ func TestPrepareGuiCommandXinitrc(t *testing.T) {
 	d.exec = "/usr/bin/none"
 	d.loginShell = ""
 	cmd, exec = s.prepareGuiCommand()
-	if strings.HasPrefix(exec, "dbus-launch") {
+	if strings.HasPrefix(exec, "dbus-launch") || s.dbus != nil {
 		t.Errorf("TestPrepareGuiCommandXinitrc: result exec command should not start with dbus-launch: '%s'", exec)
 	}
 	if !strings.HasPrefix(cmd.String(), "/bin/sh") {
@@ -88,7 +88,7 @@ func TestPrepareGuiCommandXinitrc(t *testing.T) {
 	c.XinitrcLaunch = false
 	d.exec = "/usr/bin/none"
 	_, exec = s.prepareGuiCommand()
-	if !strings.HasPrefix(exec, "dbus-launch") {
-		t.Errorf("TestPrepareGuiCommandXinitrc: result exec command should start with dbus-launch: '%s'", exec)
+	if s.dbus == nil {
+		t.Errorf("TestPrepareGuiCommandXinitrc: dbus-launch should be enabled: '%s'", exec)
 	}
 }

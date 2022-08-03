@@ -43,7 +43,7 @@ __NOTE:__ to enable autologin DEFAULT_USER must be in group nopasswdlogin, other
 
 `LANG` defines locale for all users. Default value is "en_US.UTF-8"
 
-`DBUS_LAUNCH` Prepends "dbus-launch" before desktop command. Default value is true. If `.emptty` is handled as script, this config is overriden to false.
+`DBUS_LAUNCH` Starts "dbus-launch" before desktop command. Default value is true. If `.emptty` is handled as script, this config is overriden to false.
 
 `XINITRC_LAUNCH` Starts Xorg desktop with calling "\~/.xinitrc" script, if is true, file exists and selected WM/DE is Xorg session, it overrides DBUS_LAUNCH. If `.emptty` is handled as script, this config is overriden to false.
 

@@ -42,11 +42,12 @@ type commonSession struct {
 	usr  *sysuser
 	d    *desktop
 	conf *config
+	dbus *dbus
 }
 
 // Starts user's session
 func startSession(usr *sysuser, d *desktop, conf *config) {
-	s := &commonSession{nil, usr, d, conf}
+	s := &commonSession{nil, usr, d, conf, nil}
 
 	switch d.env {
 	case Wayland:
@@ -79,7 +80,12 @@ func (s *commonSession) start() {
 		logPrint(sessionErrLogErr)
 	}
 
+	if s.dbus != nil {
+		s.dbus.launch(s.usr)
+	}
+
 	logPrint("Starting " + strExec)
+	session.Env = append(s.usr.environ())
 	if err := session.Start(); err != nil {
 		s.finishCarrier()
 		handleErr(err)
@@ -94,6 +100,10 @@ func (s *commonSession) start() {
 	logPrint("Added utmp entry")
 
 	err := session.Wait()
+
+	if s.dbus != nil {
+		s.dbus.interrupt()
+	}
 
 	carrierErr := s.finishCarrier()
 
@@ -170,7 +180,7 @@ func (s *commonSession) prepareGuiCommand() (cmd *exec.Cmd, strExec string) {
 		startScript = true
 		strExec = s.usr.homedir + "/.xinitrc " + strExec
 	} else if allowStartupPrefix && s.conf.DbusLaunch && !strings.Contains(strExec, "dbus-launch") {
-		strExec = "dbus-launch " + strExec
+		s.dbus = &dbus{}
 	}
 
 	if startScript {
