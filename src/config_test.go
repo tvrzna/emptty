@@ -145,6 +145,10 @@ func TestLoadConfig(t *testing.T) {
 		t.Error("TestLoadConfig: HIDE_ENTER_PASSWORD value is not correct")
 	}
 
+	if !conf.AlwaysDbusLaunch {
+		t.Error("TestLoadConfig: ALWAYS_DBUS_LAUNCH value is not correct")
+	}
+
 }
 
 func TestLangLoadConfig(t *testing.T) {

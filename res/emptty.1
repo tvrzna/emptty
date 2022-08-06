@@ -68,9 +68,11 @@ If Autologin is enabled and session does not start correctly, the number of retr
 .IP LANG
 defines locale for all users. Default value is "en_US.UTF-8"
 .IP DBUS_LAUNCH
-Starts "dbus-launch" before desktop command. Default value is true. If
+Starts "dbus-launch" before desktop command. After end of session "dbus-daemon" is interrupted. Default value is true. If
 .I .emptty
 is handled as script, this config is overriden to false.
+.IP ALWAYS_DBUS_LAUNCH
+Starts "dbus-launch" before desktop command in any case. After end of session "dbus-daemon" is interrupted. Default value is false.
 .IP XINITRC_LAUNCH
 Starts Xorg desktop with calling
 .I ~/.xinitrc

@@ -69,6 +69,10 @@ func (s *commonSession) start() {
 		s.usr.setenv(envXdgSessionType, s.d.env.sessionType())
 	}
 
+	if s.conf.AlwaysDbusLaunch {
+		s.dbus = &dbus{}
+	}
+
 	session, strExec := s.prepareGuiCommand()
 	go handleInterrupt(makeInterruptChannel(), session)
 

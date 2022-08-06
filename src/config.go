@@ -26,6 +26,7 @@ type config struct {
 	PrintMotd           bool          `config:"PRINT_MOTD" parser:"ParseBool" default:"true"`
 	Lang                string        `config:"LANG" parser:"SanitizeValue" default:""`
 	DbusLaunch          bool          `config:"DBUS_LAUNCH" parser:"ParseBool" default:"true"`
+	AlwaysDbusLaunch    bool          `config:"ALWAYS_DBUS_LAUNCH" parser:"ParseBool" default:"false"`
 	XinitrcLaunch       bool          `config:"XINITRC_LAUNCH" parser:"ParseBool" default:"false"`
 	VerticalSelection   bool          `config:"VERTICAL_SELECTION" parser:"ParseBool" default:"false"`
 	Logging             enLogging     `config:"LOGGING" parser:"ParseLogging" default:"default"`
