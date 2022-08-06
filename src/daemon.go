@@ -160,6 +160,8 @@ func evaluateIssueVars(issue string, issueVars []*issueVariable, strTTY string) 
 			output = runSimpleCmd("uname", "-m")
 		case 'n':
 			output = runSimpleCmd("uname", "-n")
+		case 'O':
+			output = getDnsDomainName()
 		case 'r':
 			output = runSimpleCmd("uname", "-r")
 		case 's':
