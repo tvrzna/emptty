@@ -323,10 +323,19 @@ func getCurrentTTYName(fallback string, fullname bool) string {
 // Gets DNS domain name of current machine
 func getDnsDomainName() string {
 	if host, err := os.Hostname(); err == nil {
-		if ipaddresses, err := net.LookupHost(host); err == nil && len(ipaddresses) > 0 {
-			if domains, err := net.LookupAddr(ipaddresses[0]); err == nil {
-				return domains[0][strings.Index(domains[0], ".")+1:]
+		var domain string
+		if canonname, err := net.LookupCNAME(host); err == nil {
+			domain = canonname[strings.Index(canonname, ".")+1 : len(canonname)]
+		}
+		if domain == "" {
+			if ipaddresses, err := net.LookupHost(host); err == nil && len(ipaddresses) > 0 {
+				if domains, err := net.LookupAddr(ipaddresses[0]); err == nil {
+					domain = domains[0][strings.Index(domains[0], ".")+1 : len(domains[0])]
+				}
 			}
+		}
+		if domain != "" && domain[len(domain)-1:] == "." {
+			return domain[:len(domain)-1]
 		}
 	}
 	return "unknown_domain"
