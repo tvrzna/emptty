@@ -328,9 +328,14 @@ func getDnsDomainName() string {
 			domain = canonname[strings.Index(canonname, ".")+1 : len(canonname)]
 		}
 		if domain == "" {
-			if ipaddresses, err := net.LookupHost(host); err == nil && len(ipaddresses) > 0 {
-				if domains, err := net.LookupAddr(ipaddresses[0]); err == nil {
-					domain = domains[0][strings.Index(domains[0], ".")+1 : len(domains[0])]
+			if ip, err := net.LookupHost(host); err == nil && len(ip) > 0 {
+				if domains, err := net.LookupAddr(ip[0]); err == nil {
+					for _, d := range domains {
+						if d[len(d)-1:] == "." {
+							domain = d[strings.Index(d, ".")+1 : len(d)]
+							break
+						}
+					}
 				}
 			}
 		}
