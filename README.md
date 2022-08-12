@@ -43,11 +43,11 @@ __NOTE:__ to enable autologin DEFAULT_USER must be in group nopasswdlogin, other
 
 `LANG` defines locale for all users. Default value is "en_US.UTF-8"
 
-`DBUS_LAUNCH` Starts "dbus-launch" before desktop command. After end of session "dbus-daemon" is interrupted. Default value is true. If `.emptty` is handled as script, this config is overriden to false.
+`DBUS_LAUNCH` Starts "dbus-launch" before desktop command. After end of session "dbus-daemon" is interrupted. Default value is true. If `.emptty` is handled as script (does not contain `Exec` option), this config is overriden to false.
 
-`ALWAYS_DBUS_LAUNCH` Starts "dbus-launch" before desktop command in any case. After end of session "dbus-daemon" is interrupted. Default value is false.
+`ALWAYS_DBUS_LAUNCH` Starts "dbus-launch" before desktop command in any case, `DBUS_LAUNCH` value is ignored. It also starts even if `XINITRC_LAUNCH` is set to `true`. After end of session "dbus-daemon" is interrupted. Default value is false.
 
-`XINITRC_LAUNCH` Starts Xorg desktop with calling "\~/.xinitrc" script, if is true, file exists and selected WM/DE is Xorg session, it overrides DBUS_LAUNCH. If `.emptty` is handled as script, this config is overriden to false.
+`XINITRC_LAUNCH` Starts Xorg desktop with calling "\~/.xinitrc" script with session exec as argument, if is true, file exists and selected WM/DE is Xorg session, it overrides DBUS_LAUNCH. If `.emptty` is handled as script (does not contain `Exec` option), this config is overriden to false.
 
 `VERTICAL_SELECTION` Prints available WM/DE each on new line instead of printing on single line.
 
@@ -115,7 +115,7 @@ See [samples](SAMPLES.md#emptty-as-config)
 
 `Name` Optional name to be used as Session Name.
 
-`Exec` Defines command to start Desktop Environment/Window Manager. This value does not need to be defined, if .emptty file is presented as shell script (with shebang at the start and execution permissions).
+`Exec` Defines command to start Desktop Environment/Window Manager. It could contain multiple arguments same as in \*.desktop files. This value does not need to be defined, if .emptty file is presented as shell script (with shebang at the start and execution permissions).
 
 `Environment` Selects, which environment should be defined for following command. Possible values are "xorg" and "wayland", "xorg" is default.
 

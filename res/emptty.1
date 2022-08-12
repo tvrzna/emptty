@@ -70,15 +70,24 @@ defines locale for all users. Default value is "en_US.UTF-8"
 .IP DBUS_LAUNCH
 Starts "dbus-launch" before desktop command. After end of session "dbus-daemon" is interrupted. Default value is true. If
 .I .emptty
-is handled as script, this config is overriden to false.
+is handled as script (does not contain
+.I Exec
+option), this config is overriden to false.
 .IP ALWAYS_DBUS_LAUNCH
-Starts "dbus-launch" before desktop command in any case. After end of session "dbus-daemon" is interrupted. Default value is false.
+Starts "dbus-launch" before desktop command in any case,
+.I DBUS_LAUNCH
+value is ignored. It also starts even if
+.I
+XINITRC_LAUNCH
+is set to `true`. After end of session "dbus-daemon" is interrupted. Default value is false.
 .IP XINITRC_LAUNCH
 Starts Xorg desktop with calling
 .I ~/.xinitrc
-script, if is true, file exists and selected WM/DE is Xorg session, it overrides DBUS_LAUNCH. If
+script with session exec as argument, if is true, file exists and selected WM/DE is Xorg session, it overrides DBUS_LAUNCH. If
 .I .emptty
-is handled as script, this config is overriden to false.
+is handled as script (does not contain
+.I Exec
+option), this config is overriden to false.
 .IP VERTICAL_SELECTION
 Prints available WM/DE each on new line instead of printing on single line.
 .IP LOGGING
@@ -202,7 +211,7 @@ Optional folders for custom sessions, that could be available system-wide (in ca
 .IP Name
 Defines name of Desktop Environment/Window Manager.
 .IP Exec
-Defines command to start Desktop Environment/Window Manager.
+Defines command to start Desktop Environment/Window Manager. It could contain multiple arguments same as in *.desktop files.
 .IP Environment
 Selects, which environment should be defined for following command. Possible values are "xorg" and "wayland", "xorg" is default.
 
