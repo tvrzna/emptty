@@ -69,7 +69,7 @@ If Autologin is enabled and session does not start correctly, the number of retr
 defines locale for all users. Default value is "en_US.UTF-8"
 .IP DBUS_LAUNCH
 Starts "dbus-launch" before desktop command. After end of session "dbus-daemon" is interrupted. Default value is true. If
-.I .emptty
+.I user config
 is handled as script (does not contain
 .I Exec
 option), this config is overriden to false.
@@ -84,7 +84,7 @@ is set to `true`. After end of session "dbus-daemon" is interrupted. Default val
 Starts Xorg desktop with calling
 .I ~/.xinitrc
 script with session exec as argument, if is true, file exists and selected WM/DE is Xorg session, it overrides DBUS_LAUNCH. If
-.I .emptty
+.I user config
 is handled as script (does not contain
 .I Exec
 option), this config is overriden to false.
@@ -189,7 +189,7 @@ Configuration file stored as ${HOME}/.config/emptty has higher priority on loadi
 .IP Name
 Optional name to be used as Session Name.
 .IP Exec
-Defines command to start Desktop Environment/Window Manager. This value does not need to be defined, if .emptty file is presented as shell script (with shebang at the start and execution permissions).
+Defines command to start Desktop Environment/Window Manager. This value does not need to be defined, if user config is presented as shell script (with shebang at the start and execution permissions).
 .IP Environment
 Selects, which environment should be defined for following command. Possible values are "xorg" and "wayland", "xorg" is default.
 .IP Lang
