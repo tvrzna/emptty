@@ -30,10 +30,10 @@ type propertyFunc func(key, value string)
 // These pairs are used as parameters for invoking propertyFunc
 func readProperties(filePath string, method propertyFunc) error {
 	file, err := os.Open(filePath)
-	defer file.Close()
 	if err != nil {
 		return errors.New("Could not open file " + filePath)
 	}
+	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
@@ -46,11 +46,11 @@ func readProperties(filePath string, method propertyFunc) error {
 // Reads single property line and parses its content into key-value pair.
 // The pair is used as parameter for invoking propertyFunc.
 func readPropertyLine(line string, method propertyFunc) {
-	if !strings.HasPrefix(line, "#") && strings.Index(line, "=") >= 0 {
+	if !strings.HasPrefix(line, "#") && strings.Contains(line, "=") {
 		splitIndex := strings.Index(line, "=")
 		key := strings.ReplaceAll(line[:splitIndex], "export ", "")
 		value := line[splitIndex+1:]
-		if strings.Index(value, "#") >= 0 {
+		if strings.Contains(value, "#") {
 			value = value[:strings.Index(value, "#")]
 		}
 		key = strings.ToUpper(strings.TrimSpace(key))
@@ -150,7 +150,7 @@ func cmdAsUser(usr *sysuser, name string, arg ...string) *exec.Cmd {
 		arg = append(nameArgs[1:], arg...)
 	}
 	cmd := exec.Command(name, arg...)
-	cmd.Env = append(usr.environ())
+	cmd.Env = usr.environ()
 	cmd.SysProcAttr = &syscall.SysProcAttr{}
 	cmd.SysProcAttr.Credential = &syscall.Credential{Uid: usr.uidu32(), Gid: usr.gidu32(), Groups: usr.gidsu32}
 	return cmd
@@ -191,7 +191,7 @@ func runSimpleCmdAsUser(usr *sysuser, cmd ...string) string {
 	execCmd := exec.Command(path, cmd[1:]...)
 
 	if usr != nil {
-		execCmd.Env = append(usr.environ())
+		execCmd.Env = usr.environ()
 		execCmd.SysProcAttr = &syscall.SysProcAttr{}
 		execCmd.SysProcAttr.Credential = &syscall.Credential{Uid: usr.uidu32(), Gid: usr.gidu32(), Groups: usr.gidsu32}
 	}
@@ -325,14 +325,14 @@ func getDnsDomainName() string {
 	if host, err := os.Hostname(); err == nil {
 		var domain string
 		if canonname, err := net.LookupCNAME(host); err == nil {
-			domain = canonname[strings.Index(canonname, ".")+1 : len(canonname)]
+			domain = canonname[strings.Index(canonname, ".")+1:]
 		}
 		if domain == "" {
 			if ip, err := net.LookupHost(host); err == nil && len(ip) > 0 {
 				if domains, err := net.LookupAddr(ip[0]); err == nil {
 					for _, d := range domains {
 						if d[len(d)-1:] == "." {
-							domain = d[strings.Index(d, ".")+1 : len(d)]
+							domain = d[strings.Index(d, ".")+1:]
 							break
 						}
 					}

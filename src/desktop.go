@@ -110,7 +110,7 @@ func selectDesktop(usr *sysuser, conf *config, allowAutoselectDesktop bool) (*de
 		}
 	}
 
-	for true {
+	for {
 		fmt.Printf("\n")
 		printDesktops(conf, desktops)
 		fmt.Printf("\nSelect [%d]: ", lastDesktop)
@@ -129,7 +129,6 @@ func selectDesktop(usr *sysuser, conf *config, allowAutoselectDesktop bool) (*de
 			return desktops[id], desktops[lastDesktop]
 		}
 	}
-	return nil, nil
 }
 
 // Prints list of desktops on screen
@@ -166,7 +165,7 @@ func findAutoselectDesktop(autologinSession string, env enEnvironment, desktops 
 	exec, args := getDesktopBaseExec(autologinSession)
 	for _, d := range desktops {
 		desktopExec, _ := getDesktopBaseExec(d.exec)
-		if (exec == desktopExec || strings.ToLower(autologinSession) == strings.ToLower(d.name)) &&
+		if (exec == desktopExec || strings.EqualFold(autologinSession, d.name)) &&
 			(env == Undefined || env == d.env) {
 			if args != "" {
 				d.exec = d.exec + " " + args

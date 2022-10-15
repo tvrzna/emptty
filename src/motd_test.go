@@ -52,7 +52,7 @@ func TestMotdDynamic(t *testing.T) {
 	defer os.Chmod(getTestingPath("motd-dynamic.sh"), originalMode)
 	os.Chmod(getTestingPath("motd-dynamic.sh"), 0755)
 
-	f, _ = os.Stat(getTestingPath("motd-dynamic.sh"))
+	os.Stat(getTestingPath("motd-dynamic.sh"))
 
 	output := readOutput(func() {
 		printMotd(c)

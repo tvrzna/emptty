@@ -89,7 +89,7 @@ func (s *commonSession) start() {
 	}
 
 	logPrint("Starting " + strExec)
-	session.Env = append(s.usr.environ())
+	session.Env = s.usr.environ()
 	if err := session.Start(); err != nil {
 		s.finishCarrier()
 		handleErr(err)
