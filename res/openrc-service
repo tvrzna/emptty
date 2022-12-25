@@ -5,3 +5,8 @@ command=/usr/bin/emptty
 command_args="-d"
 pidfile="/run/${RC_SVCNAME}.pid"
 respawn_period=${respawn_period-60}
+
+depend() {
+  after local
+  before getty
+}
