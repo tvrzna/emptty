@@ -1,6 +1,7 @@
-env=waylAND
-COMMAND=none
-SELECTION=false
-EXEC=none
-NAME=window-manager
-LOGINSHELL=/bin/bash --login
+#!/bin/fish
+set env waylAND
+set COMMAND none
+set SELECTION false
+set EXEC none
+set NAME window-manager
+set LOGINSHELL /bin/fish --login

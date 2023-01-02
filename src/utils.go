@@ -29,6 +29,12 @@ type propertyFunc func(key, value string)
 // readProperties reads defined filePath per line and parses each key-value pair.
 // These pairs are used as parameters for invoking propertyFunc
 func readProperties(filePath string, method propertyFunc) error {
+	return readPropertiesWithSupport(filePath, method, false)
+}
+
+// readPropertiesWithSupport reads defined filePath per line and parses each key-value pair with possible fish shell support.
+// These pairs are used as parameters for invoking propertyFunc
+func readPropertiesWithSupport(filePath string, method propertyFunc, fishSupport bool) error {
 	file, err := os.Open(filePath)
 	if err != nil {
 		return errors.New("Could not open file " + filePath)
@@ -36,18 +42,34 @@ func readProperties(filePath string, method propertyFunc) error {
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
+	requiresFishSupport := false
+	isFirstLine := true
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
-		readPropertyLine(line, method)
+		if isFirstLine {
+			if fishSupport && strings.HasPrefix(line, "#!") && strings.Contains(line, "/fish") {
+				requiresFishSupport = true
+			}
+			isFirstLine = false
+		}
+
+		readPropertyLine(line, method, requiresFishSupport)
 	}
 	return scanner.Err()
 }
 
 // Reads single property line and parses its content into key-value pair.
 // The pair is used as parameter for invoking propertyFunc.
-func readPropertyLine(line string, method propertyFunc) {
-	if !strings.HasPrefix(line, "#") && strings.Contains(line, "=") {
-		splitIndex := strings.Index(line, "=")
+func readPropertyLine(line string, method propertyFunc, fishSupport bool) {
+	if !strings.HasPrefix(line, "#") && ((!fishSupport && strings.Contains(line, "=")) || fishSupport && strings.HasPrefix(line, "set")) {
+		var splitIndex int
+		if fishSupport {
+			line = line[4:]
+			splitIndex = strings.Index(line, " ")
+		} else {
+			splitIndex = strings.Index(line, "=")
+		}
+
 		key := strings.ReplaceAll(line[:splitIndex], "export ", "")
 		value := line[splitIndex+1:]
 		if strings.Contains(value, "#") {

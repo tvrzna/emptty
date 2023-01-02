@@ -36,6 +36,16 @@ LoginShell=/bin/bash --login
 exec dbus-launch $@
 ```
 
+#### Script with fish support in LoginShell
+Emptty supports simplified fish support, if shebang is set to fish, properties could be set in its basic way.
+```
+#!/bin/fish
+set Selection true
+set LoginShell /bin/fish --login
+
+exec dbus-launch $argv
+```
+
 ## \~/.config/emptty or \~/.emptty as config
 In your .config folder you have to create 'emptty' file or in your home folder you have to create `.emptty` file. If `environment` is not defined, it assumes xorg.
 

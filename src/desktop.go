@@ -255,7 +255,7 @@ func loadUserDesktop(homeDir string) (d *desktop, lang string) {
 		}
 		d := &desktop{isUser: true, path: confFile, env: Xorg, selection: false}
 
-		err := readProperties(confFile, func(key string, value string) {
+		err := readPropertiesWithSupport(confFile, func(key string, value string) {
 			switch key {
 			case desktopName:
 				d.name = value
@@ -270,7 +270,7 @@ func loadUserDesktop(homeDir string) (d *desktop, lang string) {
 			case desktopLoginShell:
 				d.loginShell = sanitizeValue(value, "")
 			}
-		})
+		}, true)
 		handleErr(err)
 
 		if d.selection {

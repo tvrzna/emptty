@@ -41,7 +41,7 @@ func (d *dbus) launch(usr *sysuser) {
 				d.address = value
 				usr.setenv(dbusSessionBusAddress, value)
 			}
-		})
+		}, false)
 	}
 	if scanner.Err() != nil {
 		logPrint("Reading output from dbus-launch error: ", scanner.Err())

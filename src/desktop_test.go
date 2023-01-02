@@ -158,9 +158,9 @@ func TestLoadUserDesktop(t *testing.T) {
 }
 
 func TestGetDesktop(t *testing.T) {
-	d := getDesktop(getTestingPath("userHome/.config/emptty"), Custom)
+	d := getDesktop(getTestingPath("desktops/desktop2.desktop"), Custom)
 
-	if d.exec != "none" {
+	if d.exec != "/usr/bin/desktop2" {
 		t.Error("TestLoadUserDesktop: wrong EXEC value")
 	}
 
@@ -172,7 +172,7 @@ func TestGetDesktop(t *testing.T) {
 		t.Error("TestLoadUserDesktop: wrong ENVIRONMENT value")
 	}
 
-	if d.name != "window-manager" {
+	if d.name != "Desktop2" {
 		t.Error("TestLoadUserDesktop: wrong NAME value")
 	}
 
