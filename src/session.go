@@ -196,7 +196,7 @@ func (s *commonSession) prepareGuiCommand() (cmd *exec.Cmd, strExec string) {
 	return cmd, strExec
 }
 
-// Gets preffered login shell
+// Gets preferred login shell
 func (s *commonSession) getLoginShell() string {
 	if s.d.loginShell != "" {
 		return s.d.loginShell
@@ -208,7 +208,7 @@ func (s *commonSession) getLoginShell() string {
 func handleInterrupt(c chan os.Signal, cmd *exec.Cmd) {
 	<-c
 	interrupted = true
-	logPrint("Catched interrupt signal")
+	logPrint("Caught interrupt signal")
 	cmd.Process.Signal(os.Interrupt)
 	cmd.Wait()
 }

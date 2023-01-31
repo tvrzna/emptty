@@ -17,7 +17,7 @@ type dbus struct {
 	address string
 }
 
-// Launches dbus-launch to start daemon, parses its address and pid for further usage in environmentals.
+// Launches dbus-launch to start daemon, parses its address and pid for further usage in environments.
 func (d *dbus) launch(usr *sysuser) {
 	logPrint("Starting dbus-launch")
 	dbusOutput := runSimpleCmdAsUser(usr, "dbus-launch")

@@ -72,7 +72,7 @@ Starts "dbus-launch" before desktop command. After end of session "dbus-daemon" 
 .I user config
 is handled as script (does not contain
 .I Exec
-option), this config is overriden to false.
+option), this config is overridden to false.
 .IP ALWAYS_DBUS_LAUNCH
 Starts "dbus-launch" before desktop command in any case,
 .I DBUS_LAUNCH
@@ -87,7 +87,7 @@ script with session exec as argument, if is true, file exists and selected WM/DE
 .I user config
 is handled as script (does not contain
 .I Exec
-option), this config is overriden to false.
+option), this config is overridden to false.
 .IP VERTICAL_SELECTION
 Prints available WM/DE each on new line instead of printing on single line.
 .IP LOGGING
@@ -158,7 +158,7 @@ If set true, it will not use .emptty-xauth file, but the standard ~/.Xauthority 
 If set true, Xorg will be started as rootless, if system allows and emptty is running in daemon mode. Possible values are "true" or "false". Default value is false.
 
 .IP IDENTIFY_ENVS
-If set true, environemntal groups are printed to differ Xorg/Wayland/Custom/UserCustom desktops. Possible values are "true" or "false". Default value is false.
+If set true, environmental groups are printed to differ Xorg/Wayland/Custom/UserCustom desktops. Possible values are "true" or "false". Default value is false.
 
 .IP HIDE_ENTER_LOGIN
 If set true, "hostname login:" is not displayed. Possible values are "true" or "false". Default value is false.
@@ -167,14 +167,14 @@ If set true, "hostname login:" is not displayed. Possible values are "true" or "
 If set true, "Password:" is not displayed. Possible values are "true" or "false". Default value is false.
 
 .SH DYNAMIC MOTD
-Optional file stored by default as /etc/emptty/motd-gen.sh. Could be overriden.
+Optional file stored by default as /etc/emptty/motd-gen.sh. Could be overridden.
 
 If
 .IDYNAMIC_MOTD
 is set to true, this file exists and is executable for its owner, the result is printed as your own MOTD. Be very careful with this script!
 
 .SH CUSTOM MOTD
-Optional file stored by default as /etc/emptty/motd. Could be overriden.
+Optional file stored by default as /etc/emptty/motd. Could be overridden.
 
 Custom file, that prints your own MOTD. Reading this file supports colors (e.g.
 .I \\\x1b[31m

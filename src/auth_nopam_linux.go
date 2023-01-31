@@ -36,8 +36,8 @@ func authPassword(username string, password string) bool {
 		return false
 	}
 
-	crypted := C.crypt(passwd, passhash)
-	if crypted == nil || C.strcmp(crypted, passhash) != 0 {
+	encrypted := C.crypt(passwd, passhash)
+	if encrypted == nil || C.strcmp(encrypted, passhash) != 0 {
 		return false
 	}
 	return true

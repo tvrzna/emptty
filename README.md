@@ -43,11 +43,11 @@ __NOTE:__ to enable autologin DEFAULT_USER must be in group nopasswdlogin, other
 
 `LANG` defines locale for all users. Default value is "en_US.UTF-8"
 
-`DBUS_LAUNCH` Starts "dbus-launch" before desktop command. After end of session "dbus-daemon" is interrupted. Default value is true. If user config is handled as script (does not contain `Exec` option), this config is overriden to false.
+`DBUS_LAUNCH` Starts "dbus-launch" before desktop command. After end of session "dbus-daemon" is interrupted. Default value is true. If user config is handled as script (does not contain `Exec` option), this config is overridden to false.
 
 `ALWAYS_DBUS_LAUNCH` Starts "dbus-launch" before desktop command in any case, `DBUS_LAUNCH` value is ignored. It also starts even if `XINITRC_LAUNCH` is set to `true`. After end of session "dbus-daemon" is interrupted. Default value is false.
 
-`XINITRC_LAUNCH` Starts Xorg desktop with calling "\~/.xinitrc" script with session exec as argument, if is true, file exists and selected WM/DE is Xorg session, it overrides DBUS_LAUNCH. If user config is handled as script (does not contain `Exec` option), this config is overriden to false.
+`XINITRC_LAUNCH` Starts Xorg desktop with calling "\~/.xinitrc" script with session exec as argument, if is true, file exists and selected WM/DE is Xorg session, it overrides DBUS_LAUNCH. If user config is handled as script (does not contain `Exec` option), this config is overridden to false.
 
 `VERTICAL_SELECTION` Prints available WM/DE each on new line instead of printing on single line.
 
@@ -94,7 +94,7 @@ If set true, Xorg will be started as rootless, if system allows and emptty is ru
 __NOTE:__ Rootless Xorg requires additional [changes](#rootless-xorg) changes in Xorg config.
 
 `IDENTIFY_ENVS`
-If set true, environemntal groups are printed to differ Xorg/Wayland/Custom/UserCustom desktops. Possible values are "true" or "false". Default value is false.
+If set true, environmental groups are printed to differ Xorg/Wayland/Custom/UserCustom desktops. Possible values are "true" or "false". Default value is false.
 
 `HIDE_ENTER_LOGIN`
 If set true, "hostname login:" is not displayed. Possible values are "true" or "false". Default value is false.
