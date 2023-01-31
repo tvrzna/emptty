@@ -56,7 +56,7 @@ func authUser(conf *config) *sysuser {
 			fmt.Println(msg)
 			return "", nil
 		}
-		return "", errors.New("Unrecognized message style")
+		return "", errors.New("unrecognized message style")
 	})
 
 	err := trans.Authenticate(pam.Silent)
@@ -114,5 +114,5 @@ func openSession(sessionType string) error {
 		}
 		return trans.OpenSession(pam.Silent)
 	}
-	return errors.New("No active transaction")
+	return errors.New("no active transaction")
 }

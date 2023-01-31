@@ -17,7 +17,7 @@ func login(conf *config) {
 
 	if err := handleLoginRetries(conf, usr); err != nil {
 		closeAuth()
-		handleErr(err)
+		handleStrErr("Exceeded maximum number of allowed login retries in short period.")
 		return
 	}
 
@@ -45,7 +45,7 @@ func login(conf *config) {
 
 	if err := openSession(d.env.sessionType()); err != nil {
 		closeAuth()
-		handleErr(err)
+		handleStrErr("No active transaction")
 		return
 	}
 
@@ -102,7 +102,7 @@ func handleLoginRetries(conf *config, usr *sysuser) (result error) {
 				retries++
 
 				if retries >= conf.AutologinMaxRetry {
-					result = errors.New("Exceeded maximum number of allowed login retries in short period.")
+					result = errors.New("exceeded maximum number of allowed login retries in short period")
 					retries = 0
 				}
 			}

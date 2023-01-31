@@ -26,5 +26,5 @@ func openXDisplay(dispName string) error {
 		}
 		time.Sleep(50 * time.Millisecond)
 	}
-	return errors.New("Could not open X Display")
+	return errors.New("could not open X Display")
 }

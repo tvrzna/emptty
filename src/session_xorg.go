@@ -68,7 +68,9 @@ func (x *xorgSession) startCarrier() {
 	}
 	logPrint("Started Xorg")
 
-	handleErr(openXDisplay(x.usr.getenv(envDisplay)))
+	if err := openXDisplay(x.usr.getenv(envDisplay)); err != nil {
+		handleStrErr("Could not open X Display.")
+	}
 }
 
 // Gets Xorg Pid as int

@@ -317,7 +317,7 @@ func doAsUser(usr *sysuser, fce func()) {
 // Make channel for catching interrupts.
 func makeInterruptChannel() chan os.Signal {
 	c := make(chan os.Signal, 10)
-	signal.Notify(c, os.Interrupt, syscall.SIGHUP, syscall.SIGINT, syscall.SIGKILL, syscall.SIGQUIT, syscall.SIGTERM)
+	signal.Notify(c, os.Interrupt, syscall.SIGHUP, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGTERM)
 	return c
 }
 
