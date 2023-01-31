@@ -70,7 +70,7 @@ func runDisplayScript(scriptPath string) {
 	}
 }
 
-// Handles keeping informations about last login with retry.
+// Handles keeping information about last login with retry.
 func handleLoginRetries(conf *config, usr *sysuser) (result error) {
 	// infinite allowed retries, return to avoid writing into file
 	if conf.AutologinMaxRetry < 0 {

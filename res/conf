@@ -73,5 +73,5 @@ VERTICAL_SELECTION=false
 #If set true, Xorg will be started as rootless, if system allows and emptty is running in daemon mode.
 #ROOTLESS_XORG=false
 
-#If set true, environemntal groups are printed to differ Xorg/Wayland/Custom/UserCustom desktops.
+#If set true, environmental groups are printed to differ Xorg/Wayland/Custom/UserCustom desktops.
 IDENTIFY_ENVS=false

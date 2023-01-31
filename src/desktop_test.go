@@ -305,12 +305,12 @@ func TestFindAutoselectDesktop(t *testing.T) {
 
 	d3 := findAutoselectDesktop("unknowndESktop", Undefined, desktops)
 	if d3 != nil {
-		t.Error("TestFindAutoselectDesktop: found desktop, that should be uknown")
+		t.Error("TestFindAutoselectDesktop: found desktop, that should be unknown")
 	}
 
 	d4 := findAutoselectDesktop("UnknownDesktop", Wayland, desktops)
 	if d4 != nil {
-		t.Error("TestFindAutoselectDesktop: found desktop, that should be uknown")
+		t.Error("TestFindAutoselectDesktop: found desktop, that should be unknown")
 	}
 }
 

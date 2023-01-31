@@ -117,7 +117,7 @@ func TestSetColors(t *testing.T) {
 		resetColors()
 	})
 	if output != "\x1b[0;0m\n" {
-		t.Error("TestSetColors: result does not match to reseting value")
+		t.Error("TestSetColors: result does not match to resetting value")
 	}
 
 	output = readOutput(func() {

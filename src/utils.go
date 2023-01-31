@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	pathOsRelaseFile = "/etc/os-release"
+	pathOsReleaseFile = "/etc/os-release"
 
 	osReleasePrettyName = "PRETTY_NAME"
 	osReleaseName       = "NAME"
@@ -287,7 +287,7 @@ func getIpAddressFromIface(iface *net.Interface, ipType byte) string {
 // Gets value from /etc/os-release. If no name is defined, it assumes PRETTY_NAME or NAME, if PRETTY_NAME is not defined.
 func getOsReleaseValue(name string) string {
 	var values = make(map[string]string)
-	readProperties(pathOsRelaseFile, func(key, value string) {
+	readProperties(pathOsReleaseFile, func(key, value string) {
 		if len(value) > 1 {
 			values[key] = value[1 : len(value)-1]
 		}
