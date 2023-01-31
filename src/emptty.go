@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-const version = "0.9.0"
+const version = "0.9.1"
 
 var buildVersion string
 
