@@ -77,6 +77,9 @@ func readPropertyLine(line string, method propertyFunc, fishSupport bool) {
 		}
 		key = strings.ToUpper(strings.TrimSpace(key))
 		value = strings.TrimSpace(value)
+		for (strings.HasPrefix(value, "\"") && strings.HasSuffix(value, "\"")) || (strings.HasPrefix(value, "'") && strings.HasSuffix(value, "'")) {
+			value = value[1 : len(value)-1]
+		}
 		method(key, value)
 	}
 }
