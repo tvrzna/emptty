@@ -66,12 +66,6 @@ func handleErr(err error) {
 		fmt.Printf("Error: %s\n", err)
 		fmt.Printf("\nPress Enter to continue...")
 		if !TEST_MODE {
-			c := makeInterruptChannel()
-			go func(c chan os.Signal) {
-				<-c
-				os.Exit(1)
-			}(c)
-
 			bufio.NewReader(os.Stdin).ReadString('\n')
 			os.Exit(1)
 		}

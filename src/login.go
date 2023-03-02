@@ -11,7 +11,7 @@ import (
 )
 
 // Login into graphical environment
-func login(conf *config) {
+func login(conf *config, h *sessionHandle) {
 	interrupted = false
 	usr := authUser(conf)
 
@@ -49,7 +49,8 @@ func login(conf *config) {
 		return
 	}
 
-	startSession(usr, d, conf)
+	h.session = createSession(usr, d, conf)
+	h.session.start()
 
 	closeAuth()
 

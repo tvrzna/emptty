@@ -6,7 +6,6 @@ import (
 	"net"
 	"os"
 	"os/exec"
-	"os/signal"
 	"os/user"
 	"path/filepath"
 	"strconv"
@@ -315,13 +314,6 @@ func doAsUser(usr *sysuser, fce func()) {
 	fce()
 
 	setFsUser(previousUser)
-}
-
-// Make channel for catching interrupts.
-func makeInterruptChannel() chan os.Signal {
-	c := make(chan os.Signal, 10)
-	signal.Notify(c, os.Interrupt, syscall.SIGHUP, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGTERM)
-	return c
 }
 
 // Gets current TTY name

@@ -11,7 +11,7 @@ func TestPrepareGuiCommandWithChild(t *testing.T) {
 	d := &desktop{path: "/dev/null", exec: "/usr/bin/none"}
 	d.child = d
 
-	s := &commonSession{nil, u, d, c, nil}
+	s := &commonSession{nil, u, d, c, nil, nil}
 
 	_, exec := s.prepareGuiCommand()
 	if exec != "/usr/bin/none" {
@@ -30,7 +30,7 @@ func TestPrepareGuiCommandXinitrc(t *testing.T) {
 	u := &sysuser{uid: 3000, gid: 2000, homedir: getTestingPath("userHome3")}
 	d := &desktop{path: "/dev/null", exec: "/usr/bin/none", loginShell: "/bin/login-shell"}
 
-	s := &commonSession{nil, u, d, c, nil}
+	s := &commonSession{nil, u, d, c, nil, nil}
 
 	// No config
 	_, exec := s.prepareGuiCommand()

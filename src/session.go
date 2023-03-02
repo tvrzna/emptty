@@ -43,11 +43,12 @@ type commonSession struct {
 	d    *desktop
 	conf *config
 	dbus *dbus
+	cmd  *exec.Cmd
 }
 
 // Starts user's session
-func startSession(usr *sysuser, d *desktop, conf *config) {
-	s := &commonSession{nil, usr, d, conf, nil}
+func createSession(usr *sysuser, d *desktop, conf *config) *commonSession {
+	s := &commonSession{nil, usr, d, conf, nil, nil}
 
 	switch d.env {
 	case Wayland:
@@ -56,7 +57,7 @@ func startSession(usr *sysuser, d *desktop, conf *config) {
 		s.session = &xorgSession{s, nil}
 	}
 
-	s.start()
+	return s
 }
 
 // Performs common start of session
@@ -74,7 +75,7 @@ func (s *commonSession) start() {
 	}
 
 	session, strExec := s.prepareGuiCommand()
-	go handleInterrupt(makeInterruptChannel(), session)
+	s.cmd = session
 
 	sessionErrLog, sessionErrLogErr := initSessionErrorLogger(s.conf)
 	if sessionErrLogErr == nil {
@@ -202,13 +203,4 @@ func (s *commonSession) getLoginShell() string {
 		return s.d.loginShell
 	}
 	return "/bin/sh"
-}
-
-// Catch interrupt signal chan and interrupts Cmd.
-func handleInterrupt(c chan os.Signal, cmd *exec.Cmd) {
-	<-c
-	interrupted = true
-	logPrint("Caught interrupt signal")
-	cmd.Process.Signal(os.Interrupt)
-	cmd.Wait()
 }

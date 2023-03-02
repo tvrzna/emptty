@@ -3,13 +3,19 @@ package src
 import (
 	"fmt"
 	"os"
+	"os/signal"
 	"runtime"
 	"strings"
+	"syscall"
 )
 
 const version = "0.9.1"
 
 var buildVersion string
+
+type sessionHandle struct {
+	session *commonSession
+}
 
 func init() {
 	runtime.LockOSThread()
@@ -38,10 +44,35 @@ func Main() {
 
 	initLogger(conf)
 	printMotd(conf)
-	login(conf)
+
+	h := &sessionHandle{}
+	initInterruptHandler(h)
+	login(conf, h)
 
 	if conf.DaemonMode {
 		stopDaemon(conf, fTTY)
+	}
+}
+
+// Initialize common interrupt
+func initInterruptHandler(h *sessionHandle) {
+	c := make(chan os.Signal, 10)
+	signal.Notify(c, os.Interrupt, syscall.SIGHUP, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGTERM)
+	go handleInterrupt(c, h)
+}
+
+// Catch interrupt signal chan and interrupts Cmd.
+func handleInterrupt(c chan os.Signal, h *sessionHandle) {
+	<-c
+	interrupted = true
+	logPrint("Caught interrupt signal")
+	setTerminalEcho(os.Stdout.Fd(), true)
+	if h.session != nil && h.session.cmd != nil {
+		h.session.cmd.Process.Signal(os.Interrupt)
+		h.session.cmd.Wait()
+	} else {
+		closeAuth()
+		os.Exit(1)
 	}
 }
 
