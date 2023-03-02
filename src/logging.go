@@ -24,7 +24,7 @@ const (
 )
 
 // enLogging defines possible option how to handle configuration.
-type enLogging int
+type enLogging byte
 
 const (
 	// Default represents saving into new file and backing up older with suffix

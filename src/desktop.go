@@ -41,7 +41,7 @@ const (
 )
 
 // enEnvironment defines possible Environments.
-type enEnvironment int
+type enEnvironment byte
 
 const (
 	// Undefined represents no environment
