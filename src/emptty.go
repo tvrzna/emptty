@@ -25,22 +25,12 @@ func init() {
 func Main() {
 	TEST_MODE = false
 
-	if contains(os.Args, "-h") || contains(os.Args, "--help") {
-		printHelp()
-		os.Exit(0)
-	}
-	if contains(os.Args, "-v") || contains(os.Args, "--version") {
-		fmt.Printf("emptty %s\nhttps://github.com/tvrzna/emptty\n\nReleased under the MIT License.\n", getVersion())
-		os.Exit(0)
-	}
+	processCoreArgs(os.Args)
 
 	conf := loadConfig(loadConfigPath(os.Args))
 	processArgs(os.Args, conf)
 
-	var fTTY *os.File
-	if conf.DaemonMode {
-		fTTY = startDaemon(conf)
-	}
+	fTTY := startDaemon(conf)
 
 	initLogger(conf)
 	printMotd(conf)
@@ -49,9 +39,7 @@ func Main() {
 	initInterruptHandler(h)
 	login(conf, h)
 
-	if conf.DaemonMode {
-		stopDaemon(conf, fTTY)
-	}
+	stopDaemon(conf, fTTY)
 }
 
 // Initialize common interrupt
@@ -73,6 +61,18 @@ func handleInterrupt(c chan os.Signal, h *sessionHandle) {
 	} else {
 		closeAuth()
 		os.Exit(1)
+	}
+}
+
+// Process core arguments for help and version, because they don't require any further application run
+func processCoreArgs(args []string) {
+	if contains(args, "-h", "--help") {
+		printHelp()
+		os.Exit(0)
+	}
+	if contains(args, "-v", "--version") {
+		fmt.Printf("emptty %s\nhttps://github.com/tvrzna/emptty\n\nReleased under the MIT License.\n", getVersion())
+		os.Exit(0)
 	}
 }
 

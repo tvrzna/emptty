@@ -180,11 +180,13 @@ func cmdAsUser(usr *sysuser, name string, arg ...string) *exec.Cmd {
 	return cmd
 }
 
-// Checks, if array contains value
-func contains(array []string, value string) bool {
-	for _, v := range array {
-		if v == value {
-			return true
+// Checks, if array contains any of values
+func contains(array []string, values ...string) bool {
+	for _, a := range array {
+		for _, v := range values {
+			if a == v {
+				return true
+			}
 		}
 	}
 	return false
