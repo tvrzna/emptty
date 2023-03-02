@@ -59,8 +59,7 @@ func authUser(conf *config) *sysuser {
 		return "", errors.New("unrecognized message style")
 	})
 
-	err := trans.Authenticate(pam.Silent)
-	if err != nil {
+	if err := trans.Authenticate(pam.Silent); err != nil {
 		bkpErr := errors.New(err.Error())
 		username, _ := trans.GetItem(pam.User)
 		addBtmpEntry(username, os.Getpid(), conf.strTTY())
@@ -68,14 +67,9 @@ func authUser(conf *config) *sysuser {
 	}
 	logPrint("Authenticate OK")
 
-	err = trans.AcctMgmt(pam.Silent)
-	handleErr(err)
-
-	err = trans.SetItem(pam.Tty, "tty"+conf.strTTY())
-	handleErr(err)
-
-	err = trans.SetCred(pam.EstablishCred)
-	handleErr(err)
+	handleErr(trans.AcctMgmt(pam.Silent))
+	handleErr(trans.SetItem(pam.Tty, "tty"+conf.strTTY()))
+	handleErr(trans.SetCred(pam.EstablishCred))
 
 	pamUsr, _ := trans.GetItem(pam.User)
 	usr, _ := user.Lookup(pamUsr)
