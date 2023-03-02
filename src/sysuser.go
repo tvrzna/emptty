@@ -24,30 +24,23 @@ type sysuser struct {
 
 // Loads all necessary info about user into sysuser struct.
 func getSysuser(usr *user.User) *sysuser {
-	var result sysuser
+	u := &sysuser{}
 
-	uid, _ := strconv.ParseInt(usr.Uid, 10, 32)
-	gid, _ := strconv.ParseInt(usr.Gid, 10, 32)
-	var gidsu32 []uint32
-	var gids []int
-	strGids, err := usr.GroupIds()
-	if err == nil {
+	u.username = usr.Username
+	u.homedir = usr.HomeDir
+	u.uid, _ = strconv.Atoi(usr.Uid)
+	u.gid, _ = strconv.Atoi(usr.Gid)
+	u.env = make(map[string]string)
+
+	if strGids, err := usr.GroupIds(); err == nil {
 		for _, val := range strGids {
-			value, _ := strconv.ParseInt(val, 10, 32)
-			gids = append(gids, int(value))
-			gidsu32 = append(gidsu32, uint32(value))
+			value, _ := strconv.Atoi(val)
+			u.gids = append(u.gids, int(value))
+			u.gidsu32 = append(u.gidsu32, uint32(value))
 		}
 	}
 
-	result.username = usr.Username
-	result.homedir = usr.HomeDir
-	result.uid = int(uid)
-	result.gid = int(gid)
-	result.gids = gids
-	result.gidsu32 = gidsu32
-	result.env = make(map[string]string)
-
-	return &result
+	return u
 }
 
 // returns uid as uint32.
