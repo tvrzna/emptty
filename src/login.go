@@ -21,6 +21,26 @@ func login(conf *config, h *sessionHandle) {
 		return
 	}
 
+	d := processDesktopSelection(usr, conf)
+
+	runDisplayScript(conf.DisplayStartScript)
+
+	if err := openSession(d.env.sessionType()); err != nil {
+		closeAuth()
+		handleStrErr("No active transaction")
+		return
+	}
+
+	h.session = createSession(usr, d, conf)
+	h.session.start()
+
+	closeAuth()
+
+	runDisplayScript(conf.DisplayStopScript)
+}
+
+// Process whole desktop load, selection and last used save.
+func processDesktopSelection(usr *sysuser, conf *config) *desktop {
 	d, usrLang := loadUserDesktop(usr.homedir)
 
 	if d == nil || (d != nil && d.selection) {
@@ -41,20 +61,7 @@ func login(conf *config, h *sessionHandle) {
 		conf.Lang = usrLang
 	}
 
-	runDisplayScript(conf.DisplayStartScript)
-
-	if err := openSession(d.env.sessionType()); err != nil {
-		closeAuth()
-		handleStrErr("No active transaction")
-		return
-	}
-
-	h.session = createSession(usr, d, conf)
-	h.session.start()
-
-	closeAuth()
-
-	runDisplayScript(conf.DisplayStopScript)
+	return d
 }
 
 // Runs display script, if defined
