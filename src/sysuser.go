@@ -1,7 +1,6 @@
 package src
 
 import (
-	"os/exec"
 	"os/user"
 	"strconv"
 	"strings"
@@ -96,10 +95,8 @@ func (u *sysuser) environ() []string {
 
 // Reads default shell of user.
 func (u *sysuser) getShell() string {
-	out, err := exec.Command("/usr/bin/getent", "passwd", u.strUid()).Output()
-	handleErr(err)
-
-	ent := strings.Split(strings.TrimSuffix(string(out), "\n"), ":")
+	passwd := runSimpleCmd("getent", "passwd", u.strUid())
+	ent := strings.Split(strings.TrimSuffix(passwd, "\n"), ":")
 	return ent[6]
 }
 
