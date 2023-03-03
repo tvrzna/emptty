@@ -13,7 +13,7 @@ import "C"
 import "unsafe"
 
 // Tries to authorize user with password.
-func authPassword(username string, password string) bool {
+func (n *nopamHandle) authPassword(username string, password string) bool {
 	usr := C.CString(username)
 	defer C.free(unsafe.Pointer(usr))
 

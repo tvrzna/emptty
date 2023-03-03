@@ -10,31 +10,40 @@ import (
 	"time"
 )
 
+// AuthHandle interface defines handle for authorization
+type authHandle interface {
+	usr() *sysuser
+	authUser(*config)
+	closeAuth()
+	defineSpecificEnvVariables()
+	openAuthSession(string) error
+}
+
 // Login into graphical environment
 func login(conf *config, h *sessionHandle) {
 	interrupted = false
-	usr := authUser(conf)
+	h.auth = auth(conf)
 
-	if err := handleLoginRetries(conf, usr); err != nil {
-		closeAuth()
+	if err := handleLoginRetries(conf, h.auth.usr()); err != nil {
+		h.auth.closeAuth()
 		handleStrErr("Exceeded maximum number of allowed login retries in short period.")
 		return
 	}
 
-	d := processDesktopSelection(usr, conf)
+	d := processDesktopSelection(h.auth.usr(), conf)
 
 	runDisplayScript(conf.DisplayStartScript)
 
-	if err := openAuthSession(d.env.sessionType()); err != nil {
-		closeAuth()
+	if err := h.auth.openAuthSession(d.env.sessionType()); err != nil {
+		h.auth.closeAuth()
 		handleStrErr("No active transaction")
 		return
 	}
 
-	h.session = createSession(usr, d, conf)
+	h.session = createSession(h.auth, d, conf)
 	h.session.start()
 
-	closeAuth()
+	h.auth.closeAuth()
 
 	runDisplayScript(conf.DisplayStopScript)
 }

@@ -12,15 +12,28 @@ import (
 
 const tagPam = "nopam"
 
+// PamHandle defines structure of handle specificaly designed for not using PAM authorization
+type nopamHandle struct {
+	u *sysuser
+}
+
+// Creates authHandle and handles authorization
+func auth(conf *config) *nopamHandle {
+	h := &nopamHandle{}
+	h.authUser(conf)
+	return h
+}
+
 // Handle authentication of user without PAM.
 // If user is successfully authorized, it returns sysuser.
 //
 // If autologin is enabled, it behaves as user has been authorized.
-func authUser(conf *config) *sysuser {
+func (n *nopamHandle) authUser(conf *config) {
 	if conf.Autologin && conf.DefaultUser != "" {
 		usr, err := user.Lookup(conf.DefaultUser)
 		handleErr(err)
-		return getSysuser(usr)
+		n.u = getSysuser(usr)
+		return
 	}
 	hostname, _ := os.Hostname()
 	var username string
@@ -43,31 +56,36 @@ func authUser(conf *config) *sysuser {
 	password, err := readPassword()
 	handleErr(err)
 
-	if authPassword(username, password) {
+	if n.authPassword(username, password) {
 		usr, err := user.Lookup(username)
 		username = ""
 
 		handleErr(err)
 
-		return getSysuser(usr)
+		n.u = getSysuser(usr)
+		return
 	}
 	addBtmpEntry(username, os.Getpid(), conf.strTTY())
 	handleStrErr("Authentication failure")
-	return nil
+}
+
+// Gets sysuser
+func (n *nopamHandle) usr() *sysuser {
+	return n.u
 }
 
 // Handles close of authentication
-func closeAuth() {
+func (n *nopamHandle) closeAuth() {
 	// Nothing to do here
 }
 
 // Defines specific environmental variables defined by PAM
-func defineSpecificEnvVariables(usr *sysuser) {
+func (n *nopamHandle) defineSpecificEnvVariables() {
 	// Nothing to do here
 }
 
 // Opens auth session with XDG_SESSION_TYPE set directly into PAM environments
-func openAuthSession(sessionType string) error {
+func (n *nopamHandle) openAuthSession(sessionType string) error {
 	// Nothing to do here
 	return nil
 }

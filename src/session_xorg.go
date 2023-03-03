@@ -18,20 +18,20 @@ type xorgSession struct {
 // Starts Xorg as carrier for Xorg Session.
 func (x *xorgSession) startCarrier() {
 	if !x.conf.DefaultXauthority {
-		x.usr.setenv(envXauthority, x.usr.getenv(envXdgRuntimeDir)+"/.emptty-xauth")
-		os.Remove(x.usr.getenv(envXauthority))
+		x.auth.usr().setenv(envXauthority, x.auth.usr().getenv(envXdgRuntimeDir)+"/.emptty-xauth")
+		os.Remove(x.auth.usr().getenv(envXauthority))
 	}
 
-	x.usr.setenv(envDisplay, ":"+x.getFreeXDisplay())
+	x.auth.usr().setenv(envDisplay, ":"+x.getFreeXDisplay())
 
 	// generate mcookie
-	cmd := cmdAsUser(x.usr, lookPath("mcookie", "/usr/bin/mcookie"))
+	cmd := cmdAsUser(x.auth.usr(), lookPath("mcookie", "/usr/bin/mcookie"))
 	mcookie, err := cmd.Output()
 	handleErr(err)
 	logPrint("Generated mcookie")
 
 	// generate xauth
-	cmd = cmdAsUser(x.usr, lookPath("xauth", "/usr/bin/xauth"), "add", x.usr.getenv(envDisplay), ".", string(mcookie))
+	cmd = cmdAsUser(x.auth.usr(), lookPath("xauth", "/usr/bin/xauth"), "add", x.auth.usr().getenv(envDisplay), ".", string(mcookie))
 	_, err = cmd.Output()
 	handleErr(err)
 	logPrint("Generated xauthority")
@@ -39,7 +39,7 @@ func (x *xorgSession) startCarrier() {
 	// start X
 	logPrint("Starting Xorg")
 
-	xorgArgs := []string{"vt" + x.conf.strTTY(), x.usr.getenv(envDisplay)}
+	xorgArgs := []string{"vt" + x.conf.strTTY(), x.auth.usr().getenv(envDisplay)}
 	if x.allowRootlessX() {
 		xorgArgs = append(xorgArgs, "-keeptty")
 	}
@@ -50,15 +50,15 @@ func (x *xorgSession) startCarrier() {
 	}
 
 	if x.allowRootlessX() {
-		x.xorg = cmdAsUser(x.usr, lookPath("Xorg", "/usr/bin/Xorg"), xorgArgs...)
-		x.xorg.Env = x.usr.environ()
-		if err := x.setTTYOwnership(x.conf, x.usr.uid); err != nil {
+		x.xorg = cmdAsUser(x.auth.usr(), lookPath("Xorg", "/usr/bin/Xorg"), xorgArgs...)
+		x.xorg.Env = x.auth.usr().environ()
+		if err := x.setTTYOwnership(x.conf, x.auth.usr().uid); err != nil {
 			logPrint(err)
 		}
 	} else {
 		x.xorg = exec.Command(lookPath("Xorg", "/usr/bin/Xorg"), xorgArgs...)
-		os.Setenv(envDisplay, x.usr.getenv(envDisplay))
-		os.Setenv(envXauthority, x.usr.getenv(envXauthority))
+		os.Setenv(envDisplay, x.auth.usr().getenv(envDisplay))
+		os.Setenv(envXauthority, x.auth.usr().getenv(envXauthority))
 		x.xorg.Env = os.Environ()
 	}
 
@@ -68,7 +68,7 @@ func (x *xorgSession) startCarrier() {
 	}
 	logPrint("Started Xorg")
 
-	if err := openXDisplay(x.usr.getenv(envDisplay)); err != nil {
+	if err := openXDisplay(x.auth.usr().getenv(envDisplay)); err != nil {
 		handleStrErr("Could not open X Display.")
 	}
 }
@@ -89,7 +89,7 @@ func (x *xorgSession) finishCarrier() error {
 	logPrint("Interrupted Xorg")
 
 	// Remove auth
-	os.Remove(x.usr.getenv(envXauthority))
+	os.Remove(x.auth.usr().getenv(envXauthority))
 	logPrint("Cleaned up xauthority")
 
 	// Revert rootless TTY ownership

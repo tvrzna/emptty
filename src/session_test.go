@@ -5,13 +5,35 @@ import (
 	"testing"
 )
 
+type testAuth struct {
+	u *sysuser
+}
+
+func (t *testAuth) usr() *sysuser {
+	return t.u
+}
+func (t *testAuth) authUser(conf *config) {
+	//nothing to do
+}
+func (t *testAuth) closeAuth() {
+	// nothing to do
+}
+func (t *testAuth) defineSpecificEnvVariables() {
+	// nothing to do
+}
+func (t *testAuth) openAuthSession(sessionType string) error {
+	// nothing to do
+	return nil
+}
+
 func TestPrepareGuiCommandWithChild(t *testing.T) {
 	c := &config{}
 	u := &sysuser{uid: 3000, gid: 2000}
+	a := &testAuth{u}
 	d := &desktop{path: "/dev/null", exec: "/usr/bin/none"}
 	d.child = d
 
-	s := &commonSession{nil, u, d, c, nil, nil}
+	s := &commonSession{nil, a, d, c, nil, nil}
 
 	_, exec := s.prepareGuiCommand()
 	if exec != "/usr/bin/none" {
@@ -28,9 +50,10 @@ func TestPrepareGuiCommandWithChild(t *testing.T) {
 func TestPrepareGuiCommandXinitrc(t *testing.T) {
 	c := &config{}
 	u := &sysuser{uid: 3000, gid: 2000, homedir: getTestingPath("userHome3")}
+	a := &testAuth{u}
 	d := &desktop{path: "/dev/null", exec: "/usr/bin/none", loginShell: "/bin/login-shell"}
 
-	s := &commonSession{nil, u, d, c, nil, nil}
+	s := &commonSession{nil, a, d, c, nil, nil}
 
 	// No config
 	_, exec := s.prepareGuiCommand()

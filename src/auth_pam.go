@@ -15,14 +15,25 @@ import (
 
 const tagPam = ""
 
-var trans *pam.Transaction
+// PamHandle defines structure of handle specificaly designed for using PAM authorization
+type pamHandle struct {
+	trans *pam.Transaction
+	u     *sysuser
+}
+
+// Creates authHandle and handles authorization
+func auth(conf *config) *pamHandle {
+	h := &pamHandle{}
+	h.authUser(conf)
+	return h
+}
 
 // Handle PAM authentication of user.
 // If user is successfully authorized, it returns sysuser.
 //
 // If autologin is enabled, it behaves as user has been authorized.
-func authUser(conf *config) *sysuser {
-	trans, _ = pam.StartFunc("emptty", conf.DefaultUser, func(s pam.Style, msg string) (string, error) {
+func (h *pamHandle) authUser(conf *config) {
+	h.trans, _ = pam.StartFunc("emptty", conf.DefaultUser, func(s pam.Style, msg string) (string, error) {
 		switch s {
 		case pam.PromptEchoOff:
 			if conf.Autologin {
@@ -59,54 +70,60 @@ func authUser(conf *config) *sysuser {
 		return "", errors.New("unrecognized message style")
 	})
 
-	if err := trans.Authenticate(pam.Silent); err != nil {
+	if err := h.trans.Authenticate(pam.Silent); err != nil {
 		bkpErr := errors.New(err.Error())
-		username, _ := trans.GetItem(pam.User)
+		username, _ := h.trans.GetItem(pam.User)
 		addBtmpEntry(username, os.Getpid(), conf.strTTY())
 		handleErr(bkpErr)
 	}
 	logPrint("Authenticate OK")
 
-	handleErr(trans.AcctMgmt(pam.Silent))
-	handleErr(trans.SetItem(pam.Tty, "tty"+conf.strTTY()))
-	handleErr(trans.SetCred(pam.EstablishCred))
+	handleErr(h.trans.AcctMgmt(pam.Silent))
+	handleErr(h.trans.SetItem(pam.Tty, "tty"+conf.strTTY()))
+	handleErr(h.trans.SetCred(pam.EstablishCred))
 
-	pamUsr, _ := trans.GetItem(pam.User)
+	pamUsr, _ := h.trans.GetItem(pam.User)
 	usr, _ := user.Lookup(pamUsr)
 
-	return getSysuser(usr)
+	h.u = getSysuser(usr)
+}
+
+// Gets sysuser
+func (h *pamHandle) usr() *sysuser {
+	return h.u
 }
 
 // Handles close of PAM authentication
-func closeAuth() {
-	if trans != nil {
-		if err := trans.SetCred(pam.DeleteCred); err != nil {
+func (h *pamHandle) closeAuth() {
+	if h != nil && h.usr() != nil && h.trans != nil {
+		if err := h.trans.SetCred(pam.DeleteCred); err != nil {
 			logPrint(err)
 		}
-		if err := trans.CloseSession(pam.Silent); err != nil {
+		if err := h.trans.CloseSession(pam.Silent); err != nil {
 			logPrint(err)
 		}
-		trans = nil
+		h.trans = nil
+		h.u = nil
 	}
 }
 
 // Defines specific environmental variables defined by PAM
-func defineSpecificEnvVariables(usr *sysuser) {
-	if trans != nil {
-		envs, _ := trans.GetEnvList()
+func (h *pamHandle) defineSpecificEnvVariables() {
+	if h.trans != nil && h.u != nil {
+		envs, _ := h.trans.GetEnvList()
 		for key, value := range envs {
-			usr.setenv(key, value)
+			h.u.setenv(key, value)
 		}
 	}
 }
 
 // Opens auth session with XDG_SESSION_TYPE set directly into PAM environments
-func openAuthSession(sessionType string) error {
-	if trans != nil {
-		if err := trans.PutEnv(fmt.Sprintf("XDG_SESSION_TYPE=%s", sessionType)); err != nil {
+func (h *pamHandle) openAuthSession(sessionType string) error {
+	if h.trans != nil {
+		if err := h.trans.PutEnv(fmt.Sprintf("XDG_SESSION_TYPE=%s", sessionType)); err != nil {
 			return err
 		}
-		return trans.OpenSession(pam.Silent)
+		return h.trans.OpenSession(pam.Silent)
 	}
 	return errors.New("no active transaction")
 }

@@ -15,6 +15,7 @@ var buildVersion string
 
 type sessionHandle struct {
 	session *commonSession
+	auth    authHandle
 }
 
 func init() {
@@ -59,7 +60,9 @@ func handleInterrupt(c chan os.Signal, h *sessionHandle) {
 		h.session.cmd.Process.Signal(os.Interrupt)
 		h.session.cmd.Wait()
 	} else {
-		closeAuth()
+		if h.auth != nil {
+			h.auth.closeAuth()
+		}
 		os.Exit(1)
 	}
 }

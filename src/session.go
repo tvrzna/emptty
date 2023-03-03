@@ -39,7 +39,7 @@ type session interface {
 // commonSession defines structure with data required for starting the session
 type commonSession struct {
 	session
-	usr  *sysuser
+	auth authHandle
 	d    *desktop
 	conf *config
 	dbus *dbus
@@ -47,8 +47,8 @@ type commonSession struct {
 }
 
 // Starts user's session
-func createSession(usr *sysuser, d *desktop, conf *config) *commonSession {
-	s := &commonSession{nil, usr, d, conf, nil, nil}
+func createSession(h authHandle, d *desktop, conf *config) *commonSession {
+	s := &commonSession{auth: h, d: d, conf: conf}
 
 	switch d.env {
 	case Wayland:
@@ -67,7 +67,7 @@ func (s *commonSession) start() {
 	s.startCarrier()
 
 	if !s.conf.NoXdgFallback {
-		s.usr.setenv(envXdgSessionType, s.d.env.sessionType())
+		s.auth.usr().setenv(envXdgSessionType, s.d.env.sessionType())
 	}
 
 	if s.conf.AlwaysDbusLaunch {
@@ -86,11 +86,11 @@ func (s *commonSession) start() {
 	}
 
 	if s.dbus != nil {
-		s.dbus.launch(s.usr)
+		s.dbus.launch(s.auth.usr())
 	}
 
 	logPrint("Starting " + strExec)
-	session.Env = s.usr.environ()
+	session.Env = s.auth.usr().environ()
 	if err := session.Start(); err != nil {
 		s.finishCarrier()
 		handleErr(err)
@@ -101,7 +101,7 @@ func (s *commonSession) start() {
 		pid = session.Process.Pid
 	}
 
-	utmpEntry := addUtmpEntry(s.usr.username, pid, s.conf.strTTY(), s.usr.getenv(envDisplay))
+	utmpEntry := addUtmpEntry(s.auth.usr().username, pid, s.conf.strTTY(), s.auth.usr().getenv(envDisplay))
 	logPrint("Added utmp entry")
 
 	err := session.Wait()
@@ -128,30 +128,30 @@ func (s *commonSession) start() {
 
 // Prepares environment and env variables for authorized user.
 func (s *commonSession) defineEnvironment() {
-	defineSpecificEnvVariables(s.usr)
+	s.auth.defineSpecificEnvVariables()
 
-	s.usr.setenv(envHome, s.usr.homedir)
-	s.usr.setenv(envPwd, s.usr.homedir)
-	s.usr.setenv(envUser, s.usr.username)
-	s.usr.setenv(envLogname, s.usr.username)
-	s.usr.setenv(envUid, s.usr.strUid())
+	s.auth.usr().setenv(envHome, s.auth.usr().homedir)
+	s.auth.usr().setenv(envPwd, s.auth.usr().homedir)
+	s.auth.usr().setenv(envUser, s.auth.usr().username)
+	s.auth.usr().setenv(envLogname, s.auth.usr().username)
+	s.auth.usr().setenv(envUid, s.auth.usr().strUid())
 	if !s.conf.NoXdgFallback {
-		s.usr.setenvIfEmpty(envXdgConfigHome, s.usr.homedir+"/.config")
-		s.usr.setenvIfEmpty(envXdgRuntimeDir, "/run/user/"+s.usr.strUid())
-		s.usr.setenvIfEmpty(envXdgSeat, "seat0")
-		s.usr.setenv(envXdgSessionClass, "user")
+		s.auth.usr().setenvIfEmpty(envXdgConfigHome, s.auth.usr().homedir+"/.config")
+		s.auth.usr().setenvIfEmpty(envXdgRuntimeDir, "/run/user/"+s.auth.usr().strUid())
+		s.auth.usr().setenvIfEmpty(envXdgSeat, "seat0")
+		s.auth.usr().setenv(envXdgSessionClass, "user")
 	}
-	s.usr.setenv(envShell, s.usr.getShell())
-	s.usr.setenvIfEmpty(envLang, s.conf.Lang)
-	s.usr.setenvIfEmpty(envPath, os.Getenv(envPath))
+	s.auth.usr().setenv(envShell, s.auth.usr().getShell())
+	s.auth.usr().setenvIfEmpty(envLang, s.conf.Lang)
+	s.auth.usr().setenvIfEmpty(envPath, os.Getenv(envPath))
 
 	if !s.conf.NoXdgFallback {
 		if s.d.name != "" {
-			s.usr.setenv(envDesktopSession, s.d.name)
-			s.usr.setenv(envXdgSessDesktop, s.d.name)
+			s.auth.usr().setenv(envDesktopSession, s.d.name)
+			s.auth.usr().setenv(envXdgSessDesktop, s.d.name)
 		} else if s.d.child != nil && s.d.child.name != "" {
-			s.usr.setenv(envDesktopSession, s.d.child.name)
-			s.usr.setenv(envXdgSessDesktop, s.d.child.name)
+			s.auth.usr().setenv(envDesktopSession, s.d.child.name)
+			s.auth.usr().setenv(envXdgSessDesktop, s.d.child.name)
 		}
 	}
 
@@ -159,12 +159,12 @@ func (s *commonSession) defineEnvironment() {
 
 	// create XDG folder
 	if !s.conf.NoXdgFallback {
-		if !fileExists(s.usr.getenv(envXdgRuntimeDir)) {
-			err := os.MkdirAll(s.usr.getenv(envXdgRuntimeDir), 0700)
+		if !fileExists(s.auth.usr().getenv(envXdgRuntimeDir)) {
+			err := os.MkdirAll(s.auth.usr().getenv(envXdgRuntimeDir), 0700)
 			handleErr(err)
 
 			// Set owner of XDG folder
-			os.Chown(s.usr.getenv(envXdgRuntimeDir), s.usr.uid, s.usr.gid)
+			os.Chown(s.auth.usr().getenv(envXdgRuntimeDir), s.auth.usr().uid, s.auth.usr().gid)
 
 			logPrint("Created XDG folder")
 		} else {
@@ -172,7 +172,7 @@ func (s *commonSession) defineEnvironment() {
 		}
 	}
 
-	os.Chdir(s.usr.getenv(envPwd))
+	os.Chdir(s.auth.usr().getenv(envPwd))
 }
 
 // Prepares command for starting GUI.
@@ -181,17 +181,17 @@ func (s *commonSession) prepareGuiCommand() (cmd *exec.Cmd, strExec string) {
 
 	startScript := s.d.isUser && !allowStartupPrefix
 
-	if allowStartupPrefix && s.conf.XinitrcLaunch && s.d.env == Xorg && !strings.Contains(strExec, ".xinitrc") && fileExists(s.usr.homedir+"/.xinitrc") {
+	if allowStartupPrefix && s.conf.XinitrcLaunch && s.d.env == Xorg && !strings.Contains(strExec, ".xinitrc") && fileExists(s.auth.usr().homedir+"/.xinitrc") {
 		startScript = true
-		strExec = s.usr.homedir + "/.xinitrc " + strExec
+		strExec = s.auth.usr().homedir + "/.xinitrc " + strExec
 	} else if allowStartupPrefix && s.conf.DbusLaunch && !strings.Contains(strExec, "dbus-launch") {
 		s.dbus = &dbus{}
 	}
 
 	if startScript {
-		cmd = cmdAsUser(s.usr, s.getLoginShell(), strings.Split(strExec, " ")...)
+		cmd = cmdAsUser(s.auth.usr(), s.getLoginShell(), strings.Split(strExec, " ")...)
 	} else {
-		cmd = cmdAsUser(s.usr, strExec)
+		cmd = cmdAsUser(s.auth.usr(), strExec)
 	}
 
 	return cmd, strExec
