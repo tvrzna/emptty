@@ -229,6 +229,16 @@ func runSimpleCmdAsUser(usr *sysuser, cmd ...string) string {
 	return ""
 }
 
+// Look for path of cmd, if not found, use fallback
+func lookPath(cmd string, fallback string) string {
+	path, err := exec.LookPath(cmd)
+	if err != nil {
+		logPrintf("Could not find command '%s' on PATH, using fallback '%s'", cmd, fallback)
+		return fallback
+	}
+	return path
+}
+
 // Tries to find corresponding interface and its IP address
 func getIpAddress(name string, ipType byte) string {
 	if name == "" {

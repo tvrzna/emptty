@@ -25,13 +25,13 @@ func (x *xorgSession) startCarrier() {
 	x.usr.setenv(envDisplay, ":"+x.getFreeXDisplay())
 
 	// generate mcookie
-	cmd := cmdAsUser(x.usr, "/usr/bin/mcookie")
+	cmd := cmdAsUser(x.usr, lookPath("mcookie", "/usr/bin/mcookie"))
 	mcookie, err := cmd.Output()
 	handleErr(err)
 	logPrint("Generated mcookie")
 
 	// generate xauth
-	cmd = cmdAsUser(x.usr, "/usr/bin/xauth", "add", x.usr.getenv(envDisplay), ".", string(mcookie))
+	cmd = cmdAsUser(x.usr, lookPath("xauth", "/usr/bin/xauth"), "add", x.usr.getenv(envDisplay), ".", string(mcookie))
 	_, err = cmd.Output()
 	handleErr(err)
 	logPrint("Generated xauthority")
@@ -50,13 +50,13 @@ func (x *xorgSession) startCarrier() {
 	}
 
 	if x.allowRootlessX() {
-		x.xorg = cmdAsUser(x.usr, "/usr/bin/Xorg", xorgArgs...)
+		x.xorg = cmdAsUser(x.usr, lookPath("Xorg", "/usr/bin/Xorg"), xorgArgs...)
 		x.xorg.Env = x.usr.environ()
 		if err := x.setTTYOwnership(x.conf, x.usr.uid); err != nil {
 			logPrint(err)
 		}
 	} else {
-		x.xorg = exec.Command("/usr/bin/Xorg", xorgArgs...)
+		x.xorg = exec.Command(lookPath("Xorg", "/usr/bin/Xorg"), xorgArgs...)
 		os.Setenv(envDisplay, x.usr.getenv(envDisplay))
 		os.Setenv(envXauthority, x.usr.getenv(envXauthority))
 		x.xorg.Env = os.Environ()
