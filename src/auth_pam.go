@@ -100,8 +100,8 @@ func defineSpecificEnvVariables(usr *sysuser) {
 	}
 }
 
-// Opens session with XDG_SESSION_TYPE set directly into PAM environments
-func openSession(sessionType string) error {
+// Opens auth session with XDG_SESSION_TYPE set directly into PAM environments
+func openAuthSession(sessionType string) error {
 	if trans != nil {
 		if err := trans.PutEnv(fmt.Sprintf("XDG_SESSION_TYPE=%s", sessionType)); err != nil {
 			return err

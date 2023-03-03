@@ -25,7 +25,7 @@ func login(conf *config, h *sessionHandle) {
 
 	runDisplayScript(conf.DisplayStartScript)
 
-	if err := openSession(d.env.sessionType()); err != nil {
+	if err := openAuthSession(d.env.sessionType()); err != nil {
 		closeAuth()
 		handleStrErr("No active transaction")
 		return

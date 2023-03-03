@@ -66,8 +66,8 @@ func defineSpecificEnvVariables(usr *sysuser) {
 	// Nothing to do here
 }
 
-// Opens session with XDG_SESSION_TYPE set directly into PAM environments
-func openSession(sessionType string) error {
+// Opens auth session with XDG_SESSION_TYPE set directly into PAM environments
+func openAuthSession(sessionType string) error {
 	// Nothing to do here
 	return nil
 }
