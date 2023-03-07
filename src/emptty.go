@@ -36,18 +36,20 @@ func Main() {
 	initLogger(conf)
 	printMotd(conf)
 
-	h := &sessionHandle{}
-	initInterruptHandler(h)
-	login(conf, h)
+	login(conf, initSessionHandle())
 
 	stopDaemon(conf, fTTY)
 }
 
-// Initialize common interrupt
-func initInterruptHandler(h *sessionHandle) {
+// Initialize session handle with common interrupt handler
+func initSessionHandle() *sessionHandle {
+	h := &sessionHandle{}
+
 	c := make(chan os.Signal, 10)
 	signal.Notify(c, os.Interrupt, syscall.SIGHUP, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGTERM)
 	go handleInterrupt(c, h)
+
+	return h
 }
 
 // Catch interrupt signal chan and interrupts Cmd.
