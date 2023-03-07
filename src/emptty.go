@@ -53,10 +53,10 @@ func initInterruptHandler(h *sessionHandle) {
 // Catch interrupt signal chan and interrupts Cmd.
 func handleInterrupt(c chan os.Signal, h *sessionHandle) {
 	<-c
-	interrupted = true
 	logPrint("Caught interrupt signal")
 	setTerminalEcho(os.Stdout.Fd(), true)
 	if h.session != nil && h.session.cmd != nil {
+		h.session.interrupted = true
 		h.session.cmd.Process.Signal(os.Interrupt)
 		h.session.cmd.Wait()
 	} else {

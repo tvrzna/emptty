@@ -27,8 +27,6 @@ const (
 	envUid             = "UID"
 )
 
-var interrupted bool
-
 // session defines basic functions expected from desktop session
 type session interface {
 	startCarrier()
@@ -39,11 +37,12 @@ type session interface {
 // commonSession defines structure with data required for starting the session
 type commonSession struct {
 	session
-	auth authHandle
-	d    *desktop
-	conf *config
-	dbus *dbus
-	cmd  *exec.Cmd
+	auth        authHandle
+	d           *desktop
+	conf        *config
+	dbus        *dbus
+	cmd         *exec.Cmd
+	interrupted bool
 }
 
 // Starts user's session
@@ -115,12 +114,12 @@ func (s *commonSession) start() {
 	endUtmpEntry(utmpEntry)
 	logPrint("Ended utmp entry")
 
-	if !interrupted && err != nil {
+	if !s.interrupted && err != nil {
 		logPrint(strExec + " finished with error: " + err.Error() + ". For more details see `SESSION_ERROR_LOGGING` in configuration.")
 		handleStrErr(s.d.env.string() + " session finished with error, please check logs")
 	}
 
-	if !interrupted && carrierErr != nil {
+	if !s.interrupted && carrierErr != nil {
 		logPrint(s.d.env.string() + " finished with error: " + carrierErr.Error())
 		handleStrErr(s.d.env.string() + " finished with error, please check logs")
 	}

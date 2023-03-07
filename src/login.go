@@ -21,7 +21,6 @@ type authHandle interface {
 
 // Login into graphical environment
 func login(conf *config, h *sessionHandle) {
-	interrupted = false
 	h.auth = auth(conf)
 
 	if err := handleLoginRetries(conf, h.auth.usr()); err != nil {
