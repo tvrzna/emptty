@@ -76,8 +76,7 @@ func processDesktopSelection(usr *sysuser, conf *config) *desktop {
 func runDisplayScript(scriptPath string) {
 	if scriptPath != "" {
 		if fileIsExecutable(scriptPath) {
-			err := exec.Command(scriptPath).Run()
-			if err != nil {
+			if err := exec.Command(scriptPath).Run(); err != nil {
 				logPrint(err)
 			}
 		} else {

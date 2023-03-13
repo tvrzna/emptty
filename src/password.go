@@ -10,8 +10,7 @@ import (
 func readPassword() (string, error) {
 	fd := os.Stdout.Fd()
 
-	err := setTerminalEcho(fd, false)
-	if err != nil {
+	if err := setTerminalEcho(fd, false); err != nil {
 		return "", err
 	}
 	defer setTerminalEcho(fd, true)

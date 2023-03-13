@@ -76,8 +76,7 @@ func (s *commonSession) start() {
 	session, strExec := s.prepareGuiCommand()
 	s.cmd = session
 
-	sessionErrLog, sessionErrLogErr := initSessionErrorLogger(s.conf)
-	if sessionErrLogErr == nil {
+	if sessionErrLog, sessionErrLogErr := initSessionErrorLogger(s.conf); sessionErrLogErr == nil {
 		session.Stderr = sessionErrLog
 		defer sessionErrLog.Close()
 	} else {
@@ -159,8 +158,7 @@ func (s *commonSession) defineEnvironment() {
 	// create XDG folder
 	if !s.conf.NoXdgFallback {
 		if !fileExists(s.auth.usr().getenv(envXdgRuntimeDir)) {
-			err := os.MkdirAll(s.auth.usr().getenv(envXdgRuntimeDir), 0700)
-			handleErr(err)
+			handleErr(os.MkdirAll(s.auth.usr().getenv(envXdgRuntimeDir), 0700))
 
 			// Set owner of XDG folder
 			os.Chown(s.auth.usr().getenv(envXdgRuntimeDir), s.auth.usr().uid, s.auth.usr().gid)

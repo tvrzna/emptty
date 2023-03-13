@@ -222,8 +222,7 @@ func runSimpleCmdAsUser(usr *sysuser, cmd ...string) string {
 		execCmd.SysProcAttr.Credential = &syscall.Credential{Uid: usr.uidu32(), Gid: usr.gidu32(), Groups: usr.gidsu32}
 	}
 
-	output, err := execCmd.Output()
-	if err == nil {
+	if output, err := execCmd.Output(); err == nil {
 		return strings.TrimSpace(string(output))
 	}
 	return ""

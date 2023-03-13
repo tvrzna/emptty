@@ -110,8 +110,7 @@ func prepareLogFile(path, tty string, method enLogging) (*os.File, error) {
 // Temporal solution to avoid issues with names of logging folder, if there is already file with same name.
 func backupFileIfNotFolder(path string) {
 	fileName := path[:strings.LastIndex(path, "/")]
-	f, err := os.Stat(fileName)
-	if err == nil && f != nil && !f.IsDir() {
+	if f, err := os.Stat(fileName); err == nil && f != nil && !f.IsDir() {
 		os.Remove(fileName + pathLogFileOldSuffix)
 		os.Rename(fileName, fileName+pathLogFileOldSuffix)
 	}

@@ -18,14 +18,9 @@ const (
 
 // Sets fsuid, fsgid and fsgroups according sysuser
 func setFsUser(usr *sysuser) {
-	err := syscall.Setfsuid(usr.uid)
-	handleErr(err)
-
-	err = syscall.Setfsgid(usr.gid)
-	handleErr(err)
-
-	err = syscall.Setfsgid(usr.gid)
-	handleErr(err)
+	handleErr(syscall.Setfsuid(usr.uid))
+	handleErr(syscall.Setfsgid(usr.gid))
+	handleErr(syscall.Setfsgid(usr.gid))
 }
 
 // Sets keyboard LEDs

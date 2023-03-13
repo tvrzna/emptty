@@ -10,11 +10,9 @@ import (
 
 // Sets fsuid, fsgid and fsgroups according sysuser
 func setFsUser(usr *sysuser) {
-	err := syscall.Setuid(usr.uid)
-	handleErr(err)
+	handleErr(syscall.Setuid(usr.uid))
 
-	err = syscall.Setgid(usr.gid)
-	handleErr(err)
+	handleErr(syscall.Setgid(usr.gid))
 }
 
 // Sets keyboard LEDs
