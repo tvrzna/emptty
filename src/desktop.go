@@ -34,8 +34,6 @@ const (
 	constEnvSTWayland = "wayland"
 
 	pathLastSession       = "/.cache/emptty/last-session"
-	pathXorgSessions      = "/usr/share/xsessions/"
-	pathWaylandSessions   = "/usr/share/wayland-sessions/"
 	pathCustomSessions    = "/etc/emptty/custom-sessions/"
 	pathUserCustomSession = "/.config/emptty-custom-sessions/"
 )
@@ -91,7 +89,7 @@ type lastSession struct {
 
 // Allows to select desktop, which could be selected.
 func selectDesktop(usr *sysuser, conf *config, allowAutoselectDesktop bool) (*desktop, *desktop) {
-	desktops := listAllDesktops(usr, pathXorgSessions, pathWaylandSessions)
+	desktops := listAllDesktops(usr, conf.XorgSessionsPath, conf.WaylandSessionsPath)
 	if len(desktops) == 0 {
 		handleStrErr("Not found any installed desktop.")
 	}
@@ -209,6 +207,10 @@ func listAllDesktops(usr *sysuser, pathXorgDesktops, pathWaylandDesktops string)
 // List desktops, that could be found on defined path.
 func listDesktops(path string, env enEnvironment) []*desktop {
 	var result []*desktop
+
+	if strings.HasSuffix(path, "/") {
+		path += "/"
+	}
 
 	if fileExists(path) {
 		err := filepath.Walk(path, func(filePath string, fileInfo os.FileInfo, err error) error {

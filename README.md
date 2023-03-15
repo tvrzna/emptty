@@ -102,6 +102,12 @@ If set true, "hostname login:" is not displayed. Possible values are "true" or "
 `HIDE_ENTER_PASSWORD`
 If set true, "Password:" is not displayed. Possible values are "true" or "false". Default value is false.
 
+`XORG_SESSIONS_PATH`
+Path to directory, where Xorg sessions' desktop files are stored. Default value is "/usr/share/xsessions/".
+
+`WAYLAND_SESSIONS_PATH`
+Path to directory, where Wayland sessions' desktop files are stored. Default value is "/usr/share/wayland-sessions/".
+
 #### Dynamic MOTD
 If `DYNAMIC_MOTD` is set to `true`, this file exists and is executable for its owner, the result is printed as your own MOTD. Be very careful with this script!
 

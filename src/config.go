@@ -48,6 +48,8 @@ type config struct {
 	DisplayStartScript  string        `config:"DISPLAY_START_SCRIPT" parser:"SanitizeValue" default:""`
 	DisplayStopScript   string        `config:"DISPLAY_STOP_SCRIPT" parser:"SanitizeValue" default:""`
 	SessionErrLogFile   string        `config:"SESSION_ERROR_LOGGING_FILE" parser:"SanitizeValue" default:"/var/log/emptty/session-errors.[TTY_NUMBER].log"`
+	XorgSessionsPath    string        `config:"XORG_SESSIONS_PATH" parser:"SanitizeValue" default:"/usr/share/xsessions/"`
+	WaylandSessionsPath string        `config:"WAYLAND_SESSIONS_PATH" parser:"SanitizeValue" default:"/usr/share/wayland-sessions/"`
 }
 
 // LoadConfig handles loading of application configuration.

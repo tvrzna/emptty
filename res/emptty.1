@@ -1,4 +1,4 @@
-.TH EMPTTY 1 "January 2023" "emptty 0.9.1" emptty
+.TH EMPTTY 1 "March 2023" "emptty 0.9.1" emptty
 
 .SH NAME
 emptty \- Dead simple CLI Display Manager on TTY
@@ -165,6 +165,12 @@ If set true, "hostname login:" is not displayed. Possible values are "true" or "
 
 .IP HIDE_ENTER_PASSWORD
 If set true, "Password:" is not displayed. Possible values are "true" or "false". Default value is false.
+
+.IP XORG_SESSIONS_PATH
+Path to directory, where Xorg sessions' desktop files are stored. Default value is "/usr/share/xsessions/".
+
+.IP WAYLAND_SESSIONS_PATH
+Path to directory, where Wayland sessions' desktop files are stored. Default value is "/usr/share/wayland-sessions/".
 
 .SH DYNAMIC MOTD
 Optional file stored by default as /etc/emptty/motd-gen.sh. Could be overridden.

@@ -149,6 +149,14 @@ func TestLoadConfig(t *testing.T) {
 		t.Error("TestLoadConfig: ALWAYS_DBUS_LAUNCH value is not correct")
 	}
 
+	if conf.XorgSessionsPath != "/dev/null" {
+		t.Error("TestLoadConfig: XORG_SESSIONS_PATH value is not correct")
+	}
+
+	if conf.WaylandSessionsPath != "/dev/zero" {
+		t.Error("TestLoadConfig: WAYLAND_SESSIONS_PATH value is not correct")
+	}
+
 }
 
 func TestLangLoadConfig(t *testing.T) {
