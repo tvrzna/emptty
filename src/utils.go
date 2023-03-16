@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+	"unsafe"
 )
 
 const (
@@ -20,6 +21,16 @@ const (
 	osReleaseName       = "NAME"
 
 	devPath = "/dev/"
+
+	_KDGKBTYPE     = 0x4B33
+	_VT_ACTIVATE   = 0x5606
+	_VT_WAITACTIVE = 0x5607
+
+	_KB_101 = 0x02
+	_KB_84  = 0x01
+
+	currentTty = "/dev/tty"
+	devConsole = "/dev/console"
 )
 
 // propertyFunc defines method to be invoked during readProperties method for each record.
@@ -372,4 +383,50 @@ func getDnsDomainName() string {
 		}
 	}
 	return "unknown_domain"
+}
+
+// Opens console by its path
+func openConsole(path string) *os.File {
+	for _, flag := range []int{os.O_RDWR, os.O_RDONLY, os.O_WRONLY} {
+		if c, err := os.OpenFile(path, flag, 0700); err == nil {
+			return c
+		}
+	}
+	return nil
+}
+
+// Checks, if used fd is a console
+func isConsole(fd uintptr) bool {
+	flag := 0
+	if _, _, errNo := syscall.Syscall(syscall.SYS_IOCTL, fd, uintptr(_KDGKBTYPE), uintptr(unsafe.Pointer(&flag))); errNo == 0 {
+		return flag == _KB_101 || flag == _KB_84
+	}
+	return false
+}
+
+// Gets console to change the TTY
+func getConsole() *os.File {
+	for _, name := range []string{currentTty, currentVc, devConsole} {
+		if c := openConsole(name); c != nil {
+			if isConsole(c.Fd()) {
+				return c
+			}
+			c.Close()
+		}
+	}
+	return nil
+}
+
+// Performs chvt command using ioctl
+func chvt(tty int) bool {
+	if c := getConsole(); c != nil {
+		defer c.Close()
+		if _, _, errNo := syscall.Syscall(syscall.SYS_IOCTL, uintptr(c.Fd()), uintptr(_VT_ACTIVATE), uintptr(tty)); errNo > 0 {
+			return false
+		}
+		if _, _, errNo := syscall.Syscall(syscall.SYS_IOCTL, uintptr(c.Fd()), uintptr(_VT_WAITACTIVE), uintptr(tty)); errNo > 0 {
+			return false
+		}
+	}
+	return true
 }

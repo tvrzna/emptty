@@ -14,6 +14,8 @@ const (
 	_K_SCROLLLOCK = 0x01
 	_K_NUMLOCK    = 0x02
 	_K_CAPSLOCK   = 0x04
+
+	currentVc = "/dev/tty0"
 )
 
 // Sets fsuid, fsgid and fsgroups according sysuser

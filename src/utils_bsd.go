@@ -8,6 +8,10 @@ import (
 	"syscall"
 )
 
+const (
+	currentVc = "/dev/tty"
+)
+
 // Sets fsuid, fsgid and fsgroups according sysuser
 func setFsUser(usr *sysuser) {
 	handleErr(syscall.Setuid(usr.uid))

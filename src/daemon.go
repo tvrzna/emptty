@@ -82,8 +82,7 @@ func clearScreen(w io.Writer) {
 // Perform switch to defined TTY, if switchTTY is true and tty is greater than 0.
 func switchTTY(conf *config) bool {
 	if conf.SwitchTTY && conf.Tty > 0 {
-		runSimpleCmd("chvt", conf.strTTY())
-		return true
+		return chvt(conf.Tty)
 	}
 	return false
 }
