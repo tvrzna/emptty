@@ -97,6 +97,9 @@ func (u *sysuser) environ() []string {
 func (u *sysuser) getShell() string {
 	passwd := runSimpleCmd("getent", "passwd", u.strUid())
 	ent := strings.Split(strings.TrimSuffix(passwd, "\n"), ":")
+	if len(ent) < 7 {
+		return "/bin/sh"
+	}
 	return ent[6]
 }
 
