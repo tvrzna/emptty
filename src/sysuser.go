@@ -1,5 +1,7 @@
 package src
 
+// #include <pwd.h>
+import "C"
 import (
 	"os/user"
 	"strconv"
@@ -95,12 +97,10 @@ func (u *sysuser) environ() []string {
 
 // Reads default shell of user.
 func (u *sysuser) getShell() string {
-	passwd := runSimpleCmd("getent", "passwd", u.strUid())
-	ent := strings.Split(strings.TrimSuffix(passwd, "\n"), ":")
-	if len(ent) < 7 {
-		return "/bin/sh"
+	if pwd := C.getpwuid(C.uint(u.uid)); pwd != nil && pwd.pw_shell != nil {
+		return C.GoString(pwd.pw_shell)
 	}
-	return ent[6]
+	return "/bin/sh"
 }
 
 // Gets path to login retry file
