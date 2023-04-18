@@ -42,7 +42,7 @@ func readOutput(method func()) string {
 	return string(output)
 }
 
-func TestConvertColor(t *testing.T) {
+func TestConvertColorBlack(t *testing.T) {
 	if convertColor("UNKNOWN", true) != "" {
 		t.Error("TestConvertColor: unexpected color for unknown")
 	}
@@ -60,7 +60,9 @@ func TestConvertColor(t *testing.T) {
 	if convertColor("LIGHT_BLACK", false) != "100" {
 		t.Error("TestConvertColor: unexpected color for LIGHT BLACK background")
 	}
+}
 
+func TestConvertColorRed(t *testing.T) {
 	// RED - 31
 	if convertColor("RED", true) != "31" {
 		t.Error("TestConvertColor: unexpected color for RED foreground")
@@ -74,7 +76,9 @@ func TestConvertColor(t *testing.T) {
 	if convertColor("LIGHT_RED", false) != "101" {
 		t.Error("TestConvertColor: unexpected color for LIGHT RED background")
 	}
+}
 
+func TestConvertColorGreen(t *testing.T) {
 	// GREEN - 32
 	if convertColor("GREEN", true) != "32" {
 		t.Error("TestConvertColor: unexpected color for GREEN foreground")
@@ -88,7 +92,9 @@ func TestConvertColor(t *testing.T) {
 	if convertColor("LIGHT_GREEN", false) != "102" {
 		t.Error("TestConvertColor: unexpected color for LIGHT GREEN background")
 	}
+}
 
+func TestConvertColorYellow(t *testing.T) {
 	// YELLOW - 33
 	if convertColor("YELLOW", true) != "33" {
 		t.Error("TestConvertColor: unexpected color for YELLOW foreground")
@@ -102,7 +108,9 @@ func TestConvertColor(t *testing.T) {
 	if convertColor("LIGHT_YELLOW", false) != "103" {
 		t.Error("TestConvertColor: unexpected color for LIGHT YELLOW background")
 	}
+}
 
+func TestConvertColorBlue(t *testing.T) {
 	// BLUE - 34
 	if convertColor("BLUE", true) != "34" {
 		t.Error("TestConvertColor: unexpected color for BLUE foreground")
@@ -116,7 +124,9 @@ func TestConvertColor(t *testing.T) {
 	if convertColor("LIGHT_BLUE", false) != "104" {
 		t.Error("TestConvertColor: unexpected color for LIGHT BLUE background")
 	}
+}
 
+func TestConvertColorMagenta(t *testing.T) {
 	// MAGENTA - 35
 	if convertColor("MAGENTA", true) != "35" {
 		t.Error("TestConvertColor: unexpected color for MAGENTA foreground")
@@ -130,7 +140,9 @@ func TestConvertColor(t *testing.T) {
 	if convertColor("LIGHT_MAGENTA", false) != "105" {
 		t.Error("TestConvertColor: unexpected color for LIGHT MAGENTA background")
 	}
+}
 
+func TestConvertColorCyan(t *testing.T) {
 	// CYAN - 36
 	if convertColor("CYAN", true) != "36" {
 		t.Error("TestConvertColor: unexpected color for CYAN foreground")
@@ -144,7 +156,9 @@ func TestConvertColor(t *testing.T) {
 	if convertColor("LIGHT_CYAN", false) != "106" {
 		t.Error("TestConvertColor: unexpected color for LIGHT CYAN background")
 	}
+}
 
+func TestConvertColorWhite(t *testing.T) {
 	// WHITE - 37
 	if convertColor("WHITE", true) != "37" {
 		t.Error("TestConvertColor: unexpected color for WHITE foreground")
