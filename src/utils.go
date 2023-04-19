@@ -313,7 +313,7 @@ func getOsReleaseValue(name string) string {
 	var values = make(map[string]string)
 	readProperties(pathOsReleaseFile, func(key, value string) {
 		if len(value) > 1 {
-			values[key] = value[1 : len(value)-1]
+			values[key] = value
 		}
 	})
 
