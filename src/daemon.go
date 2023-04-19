@@ -109,13 +109,28 @@ func findUniqueIssueVars(issue string) []*issueVariable {
 	var result []*issueVariable
 	var knownIssues []string
 
+	for i := 0; i < len(issue); i++ {
+		var issueVar *issueVariable
+		issueVar, i = findIssueVar(issue, i)
+		if issueVar != nil && !contains(knownIssues, issueVar.issue) {
+			result = append(result, issueVar)
+			knownIssues = append(knownIssues, issueVar.issue)
+		}
+	}
+
+	return result
+}
+
+// Finds single issue escape sequence
+func findIssueVar(issue string, i int) (*issueVariable, int) {
 	saveData := false
+	var j int
 	var buffer strings.Builder
 	var varName byte
 	var arg strings.Builder
 
-	for i := 0; i < len(issue); i++ {
-		b := issue[i]
+	for j = i; j < len(issue); j++ {
+		b := issue[j]
 
 		if b == '\\' {
 			saveData = true
@@ -125,25 +140,19 @@ func findUniqueIssueVars(issue string) []*issueVariable {
 
 		if saveData {
 			if i > 0 {
-				if issue[i-1] == '\\' {
+				if issue[j-1] == '\\' {
 					varName = b
 				} else if b != '{' && b != '}' && b != '\\' {
 					arg.WriteByte(b)
 				}
 			}
 			buffer.WriteByte(b)
-			if i == (len(issue)-1) || (i < len(issue) && i > 0 && issue[i-1] == '\\' && issue[i+1] != '{') || b == '}' {
-				if !contains(knownIssues, buffer.String()) {
-					result = append(result, &issueVariable{buffer.String(), varName, arg.String()})
-					knownIssues = append(knownIssues, buffer.String())
-				}
-
-				saveData = false
+			if j == (len(issue)-1) || (j < len(issue) && j > 0 && issue[j-1] == '\\' && issue[j+1] != '{') || b == '}' {
+				return &issueVariable{buffer.String(), varName, arg.String()}, j
 			}
 		}
 	}
-
-	return result
+	return nil, j
 }
 
 // Evaluates outputs for all known escape sequences and return replaced issue
@@ -155,38 +164,43 @@ func evaluateIssueVars(issue string, issueVars []*issueVariable, strTTY string) 
 	})
 
 	for _, issueVar := range issueVars {
-		output := ""
-		processed := true
-
-		switch issueVar.char {
-		case 'd':
-			output = runSimpleCmd("date")
-		case 'l':
-			output = getCurrentTTYName(strTTY, false)
-		case 'm':
-			output = runSimpleCmd("uname", "-m")
-		case 'n':
-			output = runSimpleCmd("uname", "-n")
-		case 'O':
-			output = getDnsDomainName()
-		case 'r':
-			output = runSimpleCmd("uname", "-r")
-		case 's':
-			output = runSimpleCmd("uname", "-s")
-		case 'S':
-			output = getOsReleaseValue(issueVar.arg)
-		case 't':
-			output = runSimpleCmd("date", "+%T")
-		case '4', '6':
-			output = getIpAddress(issueVar.arg, issueVar.char)
-		default:
-			processed = false
-		}
-
-		if processed {
+		if output, processed := evaluateIssueVar(issueVar, strTTY); processed {
 			result = strings.ReplaceAll(result, issueVar.issue, output)
 		}
 	}
 
 	return result
+}
+
+// Evaluate single issue variable and return its result value
+func evaluateIssueVar(issueVar *issueVariable, strTTY string) (output string, processed bool) {
+	output = ""
+	processed = true
+
+	switch issueVar.char {
+	case 'd':
+		output = runSimpleCmd("date")
+	case 'l':
+		output = getCurrentTTYName(strTTY, false)
+	case 'm':
+		output = runSimpleCmd("uname", "-m")
+	case 'n':
+		output = runSimpleCmd("uname", "-n")
+	case 'O':
+		output = getDnsDomainName()
+	case 'r':
+		output = runSimpleCmd("uname", "-r")
+	case 's':
+		output = runSimpleCmd("uname", "-s")
+	case 'S':
+		output = getOsReleaseValue(issueVar.arg)
+	case 't':
+		output = runSimpleCmd("date", "+%T")
+	case '4', '6':
+		output = getIpAddress(issueVar.arg, issueVar.char)
+	default:
+		processed = false
+	}
+
+	return
 }
