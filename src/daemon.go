@@ -139,7 +139,7 @@ func findIssueVar(issue string, i int) (*issueVariable, int) {
 		}
 
 		if saveData {
-			if i > 0 {
+			if j > 0 {
 				if issue[j-1] == '\\' {
 					varName = b
 				} else if b != '{' && b != '}' && b != '\\' {
