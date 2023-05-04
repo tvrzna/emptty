@@ -12,7 +12,7 @@ import (
 
 const tagPam = "nopam"
 
-// PamHandle defines structure of handle specificaly designed for not using PAM authorization
+// PamHandle defines structure of handle specifically designed for not using PAM authorization
 type nopamHandle struct {
 	u *sysuser
 }

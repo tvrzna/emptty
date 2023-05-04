@@ -15,7 +15,7 @@ import (
 
 const tagPam = ""
 
-// PamHandle defines structure of handle specificaly designed for using PAM authorization
+// PamHandle defines structure of handle specifically designed for using PAM authorization
 type pamHandle struct {
 	trans *pam.Transaction
 	u     *sysuser
