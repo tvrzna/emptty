@@ -91,7 +91,7 @@ option), this config is overridden to false.
 .IP VERTICAL_SELECTION
 Prints available WM/DE each on new line instead of printing on single line.
 .IP LOGGING
-Defines how logging is handled. Possible values are "default", "appending" or "disabled". Default value is "default".
+Defines how logging is handled. Possible values are "rotate", "appending" or "disabled". Default value is "rotate".
 .IP LOGGING_FILE
 Overrides path of log file. Default value is
 .I /var/log/emptty/[TTY_NUMBER].log
@@ -138,7 +138,7 @@ The script is started as default user; in daemon mode it means
 Enables numlock in daemon mode. Possible values are "true" or "false". Default value is false.
 
 .IP SESSION_ERROR_LOGGING
-Defines how logging of session errors is handled. Possible values are "default", "appending" or "disabled". Default value is "disabled".
+Defines how logging of session errors is handled. Possible values are "rotate", "appending" or "disabled". Default value is "disabled".
 .IP SESSION_ERROR_LOGGING_FILE
 Overrides path of session errors log file. Default value is
 .I /var/log/emptty/session-errors.[TTY_NUMBER].log

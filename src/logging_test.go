@@ -11,13 +11,18 @@ import (
 func TestParseLogging(t *testing.T) {
 	var logging enLogging
 
+	logging = parseLogging("", constLogRotate)
+	if logging != Rotate {
+		t.Error("TestParseLogging: wrong default value")
+	}
+
 	logging = parseLogging("", constLogDefault)
-	if logging != Default {
+	if logging != Rotate {
 		t.Error("TestParseLogging: wrong default value")
 	}
 
 	logging = parseLogging(constLogDefault, constLogDefault)
-	if logging != Default {
+	if logging != Rotate {
 		t.Error("TestParseLogging: wrong parsed value for default")
 	}
 
@@ -32,7 +37,7 @@ func TestParseLogging(t *testing.T) {
 	}
 
 	logging = parseLogging("aaa", "bbb")
-	if logging != Default {
+	if logging != Rotate {
 		t.Error("TestParseLogging: wrong fallback value")
 	}
 }
@@ -42,7 +47,7 @@ func TestInitSessionErrorLogger(t *testing.T) {
 	fileName := f.Name()
 	f.Close()
 
-	conf := &config{SessionErrLogFile: f.Name(), SessionErrLog: Default}
+	conf := &config{SessionErrLogFile: f.Name(), SessionErrLog: Rotate}
 	sessFile, sessErr := initSessionErrorLogger(conf)
 	sessFile.Close()
 	os.Remove(fileName + pathLogFileOldSuffix)
@@ -72,7 +77,7 @@ func TestInitLogger(t *testing.T) {
 	fileName := f.Name()
 	f.Close()
 
-	conf := &config{LoggingFile: f.Name(), Logging: Default}
+	conf := &config{LoggingFile: f.Name(), Logging: Rotate}
 	initLogger(conf)
 	os.Remove(fileName + pathLogFileOldSuffix)
 	os.Remove(fileName)

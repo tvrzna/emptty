@@ -51,7 +51,7 @@ __NOTE:__ to enable autologin DEFAULT_USER must be in group nopasswdlogin, other
 
 `VERTICAL_SELECTION` Prints available WM/DE each on new line instead of printing on single line.
 
-`LOGGING` Defines the way, how is logging handled. Possible values are "default", "appending" or "disabled". Default value is "default".
+`LOGGING` Defines the way, how is logging handled. Possible values are "rotate", "appending" or "disabled". Default value is "rotate".
 
 `LOGGING_FILE` Overrides path of log file. Default value is `/var/log/emptty/[TTY_NUMBER].log`.
 __NOTE:__ It expects existence of directories to defined logging file.
@@ -77,7 +77,7 @@ __NOTE:__ The script is started as default user; in daemon mode it means `root`.
 
 `ENABLE_NUMLOCK` Enables numlock in daemon mode. Possible values are "true" or "false". Default value is false.
 
-`SESSION_ERROR_LOGGING` Defines how logging of session errors is handled. Possible values are "default", "appending" or "disabled". Default value is "disabled".
+`SESSION_ERROR_LOGGING` Defines how logging of session errors is handled. Possible values are "rotate", "appending" or "disabled". Default value is "disabled".
 
 `SESSION_ERROR_LOGGING_FILE` Overrides path of session errors log file. Default value is `/var/log/emptty/session-errors.[TTY_NUMBER].log`.
 __NOTE:__ It expects existence of directories to defined logging file.

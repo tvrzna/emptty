@@ -34,8 +34,8 @@ XINITRC_LAUNCH=false
 # Prints available WM/DE each on new line instead of printing on single line.
 VERTICAL_SELECTION=false
 
-# Defines the way, how is logging handled. Possible values are "default", "appending" or "disabled".
-#LOGGING=default
+# Defines the way, how is logging handled. Possible values are "rotate", "appending" or "disabled".
+#LOGGING=rotate
 
 # Overrides path of log file
 #LOGGING_FILE=/var/log/emptty/[TTY_NUMBER].log
@@ -61,7 +61,7 @@ VERTICAL_SELECTION=false
 # Enables numlock in daemon mode. Possible values are "true" or "false".
 #ENABLE_NUMLOCK=false
 
-# Defines the way, how is logging of session errors handled. Possible values are "default", "appending" or "disabled".
+# Defines the way, how is logging of session errors handled. Possible values are "rotate", "appending" or "disabled".
 #SESSION_ERROR_LOGGING=disabled
 
 # Overrides path of session errors log file

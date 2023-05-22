@@ -19,6 +19,7 @@ const (
 	constTTYplaceholder = "[TTY_NUMBER]"
 
 	constLogDefault   = "default"
+	constLogRotate    = "rotate"
 	constLogAppending = "appending"
 	constLogDisabled  = "disabled"
 )
@@ -27,8 +28,8 @@ const (
 type enLogging byte
 
 const (
-	// Default represents saving into new file and backing up older with suffix
-	Default enLogging = iota + 1
+	// Rotate represents saving into new file and backing up older with suffix
+	Rotate enLogging = iota + 1
 
 	// Appending represents saving all logs into same file
 	Appending
@@ -89,7 +90,7 @@ func initSessionErrorLogger(conf *config) (*os.File, error) {
 func prepareLogFile(path, tty string, method enLogging) (*os.File, error) {
 	logFilePath := strings.ReplaceAll(path, constTTYplaceholder, tty)
 
-	if method == Default && logFilePath != pathLogFileNull {
+	if method == Rotate && logFilePath != pathLogFileNull {
 		// Temporary workaround to allow create new folder
 		backupFileIfNotFolder(logFilePath)
 
@@ -123,8 +124,8 @@ func parseLogging(strLogging, defaultValue string) enLogging {
 		return Disabled
 	case constLogAppending:
 		return Appending
-	case constLogDefault:
-		return Default
+	case constLogDefault, constLogRotate:
+		return Rotate
 	}
-	return Default
+	return Rotate
 }

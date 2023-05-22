@@ -31,7 +31,7 @@ type config struct {
 	HideEnterPassword   bool          `config:"HIDE_ENTER_PASSWORD" parser:"ParseBool" default:"false"`
 	DefaultSessionEnv   enEnvironment `config:"DEFAULT_SESSION_ENV" parser:"ParseEnv" default:""`
 	AutologinSessionEnv enEnvironment `config:"AUTOLOGIN_SESSION_ENV" parser:"ParseEnv" default:""`
-	Logging             enLogging     `config:"LOGGING" parser:"ParseLogging" default:"default"`
+	Logging             enLogging     `config:"LOGGING" parser:"ParseLogging" default:"rotate"`
 	SessionErrLog       enLogging     `config:"SESSION_ERROR_LOGGING" parser:"ParseLogging" default:"disabled"`
 	AutologinMaxRetry   int           `config:"AUTOLOGIN_MAX_RETRY" parser:"ParseInt" default:"2"`
 	Tty                 int           `config:"TTY_NUMBER" parser:"ParseTTY" default:"0"`
