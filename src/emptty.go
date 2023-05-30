@@ -111,6 +111,14 @@ func processArgs(args []string, conf *config) {
 				tty := parseTTY(val, "0")
 				if tty > 0 {
 					conf.Tty = tty
+				} else {
+					ttynum := strings.SplitAfterN(val, "tty", 2)
+					if len(ttynum) == 2 {
+						tty := parseTTY(ttynum[1], "0")
+						if tty > 0 {
+							conf.Tty = tty
+						}
+					}
 				}
 			})
 		case "-u", "--default-user":
