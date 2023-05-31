@@ -49,6 +49,11 @@ func TestProcessArgs(t *testing.T) {
 		t.Errorf("TestProcessArgs: expected tty number was 2, but was %d", conf2.Tty)
 	}
 
+	processArgs([]string{"-t", "tty16"}, conf2)
+	if conf2.Tty != 16 {
+		t.Errorf("TestProcessArgs: expected tty number was 16, but was %d", conf2.Tty)
+	}
+
 	conf3 := &config{}
 	processArgs([]string{"-u"}, conf3)
 	if conf3.DefaultUser != "" {
