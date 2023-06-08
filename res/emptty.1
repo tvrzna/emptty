@@ -8,7 +8,7 @@ emptty \- Dead simple CLI Display Manager on TTY
 
 .SH DESCRIPTION
 .B emptty
-Simple CLI Display Manager, that allows to select DE/WM after login, use predefined config or allows autologin, if selected user is part of
+Simple CLI Display Manager, that allows one to select DE/WM after login, use predefined config or allows autologin, if selected user is part of
 .I nopasswdlogin
 group.
 
@@ -102,17 +102,17 @@ It expects existence of directories to defined logging file.
 .IP XORG_ARGS
 Arguments passed to Xorg server.
 .IP DYNAMIC_MOTD
-Allows to use dynamic motd script to generate custom MOTD. Possible values are "true" or "false". Default value is false.
+Allows using dynamic motd script to generate custom MOTD. Possible values are "true" or "false". Default value is false.
 
 .B NOTE:
 Be sure, that dynamic motd has correct content and permissions (e.g. 744), the script is started as default user; in daemon mode it means
 .I root
 
 .IP DYNAMIC_MOTD_PATH
-Allows to override default path to dynamic motd. Default value is "/etc/emptty/motd-gen.sh".
+Allows overriding default path to dynamic motd. Default value is "/etc/emptty/motd-gen.sh".
 
 .IP MOTD_PATH
-Allows to override default path to static motd. Default value is "/etc/emptty/motd".
+Allows overriding default path to static motd. Default value is "/etc/emptty/motd".
 
 .IP FG_COLOR
 Foreground color, available only in daemon mode. List of colors is listed below.
@@ -152,7 +152,7 @@ Disallows setting of fallback values for all XDG environmental variables and lea
 Be aware, that setting to "true" could lead to unexpected behaviour.
 
 .IP DEFAULT_XAUTHORITY
-If set true, it will not use .emptty-xauth file, but the standard ~/.Xauthority file. This allows to handle xauth issues. Possible values are "true" or "false". Default value is false.
+If set true, it will not use .emptty-xauth file, but the standard ~/.Xauthority file. This allows handling xauth issues. Possible values are "true" or "false". Default value is false.
 
 .IP ROOTLESS_XORG
 If set true, Xorg will be started as rootless, if system allows and emptty is running in daemon mode. Possible values are "true" or "false". Default value is false.
@@ -209,7 +209,7 @@ for Xorg and Wayland. In this case
 .I Exec
 is skipped.
 .IP LoginShell
-Defines custom shell to be used to start the session. This allows to start the session with non-interactive shell e.g. "/bin/bash --login"
+Defines custom shell to be used to start the session. This allows starting the session with non-interactive shell e.g. "/bin/bash --login"
 
 .SH CUSTOM SESSIONS
 Optional folders for custom sessions, that could be available system-wide (in case of /etc/emptty/custom-sessions/) or user-specific (in case of ${HOME}/.config/emptty-custom-sessions/), but do not have .desktop file stored on standard paths for Xorg or Wayland sessions. Expected suffix of each file is ".desktop".
