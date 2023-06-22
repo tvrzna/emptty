@@ -5,6 +5,8 @@ command=/usr/bin/emptty
 command_args="-d"
 pidfile="/run/${RC_SVCNAME}.pid"
 respawn_period=${respawn_period-60}
+EMPTTY_TERMTIMEOUT=${EMPTTY_TERMTIMEOUT:-"TERM/60/KILL/15"}
+retry="${EMPTTY_TERMTIMEOUT}"
 
 depend() {
   after local
