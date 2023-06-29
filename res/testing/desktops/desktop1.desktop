@@ -1,2 +1,3 @@
 Name=Desktop1
 Exec=/usr/bin/desktop1
+DesktopNames=Desk1;DESKTOP_1

@@ -20,6 +20,7 @@ const (
 	desktopEnv         = "ENV"
 	desktopLang        = "LANG"
 	desktopLoginShell  = "LOGINSHELL"
+	desktopNames       = "DESKTOPNAMES"
 
 	constEnvXorg    = "xorg"
 	constEnvWayland = "wayland"
@@ -60,15 +61,16 @@ const (
 
 // desktop defines structure for display environments and window managers.
 type desktop struct {
-	name       string
-	exec       string
-	env        enEnvironment
-	envOrigin  enEnvironment
-	isUser     bool
-	path       string
-	selection  bool
-	child      *desktop
-	loginShell string
+	name         string
+	exec         string
+	env          enEnvironment
+	envOrigin    enEnvironment
+	isUser       bool
+	path         string
+	selection    bool
+	child        *desktop
+	loginShell   string
+	desktopNames string
 }
 
 // Gets exec path from desktop and returns true, if command allows dbus-launch.
@@ -241,6 +243,8 @@ func getDesktop(path string, env enEnvironment) *desktop {
 			d.exec = value
 		case desktopEnvironment, desktopEnv:
 			d.env = parseEnv(value, constEnvXorg)
+		case desktopNames:
+			d.desktopNames = value
 		}
 	})
 	return &d
@@ -271,6 +275,8 @@ func loadUserDesktop(homeDir string) (d *desktop, lang string) {
 				d.selection = parseBool(value, "false")
 			case desktopLoginShell:
 				d.loginShell = sanitizeValue(value, "")
+			case desktopNames:
+				d.desktopNames = sanitizeValue(value, "")
 			}
 		}, true)
 		handleErr(err)
@@ -278,6 +284,7 @@ func loadUserDesktop(homeDir string) (d *desktop, lang string) {
 		if d.selection {
 			d.exec = ""
 			d.name = ""
+			d.desktopNames = ""
 		}
 
 		return d, lang

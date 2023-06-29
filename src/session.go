@@ -25,6 +25,7 @@ const (
 	envDesktopSession  = "DESKTOP_SESSION"
 	envXdgSessDesktop  = "XDG_SESSION_DESKTOP"
 	envUid             = "UID"
+	envXdgCurrDesktop  = "XDG_CURRENT_DESKTOP"
 )
 
 // session defines basic functions expected from desktop session
@@ -150,6 +151,12 @@ func (s *commonSession) defineEnvironment() {
 		} else if s.d.child != nil && s.d.child.name != "" {
 			s.auth.usr().setenv(envDesktopSession, s.d.child.name)
 			s.auth.usr().setenv(envXdgSessDesktop, s.d.child.name)
+		}
+
+		if s.d.desktopNames != "" {
+			s.auth.usr().setenv(envXdgCurrDesktop, s.d.desktopNames)
+		} else if s.d.child.desktopNames != "" {
+			s.auth.usr().setenv(envXdgCurrDesktop, s.d.child.desktopNames)
 		}
 	}
 

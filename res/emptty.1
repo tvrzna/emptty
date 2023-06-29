@@ -1,4 +1,4 @@
-.TH EMPTTY 1 "May 2023" "emptty 0.10.0" emptty
+.TH EMPTTY 1 "June 2023" "emptty 0.10.0" emptty
 
 .SH NAME
 emptty \- Dead simple CLI Display Manager on TTY
@@ -210,6 +210,10 @@ for Xorg and Wayland. In this case
 is skipped.
 .IP LoginShell
 Defines custom shell to be used to start the session. This allows starting the session with non-interactive shell e.g. "/bin/bash --login"
+.IP DesktopNames
+Value passed into
+.I XDG_CURRENT_DESKTOP
+variable.
 
 .SH CUSTOM SESSIONS
 Optional folders for custom sessions, that could be available system-wide (in case of /etc/emptty/custom-sessions/) or user-specific (in case of ${HOME}/.config/emptty-custom-sessions/), but do not have .desktop file stored on standard paths for Xorg or Wayland sessions. Expected suffix of each file is ".desktop".
@@ -220,6 +224,10 @@ Defines name of Desktop Environment/Window Manager.
 Defines command to start Desktop Environment/Window Manager. It could contain multiple arguments same as in *.desktop files.
 .IP Environment
 Selects, which environment should be defined for following command. Possible values are "xorg" and "wayland", "xorg" is default.
+.IP DesktopNames
+Value passed into
+.I XDG_CURRENT_DESKTOP
+variable.
 
 .SH LAST SESSION
 The last user selection of session is stored into ~/.cache/emptty/last-session

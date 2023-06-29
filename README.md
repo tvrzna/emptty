@@ -131,6 +131,8 @@ See [samples](SAMPLES.md#emptty-as-config)
 
 `LoginShell` Defines custom shell to be used to start the session. This allows to start the session with non-interactive shell e.g. `/bin/bash --login`
 
+`DesktopNames` Value passed into `XDG_CURRENT_DESKTOP` variable.
+
 #### /etc/emptty/custom-sessions/ or ${HOME}/.config/emptty-custom-sessions/
 Optional folders for custom sessions, that could be available system-wide (in case of `/etc/emptty/custom-sessions/`) or user-specific (in case of `${HOME}/.config/emptty-custom-sessions/`), but do not have .desktop file stored on standard paths for Xorg or Wayland sessions. Expected suffix of each file is ".desktop".
 See [samples](SAMPLES.md#custom-sessions)
@@ -140,6 +142,8 @@ See [samples](SAMPLES.md#custom-sessions)
 `Exec` Defines command to start Desktop Environment/Window Manager.
 
 `Environment` Selects, which environment should be defined for following command. Possible values are "xorg" and "wayland", "xorg" is default.
+
+`DesktopNames` Value passed into `XDG_CURRENT_DESKTOP` variable.
 
 #### ${HOME}./xinitrc
 If config `XINITRC_LAUNCH` is set to true, it enables possibility to use .xinitrc script. See [samples](SAMPLES.md#xinitrc)
