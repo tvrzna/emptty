@@ -155,7 +155,7 @@ func (s *commonSession) defineEnvironment() {
 
 		if s.d.desktopNames != "" {
 			s.auth.usr().setenv(envXdgCurrDesktop, s.d.desktopNames)
-		} else if s.d.child.desktopNames != "" {
+		} else if s.d.child != nil && s.d.child.desktopNames != "" {
 			s.auth.usr().setenv(envXdgCurrDesktop, s.d.child.desktopNames)
 		}
 	}
