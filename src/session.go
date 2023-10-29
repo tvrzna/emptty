@@ -3,7 +3,11 @@ package src
 import (
 	"os"
 	"os/exec"
+	"path/filepath"
+	"strconv"
 	"strings"
+	"syscall"
+	"time"
 )
 
 const (
@@ -26,6 +30,10 @@ const (
 	envXdgSessDesktop  = "XDG_SESSION_DESKTOP"
 	envUid             = "UID"
 	envXdgCurrDesktop  = "XDG_CURRENT_DESKTOP"
+
+	userExitScript    = ".config/emptty-exit"
+	exitScriptKey     = "TIMEOUT"
+	exitScriptTimeout = 3
 )
 
 // session defines basic functions expected from desktop session
@@ -110,6 +118,8 @@ func (s *commonSession) start() {
 	}
 
 	carrierErr := s.finishCarrier()
+
+	s.runExitScript()
 
 	endUtmpEntry(utmpEntry)
 	logPrint("Ended utmp entry")
@@ -207,4 +217,43 @@ func (s *commonSession) getLoginShell() string {
 		return s.d.loginShell
 	}
 	return "/bin/sh"
+}
+
+// Runs session exit script
+func (s *commonSession) runExitScript() {
+	filePath := filepath.Join(s.auth.usr().homedir, userExitScript)
+	if fileExists(filePath) {
+		timeout := exitScriptTimeout
+		err := readProperties(filePath, func(key, value string) {
+			if key == exitScriptKey {
+				if v, err := strconv.Atoi(value); err == nil {
+					timeout = v
+				}
+			}
+		})
+		if err != nil {
+			logPrint(err)
+			return
+		}
+
+		c := make(chan error)
+		cmd := cmdAsUser(s.auth.usr(), s.getLoginShell(), filePath)
+		if err := cmd.Start(); err != nil {
+			logPrint("error during start of exit script", err)
+			return
+		}
+		go func(c chan error) {
+			c <- cmd.Wait()
+		}(c)
+
+		select {
+		case <-time.After(time.Duration(timeout) * time.Second):
+			syscall.Kill(cmd.Process.Pid, syscall.SIGKILL)
+		case err := <-c:
+			if err != nil {
+				logPrint(err)
+			}
+		}
+		close(c)
+	}
 }
