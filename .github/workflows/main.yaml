@@ -22,6 +22,8 @@ jobs:
     steps:
       - name: Prepare container
         run: |
+          # Redefine current main repo mirror
+          echo 'repository=https://repo-default.voidlinux.org/current' > /usr/share/xbps.d/00-repository-main.conf
           # Update system xbps
           xbps-install -Syu xbps
           # Update system
