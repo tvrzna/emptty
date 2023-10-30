@@ -133,6 +133,11 @@ See [samples](SAMPLES.md#emptty-as-config)
 
 `DesktopNames` Value passed into `XDG_CURRENT_DESKTOP` variable.
 
+#### User Exit Script ${HOME}/.config/emptty-exit
+Optional script file, that is handled as shell script and is started, when session is going end. Script is started even if emptty is being terminated. The default timeout to finish script is 3 seconds, but it is configurable from the script itself by setting variable `Timeout`.
+
+`Timeout` Optional custom timeout for script to finish its run, number represents seconds. Default is 3.
+
 #### /etc/emptty/custom-sessions/ or ${HOME}/.config/emptty-custom-sessions/
 Optional folders for custom sessions, that could be available system-wide (in case of `/etc/emptty/custom-sessions/`) or user-specific (in case of `${HOME}/.config/emptty-custom-sessions/`), but do not have .desktop file stored on standard paths for Xorg or Wayland sessions. Expected suffix of each file is ".desktop".
 See [samples](SAMPLES.md#custom-sessions)
