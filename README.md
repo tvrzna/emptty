@@ -189,7 +189,7 @@ allowed_users = anybody
 As it is mentioned in configuration, there are three options to handle logging of emptty. The logs contains not just logs from emptty, but also from Xorg (if used) and user's WM/DE.
 Described log location could differ according configuration `LOGGING_FILE`, that is stored in `/etc/emptty/conf`.
 
-#### default
+#### rotate
 This option provides simple solution, when current instance of `emptty` logs into `/var/log/emptty/[TTY_NUMBER].log` and the previous version is stored as `/var/log/emptty/[TTY_NUMBER].log.old`.
 
 __NOTE:__ Current instance always move previous log into old file, if `emptty` crashes and is started again, previous log is in `/var/log/emptty/[TTY_NUMBER].log.old`.
