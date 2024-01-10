@@ -71,6 +71,7 @@ func createSession(h authHandle, d *desktop, conf *config) *commonSession {
 // Performs common start of session
 func (s *commonSession) start() {
 	s.defineEnvironment()
+	applyRlimits()
 
 	s.startCarrier()
 
@@ -98,6 +99,7 @@ func (s *commonSession) start() {
 
 	logPrint("Starting " + strExec)
 	session.Env = s.auth.usr().environ()
+
 	if err := session.Start(); err != nil {
 		s.finishCarrier()
 		handleErr(err)

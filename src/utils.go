@@ -191,6 +191,22 @@ func cmdAsUser(usr *sysuser, name string, arg ...string) *exec.Cmd {
 	return cmd
 }
 
+// Applies current resource limits
+func applyRlimits() {
+	rlimits := []int{syscall.RLIMIT_AS, syscall.RLIMIT_CORE, syscall.RLIMIT_CPU, syscall.RLIMIT_DATA, syscall.RLIMIT_FSIZE, syscall.RLIMIT_NOFILE, syscall.RLIMIT_STACK}
+
+	rlimit := &syscall.Rlimit{}
+	for _, r := range rlimits {
+		if err := syscall.Getrlimit(r, rlimit); err != nil {
+			logPrintf("could not get rlimit %d", r)
+			continue
+		}
+		if err := syscall.Setrlimit(r, rlimit); err != nil {
+			logPrintf("could not set rlimit %d(soft: %d, max: %d)", r, rlimit.Cur, rlimit.Max)
+		}
+	}
+}
+
 // Checks, if array contains any of values
 func contains(array []string, values ...string) bool {
 	for _, a := range array {
