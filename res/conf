@@ -5,10 +5,10 @@ TTY_NUMBER=7
 SWITCH_TTY=true
 
 # Enables printing of /etc/issue in daemon mode.
-PRINT_ISSUE=true
+#PRINT_ISSUE=true
 
 # Enables printing of default motd, /etc/emptty/motd or /etc/emptty/motd-gen.sh.
-PRINT_MOTD=true
+#PRINT_MOTD=true
 
 # Preselected user, if AUTOLOGIN is enabled, this user is logged in.
 #DEFAULT_USER=user
@@ -26,10 +26,10 @@ AUTOLOGIN=false
 #LANG=en_US.UTF-8
 
 # Starts desktop with calling "dbus-launch".
-DBUS_LAUNCH=true
+#DBUS_LAUNCH=true
 
 # Starts Xorg desktop with calling "~/.xinitrc" script, if is true, file exists and selected WM/DE is Xorg session, it overrides DBUS_LAUNCH.
-XINITRC_LAUNCH=false
+XINITRC_LAUNCH=true
 
 # Prints available WM/DE each on new line instead of printing on single line.
 VERTICAL_SELECTION=false
@@ -53,10 +53,10 @@ VERTICAL_SELECTION=false
 #MOTD_PATH=/etc/emptty/motd
 
 # Foreground color, available only in daemon mode.
-#FG_COLOR=LIGHT_BLACK
+FG_COLOR=LIGHT_GREEN
 
 # Background color, available only in daemon mode.
-#BG_COLOR=BLACK
+BG_COLOR=BLACK
 
 # Enables numlock in daemon mode. Possible values are "true" or "false".
 #ENABLE_NUMLOCK=false
