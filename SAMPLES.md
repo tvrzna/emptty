@@ -3,7 +3,7 @@
 ## \~/.config/emptty or \~/.emptty as init script
 In your `.config` folder you have to create 'emptty' file or in your home folder you have to create `.emptty` file.
 
-This variant allows to treat your script in similar way as your `.xinitrc`, however this is common to both Xorg and Wayland. The magic option is `Selection=true`. You can define your own environmental variables and keep the possibility to select any desktop.
+This variant allows to treat your script in similar way as your `.xinitrc`, however this is common to both Xorg and Wayland. The magic option is `Selection=true` or `Selection=auto`. You can define your own environmental variables and keep the possibility to select any desktop.
 
 As it is mentioned in [README](README.md), no `.profile` scripts are sourced by default. However following scripts contains few examples, how it could be done inside `emptty` file.
 

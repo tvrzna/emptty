@@ -114,7 +114,7 @@ If `DYNAMIC_MOTD` is set to `true`, this file exists and is executable for its o
 #### Static MOTD
 Custom file, that prints your own MOTD. Reading this file supports colors (e.g. `\x1b[31m` or `\033[32m`).
 
-#### User Config  (${HOME}/.config/emptty or ${HOME}/.emptty)
+#### User Config `(${HOME}/.config/emptty or ${HOME}/.emptty)`
 Optional configuration file, that could be also handled as shell script. If is not presented, emptty shows selection of installed desktops.
 Configuration file stored as `${HOME}/.config/emptty` has higher priority on loading.
 See [samples](SAMPLES.md#emptty-as-config)
@@ -127,18 +127,18 @@ See [samples](SAMPLES.md#emptty-as-config)
 
 `Lang` Defines locale for logged user, has higher priority than LANG from global configuration
 
-`Selection` Requires selection of desktop, basically turns `emptty` file into `.xinitrc` for Xorg and Wayland. In this case `Exec` is skipped.
+`Selection` Requires selection of desktop, basically turns `emptty` file into `.xinitrc` for Xorg and Wayland. In this case `Exec` is skipped. Possible values are "false" for never using selection, "true" for always showing selection or "always" for showing selection or first option autoselect, if there is no other desktop. Defauls value is false.
 
 `LoginShell` Defines custom shell to be used to start the session. This allows to start the session with non-interactive shell e.g. `/bin/bash --login`
 
 `DesktopNames` Value passed into `XDG_CURRENT_DESKTOP` variable.
 
-#### User Exit Script ${HOME}/.config/emptty-exit
+#### User Exit Script `${HOME}/.config/emptty-exit`
 Optional script file, that is handled as shell script and is started, when session is going end. Script is started even if emptty is being terminated. The default timeout to finish script is 3 seconds, but it is configurable from the script itself by setting variable `Timeout`.
 
 `Timeout` Optional custom timeout for script to finish its run, number represents seconds. Default is 3.
 
-#### /etc/emptty/custom-sessions/ or ${HOME}/.config/emptty-custom-sessions/
+#### `/etc/emptty/custom-sessions/` or `${HOME}/.config/emptty-custom-sessions/`
 Optional folders for custom sessions, that could be available system-wide (in case of `/etc/emptty/custom-sessions/`) or user-specific (in case of `${HOME}/.config/emptty-custom-sessions/`), but do not have .desktop file stored on standard paths for Xorg or Wayland sessions. Expected suffix of each file is ".desktop".
 See [samples](SAMPLES.md#custom-sessions)
 
@@ -150,7 +150,7 @@ See [samples](SAMPLES.md#custom-sessions)
 
 `DesktopNames` Value passed into `XDG_CURRENT_DESKTOP` variable.
 
-#### ${HOME}./xinitrc
+#### `${HOME}./xinitrc`
 If config `XINITRC_LAUNCH` is set to true, it enables possibility to use .xinitrc script. See [samples](SAMPLES.md#xinitrc)
 
 #### Colors

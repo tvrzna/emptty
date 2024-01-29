@@ -40,7 +40,7 @@ func TestPrepareGuiCommandWithChild(t *testing.T) {
 		t.Errorf("TestPrepareGuiCommandWithChild: result exec command is unexpected: '%s'", exec)
 	}
 
-	d.selection = true
+	d.selection = SelectionTrue
 	_, exec = s.prepareGuiCommand()
 	if exec != "/dev/null /usr/bin/none" {
 		t.Errorf("TestPrepareGuiCommandWithChild: result exec command is unexpected: '%s'", exec)

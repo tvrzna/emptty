@@ -51,13 +51,13 @@ func login(conf *config, h *sessionHandle) {
 func processDesktopSelection(usr *sysuser, conf *config) *desktop {
 	d, usrLang := loadUserDesktop(usr.homedir)
 
-	if d == nil || (d != nil && d.selection) {
-		selectedDesktop, lastDesktop := selectDesktop(usr, conf, d == nil || (d != nil && !d.selection))
+	if d == nil || (d != nil && d.selection != SelectionFalse) {
+		selectedDesktop, lastDesktop := selectDesktop(usr, conf, d)
 		if isLastDesktopForSave(usr, lastDesktop, selectedDesktop) {
 			setUserLastSession(usr, selectedDesktop)
 		}
 
-		if d != nil && d.selection {
+		if d != nil && d.selection != SelectionFalse {
 			d.child = selectedDesktop
 			d.env = d.child.env
 		} else {

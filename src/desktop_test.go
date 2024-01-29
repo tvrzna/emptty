@@ -124,7 +124,7 @@ func TestLoadUserDesktop(t *testing.T) {
 		t.Error("TestLoadUserDesktop: wrong EXEC value")
 	}
 
-	if d.selection {
+	if d.selection != SelectionFalse {
 		t.Error("TestLoadUserDesktop: wrong SELECTION value")
 	}
 
@@ -164,7 +164,7 @@ func TestGetDesktop(t *testing.T) {
 		t.Error("TestLoadUserDesktop: wrong EXEC value")
 	}
 
-	if d.selection {
+	if d.selection != SelectionFalse {
 		t.Error("TestLoadUserDesktop: wrong SELECTION value")
 	}
 
@@ -328,7 +328,7 @@ func TestGetStrExec(t *testing.T) {
 		t.Errorf("TestGetStrExec: unexpected result: %s; %t", cmd, isExec)
 	}
 
-	d = &desktop{path: "/dev/null", exec: "/usr/bin/none", selection: true, child: d}
+	d = &desktop{path: "/dev/null", exec: "/usr/bin/none", selection: SelectionAuto, child: d}
 	cmd, isExec = d.getStrExec()
 	if isExec || cmd != d.path+" "+d.child.exec {
 		t.Errorf("TestGetStrExec: unexpected result: %s; %t", cmd, isExec)

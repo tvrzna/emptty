@@ -34,6 +34,10 @@ const (
 	constEnvSTXorg    = "x11"
 	constEnvSTWayland = "wayland"
 
+	constTrue  = "true"
+	constFalse = "false"
+	constAuto  = "auto"
+
 	pathLastSession       = "/.cache/emptty/last-session"
 	pathCustomSessions    = "/etc/emptty/custom-sessions/"
 	pathUserCustomSession = "/.config/emptty-custom-sessions/"
@@ -59,6 +63,20 @@ const (
 	UserCustom
 )
 
+type enSelection byte
+
+const (
+
+	// Never show selection
+	SelectionFalse enSelection = iota
+
+	// Always show selection
+	SelectionTrue
+
+	// Show selection only if necessary
+	SelectionAuto
+)
+
 // desktop defines structure for display environments and window managers.
 type desktop struct {
 	name         string
@@ -67,7 +85,7 @@ type desktop struct {
 	envOrigin    enEnvironment
 	isUser       bool
 	path         string
-	selection    bool
+	selection    enSelection
 	child        *desktop
 	loginShell   string
 	desktopNames string
@@ -75,7 +93,7 @@ type desktop struct {
 
 // Gets exec path from desktop and returns true, if command allows dbus-launch.
 func (d *desktop) getStrExec() (string, bool) {
-	if d.selection && d.child != nil {
+	if d.selection != SelectionFalse && d.child != nil {
 		return d.path + " " + d.child.exec, false
 	} else if d.exec != "" {
 		return d.exec, true
@@ -90,7 +108,9 @@ type lastSession struct {
 }
 
 // Allows to select desktop, which could be selected.
-func selectDesktop(usr *sysuser, conf *config, allowAutoselectDesktop bool) (*desktop, *desktop) {
+func selectDesktop(usr *sysuser, conf *config, d *desktop) (*desktop, *desktop) {
+	allowAutoselectDesktop := d == nil || (d != nil && d.selection == SelectionFalse)
+
 	desktops := listAllDesktops(usr, conf.XorgSessionsPath, conf.WaylandSessionsPath)
 	if len(desktops) == 0 {
 		handleStrErr("Not found any installed desktop.")
@@ -110,6 +130,12 @@ func selectDesktop(usr *sysuser, conf *config, allowAutoselectDesktop bool) (*de
 		}
 	}
 
+	// If there is just one desktop and selection is set to Auto, select first desktop
+	if len(desktops) == 1 && d != nil && d.selection == SelectionAuto {
+		return desktops[0], desktops[lastDesktop]
+	}
+
+	// Otherwise go through selection process
 	for {
 		fmt.Printf("\n")
 		printDesktops(conf, desktops)
@@ -259,7 +285,7 @@ func loadUserDesktop(homeDir string) (d *desktop, lang string) {
 		if !fileExists(confFile) {
 			continue
 		}
-		d := &desktop{isUser: true, path: confFile, env: Xorg, selection: false}
+		d := &desktop{isUser: true, path: confFile, env: Xorg, selection: SelectionFalse}
 
 		err := readPropertiesWithSupport(confFile, func(key string, value string) {
 			switch key {
@@ -272,7 +298,7 @@ func loadUserDesktop(homeDir string) (d *desktop, lang string) {
 			case desktopLang:
 				lang = value
 			case confSelection:
-				d.selection = parseBool(value, "false")
+				d.selection = parseSelection(value, "false")
 			case desktopLoginShell:
 				d.loginShell = sanitizeValue(value, "")
 			case desktopNames:
@@ -281,7 +307,7 @@ func loadUserDesktop(homeDir string) (d *desktop, lang string) {
 		}, true)
 		handleErr(err)
 
-		if d.selection {
+		if d.selection != SelectionFalse {
 			d.exec = ""
 			d.name = ""
 			d.desktopNames = ""
@@ -374,4 +400,17 @@ func (e enEnvironment) string() string {
 func (e enEnvironment) sessionType() string {
 	strings := []string{"", constEnvSTXorg, constEnvSTWayland, "", ""}
 	return strings[e]
+}
+
+// Parse input selection
+func parseSelection(selection, defaultValue string) enSelection {
+	switch strings.ToLower(sanitizeValue(selection, defaultValue)) {
+	case constTrue:
+		return SelectionTrue
+	case constFalse:
+		return SelectionFalse
+	case constAuto:
+		return SelectionAuto
+	}
+	return SelectionFalse
 }
