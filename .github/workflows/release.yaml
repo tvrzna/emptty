@@ -1,0 +1,56 @@
+name: Release
+
+on:
+  push:
+    tags: '*'
+
+jobs:
+  release-for-arch:
+    name: Relase for Arch
+    runs-on: ubuntu-latest
+
+    outputs:
+      package-name: ${{ steps.build.outputs.package-name }}
+
+    container:
+      image: 'archlinux:base'
+
+    steps:
+      - name: Prepare container
+        run: |
+          # Update system
+          pacman -Syu --noconfirm
+          # Install dependencies
+          pacman -S --noconfirm git make go gcc pam libx11
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Git Safe Directory
+        run: git config --global --add safe.directory /__w/emptty/emptty
+
+      - id: build
+        name: Package and Upload
+        run: |
+          export TAG=`git describe --tags`
+          export DISTDIR=emptty-bin-x86_64-${TAG:1}
+
+          echo "package-name=$DISTDIR.tar.gz" >> $GITHUB_OUTPUT
+
+          # Test and Build
+          make test build
+
+          # Install into distdir
+          DESTDIR=$DISTDIR make install install-manual install-config install-pam install-systemd
+          mkdir -p $DISTDIR/usr/share/licenses/emptty/
+          cp LICENSE $DISTDIR/usr/share/licenses/emptty/LICENSE
+
+          # Package distdir
+          ls $DISTDIR | xargs tar -czf $DISTDIR.tar.gz -C $DISTDIR/
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ steps.build.outputs.package-name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
