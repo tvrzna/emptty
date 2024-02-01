@@ -70,7 +70,7 @@ func (h *pamHandle) authUser(conf *config) {
 		return "", errors.New("unrecognized message style")
 	})
 
-	if err := h.trans.Authenticate(pam.Silent); err != nil {
+	if err := h.trans.Authenticate(pam.DisallowNullAuthtok); err != nil {
 		bkpErr := errors.New(err.Error())
 		username, _ := h.trans.GetItem(pam.User)
 		addBtmpEntry(username, os.Getpid(), conf.strTTY())
