@@ -9,7 +9,7 @@ import (
 	"syscall"
 )
 
-const version = "0.11.0"
+const version = "0.12.0"
 
 var buildVersion string
 
