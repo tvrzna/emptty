@@ -10,7 +10,7 @@ import (
 	"os"
 	"os/user"
 
-	"github.com/msteinert/pam"
+	"github.com/msteinert/pam/v2"
 )
 
 const tagPam = ""
@@ -74,18 +74,23 @@ func (h *pamHandle) authUser(conf *config) {
 		bkpErr := errors.New(err.Error())
 		username, _ := h.trans.GetItem(pam.User)
 		addBtmpEntry(username, os.Getpid(), conf.strTTY())
-		handleErr(bkpErr)
+		h.handleErr(bkpErr)
 	}
 	logPrint("Authenticate OK")
 
-	handleErr(h.trans.AcctMgmt(pam.Silent))
-	handleErr(h.trans.SetItem(pam.Tty, "tty"+conf.strTTY()))
-	handleErr(h.trans.SetCred(pam.EstablishCred))
+	h.handleErr(h.trans.AcctMgmt(pam.Silent))
+	h.handleErr(h.trans.SetItem(pam.Tty, "tty"+conf.strTTY()))
+	h.handleErr(h.trans.SetCred(pam.EstablishCred))
 
 	pamUsr, _ := h.trans.GetItem(pam.User)
 	usr, _ := user.Lookup(pamUsr)
 
 	h.u = getSysuser(usr)
+}
+
+func (h *pamHandle) handleErr(err error) {
+	h.closeAuth()
+	handleErr(err)
 }
 
 // Gets sysuser
@@ -95,11 +100,15 @@ func (h *pamHandle) usr() *sysuser {
 
 // Handles close of PAM authentication
 func (h *pamHandle) closeAuth() {
-	if h != nil && h.usr() != nil && h.trans != nil {
+	if h != nil && h.trans != nil {
+		logPrint("Closing PAM auth")
 		if err := h.trans.SetCred(pam.DeleteCred); err != nil {
 			logPrint(err)
 		}
 		if err := h.trans.CloseSession(pam.Silent); err != nil {
+			logPrint(err)
+		}
+		if err := h.trans.End(); err != nil {
 			logPrint(err)
 		}
 		h.trans = nil
