@@ -207,7 +207,7 @@ __NOTE:__ If any issue starts to appear and you want to report it, ensure you do
 ## Build & install
 
 ### Build dependencies
-- go
+- go (>= 1.20)
 - gcc
 - pam-devel
 - libx11-devel (libx11)

@@ -1,5 +1,4 @@
 //go:build !nopam
-// +build !nopam
 
 package src
 
@@ -89,8 +88,10 @@ func (h *pamHandle) authUser(conf *config) {
 }
 
 func (h *pamHandle) handleErr(err error) {
-	h.closeAuth()
-	handleErr(err)
+	if err != nil {
+		h.closeAuth()
+		handleErr(err)
+	}
 }
 
 // Gets sysuser

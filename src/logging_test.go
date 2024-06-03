@@ -2,7 +2,6 @@ package src
 
 import (
 	"errors"
-	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
@@ -43,7 +42,7 @@ func TestParseLogging(t *testing.T) {
 }
 
 func TestInitSessionErrorLogger(t *testing.T) {
-	f, _ := ioutil.TempFile(os.TempDir(), "emptty-session-log-file")
+	f, _ := os.CreateTemp(os.TempDir(), "emptty-session-log-file")
 	fileName := f.Name()
 	f.Close()
 
@@ -73,7 +72,7 @@ func TestInitSessionErrorLogger(t *testing.T) {
 }
 
 func TestInitLogger(t *testing.T) {
-	f, _ := ioutil.TempFile(os.TempDir(), "emptty-log-file.[TTY_NUMBER]")
+	f, _ := os.CreateTemp(os.TempDir(), "emptty-log-file.[TTY_NUMBER]")
 	fileName := f.Name()
 	f.Close()
 
@@ -149,7 +148,7 @@ func TestHandleStrErr(t *testing.T) {
 }
 
 func TestBackupFileIfNotFolder(t *testing.T) {
-	f, _ := ioutil.TempFile(os.TempDir(), "emptty-data")
+	f, _ := os.CreateTemp(os.TempDir(), "emptty-data")
 	fileName := f.Name()
 	f.Close()
 

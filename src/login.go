@@ -2,7 +2,6 @@ package src
 
 import (
 	"errors"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"strconv"
@@ -51,7 +50,7 @@ func login(conf *config, h *sessionHandle) {
 func processDesktopSelection(usr *sysuser, conf *config) *desktop {
 	d, usrLang := loadUserDesktop(usr.homedir)
 
-	if d == nil || (d != nil && d.selection != SelectionFalse) {
+	if d == nil || d.selection != SelectionFalse {
 		selectedDesktop, lastDesktop := selectDesktop(usr, conf, d)
 		if isLastDesktopForSave(usr, lastDesktop, selectedDesktop) {
 			setUserLastSession(usr, selectedDesktop)
@@ -110,7 +109,7 @@ func handleLoginRetries(conf *config, usr *sysuser) (result error) {
 		limit := time.Now().Add(-2 * time.Second)
 		if info, err := file.Stat(); err == nil {
 			if info.ModTime().After(limit) {
-				content, err := ioutil.ReadFile(usr.getLoginRetryPath())
+				content, err := os.ReadFile(usr.getLoginRetryPath())
 				if err == nil {
 					retries, _ = strconv.Atoi(strings.TrimSpace(string(content)))
 				}
@@ -123,7 +122,7 @@ func handleLoginRetries(conf *config, usr *sysuser) (result error) {
 			}
 		}
 		doAsUser(usr, func() {
-			if err := ioutil.WriteFile(usr.getLoginRetryPath(), []byte(strconv.Itoa(retries)), 0600); err != nil {
+			if err := os.WriteFile(usr.getLoginRetryPath(), []byte(strconv.Itoa(retries)), 0600); err != nil {
 				logPrint(err)
 			}
 		})

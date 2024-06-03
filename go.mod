@@ -1,6 +1,6 @@
 module github.com/tvrzna/emptty
 
-go 1.14
+go 1.20
 
 require github.com/msteinert/pam/v2 v2.0.0
 

@@ -1,5 +1,4 @@
 //go:build !noutmp
-// +build !noutmp
 
 package src
 

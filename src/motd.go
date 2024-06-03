@@ -2,7 +2,7 @@ package src
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -37,7 +37,7 @@ func printDynamicMotd(conf *config) bool {
 // Prints static motd. If something was printed, returns true.
 func printStaticMotd(conf *config) bool {
 	if fileExists(conf.MotdPath) {
-		motd, err := ioutil.ReadFile(conf.MotdPath)
+		motd, err := os.ReadFile(conf.MotdPath)
 		return printCommonMotd(conf, motd, err)
 	}
 	return false

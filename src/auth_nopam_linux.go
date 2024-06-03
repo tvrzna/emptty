@@ -1,5 +1,4 @@
 //go:build nopam
-// +build nopam
 
 package src
 

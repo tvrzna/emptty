@@ -1,7 +1,7 @@
 package src
 
 import (
-	"io/ioutil"
+	"io"
 	"log"
 	"os"
 	"testing"
@@ -31,7 +31,7 @@ func readOutput(method func()) string {
 	method()
 
 	w.Close()
-	output, _ := ioutil.ReadAll(r)
+	output, _ := io.ReadAll(r)
 	os.Stdout = original
 	log.SetOutput(original)
 
@@ -189,7 +189,7 @@ func TestCmdAsUser(t *testing.T) {
 }
 
 func TestSetKeyboardLeds(t *testing.T) {
-	f, err := ioutil.TempFile(os.TempDir(), "emptty-led-test")
+	f, err := os.CreateTemp(os.TempDir(), "emptty-led-test")
 	if err != nil {
 		t.Error("TestSetKeyboardLeds: could not open test file")
 	}

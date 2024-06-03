@@ -3,7 +3,6 @@ package src
 import (
 	"bufio"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -109,7 +108,7 @@ type lastSession struct {
 
 // Allows to select desktop, which could be selected.
 func selectDesktop(usr *sysuser, conf *config, d *desktop) (*desktop, *desktop) {
-	allowAutoselectDesktop := d == nil || (d != nil && d.selection == SelectionFalse)
+	allowAutoselectDesktop := d == nil || d.selection == SelectionFalse
 
 	desktops := listAllDesktops(usr, conf.XorgSessionsPath, conf.WaylandSessionsPath)
 	if len(desktops) == 0 {
@@ -336,7 +335,7 @@ func getLastDesktop(usr *sysuser, desktops []*desktop) int {
 func getUserLastSession(usr *sysuser) *lastSession {
 	path := usr.homedir + pathLastSession
 	if fileExists(path) {
-		if content, err := ioutil.ReadFile(path); err == nil {
+		if content, err := os.ReadFile(path); err == nil {
 			arrContent := strings.Split(strings.TrimSpace(string(content)), ";")
 			l := lastSession{}
 			l.exec = strings.TrimSpace(arrContent[0])
@@ -357,7 +356,7 @@ func setUserLastSession(usr *sysuser, d *desktop) {
 		if err := mkDirsForFile(path, 0744); err != nil {
 			logPrint(err)
 		}
-		if err := ioutil.WriteFile(path, []byte(data), 0600); err != nil {
+		if err := os.WriteFile(path, []byte(data), 0600); err != nil {
 			logPrint(err)
 		}
 	})

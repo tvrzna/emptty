@@ -3,7 +3,6 @@ package src
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"sort"
 	"strings"
@@ -90,7 +89,7 @@ func switchTTY(conf *config) bool {
 // Prints getty issue
 func printIssue(path, strTTY string) {
 	if fileExists(path) {
-		bIssue, err := ioutil.ReadFile(path)
+		bIssue, err := os.ReadFile(path)
 		if err == nil {
 			issue := string(bIssue)
 			issue = evaluateIssueVars(issue, findUniqueIssueVars(issue), strTTY)
