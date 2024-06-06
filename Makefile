@@ -6,12 +6,6 @@ ifdef TAGS
 	TAGS_ARGS = -tags ${TAGS}
 endif
 
-ifeq ($(shell expr ${GOVERSION} \>= 'go1.18'), 1)
-	GOVCS = -buildvcs=false
-else
-	GOVCS=
-endif
-
 test:
 	@echo "Testing..."
 	@go test -coverprofile cover.out ${TAGS_ARGS} ./...
@@ -27,7 +21,7 @@ clean:
 build:
 	@echo "Building${TAGS_ARGS}..."
 	@mkdir -p dist
-	@go build ${TAGS_ARGS} -o dist/${DISTFILE} -ldflags "-X github.com/tvrzna/emptty/src.buildVersion=${BUILD_VERSION}" ${GOVCS}
+	@go build ${TAGS_ARGS} -o dist/${DISTFILE} -ldflags "-X github.com/tvrzna/emptty/src.buildVersion=${BUILD_VERSION}" -buildvcs=false
 	@gzip -cn res/emptty.1 > dist/emptty.1.gz
 	@echo "Done"
 
