@@ -254,7 +254,7 @@ $ make build TAGS=tag1,tag2
 ```
 
 #### nopam
-This tag disables dependency on PAM. In Linux it switch to basic authentication with `shadow`. For OpenBSD there is simple `bsd_auth` authentication.
+This tag disables dependency on PAM. In Linux it switch to basic authentication with `shadow`.
 
 #### noxlib
 This tag disables dependency on libx11, could be useful, if only Wayland desktop is expected to be used.

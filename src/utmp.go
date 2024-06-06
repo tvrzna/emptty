@@ -1,4 +1,4 @@
-//go:build !noutmp && !openbsd
+//go:build !noutmp
 
 package src
 
