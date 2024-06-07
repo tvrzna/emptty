@@ -109,9 +109,7 @@ func (h *pamHandle) closeAuth() {
 		if err := h.trans.CloseSession(pam.Silent); err != nil {
 			logPrint(err)
 		}
-		if err := h.trans.End(); err != nil {
-			logPrint(err)
-		}
+		h.trans.End()
 		h.trans = nil
 		h.u = nil
 	}
