@@ -5,7 +5,6 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
-	"strings"
 	"syscall"
 )
 
@@ -45,7 +44,7 @@ func (x *xorgSession) startCarrier() {
 	}
 
 	if x.conf.XorgArgs != "" {
-		arrXorgArgs := strings.Split(x.conf.XorgArgs, " ")
+		arrXorgArgs := parseExec(x.conf.XorgArgs)
 		xorgArgs = append(xorgArgs, arrXorgArgs...)
 	}
 

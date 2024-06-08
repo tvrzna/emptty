@@ -180,7 +180,7 @@ func convertColor(name string, isForeground bool) string {
 // Prepares *exec.Cmd to be started as sysuser.
 func cmdAsUser(usr *sysuser, name string, arg ...string) *exec.Cmd {
 	if strings.Contains(name, " ") {
-		nameArgs := strings.Split(name, " ")
+		nameArgs := parseExec(name)
 		name = nameArgs[0]
 		arg = append(nameArgs[1:], arg...)
 	}
@@ -189,6 +189,35 @@ func cmdAsUser(usr *sysuser, name string, arg ...string) *exec.Cmd {
 	cmd.SysProcAttr = &syscall.SysProcAttr{}
 	cmd.SysProcAttr.Credential = &syscall.Credential{Uid: usr.uidu32(), Gid: usr.gidu32(), Groups: usr.gidsu32}
 	return cmd
+}
+
+// Splits execString by spaces respecting double quotes.
+func parseExec(execString string) (result []string) {
+	var sb strings.Builder
+	inQuotes := false
+	escapeNext := false
+
+	for _, r := range execString {
+		switch {
+		case escapeNext:
+			escapeNext = false
+		case r == '\\':
+			escapeNext = true
+		case r == '"':
+			inQuotes = !inQuotes
+		case r == ' ' && !inQuotes:
+			if sb.Len() > 0 {
+				result = append(result, sb.String())
+				sb.Reset()
+				continue
+			}
+		}
+		sb.WriteRune(r)
+	}
+	if sb.Len() > 0 {
+		result = append(result, sb.String())
+	}
+	return
 }
 
 // Applies current resource limits

@@ -203,3 +203,13 @@ func TestSetKeyboardLeds(t *testing.T) {
 		t.Error("TestSetKeyboardLeds: could not remove test file")
 	}
 }
+
+func TestParseExec(t *testing.T) {
+	str := `echo "this is just an \"argument" ok`
+
+	res := parseExec(str)
+
+	if len(res) != 3 {
+		t.Error("TestParseExec: unexpected lenght of parsed parts of executable")
+	}
+}

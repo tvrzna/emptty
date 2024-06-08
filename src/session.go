@@ -205,7 +205,7 @@ func (s *commonSession) prepareGuiCommand() (cmd *exec.Cmd, strExec string) {
 	}
 
 	if startScript {
-		cmd = cmdAsUser(s.auth.usr(), s.getLoginShell(), strings.Split(strExec, " ")...)
+		cmd = cmdAsUser(s.auth.usr(), s.getLoginShell()+" "+strExec)
 	} else {
 		cmd = cmdAsUser(s.auth.usr(), strExec)
 	}
