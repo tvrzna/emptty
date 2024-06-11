@@ -159,10 +159,10 @@ func (s *commonSession) defineEnvironment() {
 	if !s.conf.NoXdgFallback {
 		if s.d.name != "" {
 			s.auth.usr().setenv(envDesktopSession, s.d.name)
-			s.auth.usr().setenv(envXdgSessDesktop, s.d.name)
+			s.auth.usr().setenv(envXdgSessDesktop, s.d.getDesktopName())
 		} else if s.d.child != nil && s.d.child.name != "" {
 			s.auth.usr().setenv(envDesktopSession, s.d.child.name)
-			s.auth.usr().setenv(envXdgSessDesktop, s.d.child.name)
+			s.auth.usr().setenv(envXdgSessDesktop, s.d.child.getDesktopName())
 		}
 
 		if s.d.desktopNames != "" {

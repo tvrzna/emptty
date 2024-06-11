@@ -361,3 +361,17 @@ func TestGetDesktopBaseExec(t *testing.T) {
 		t.Error("TestGetDesktopBaseExec: wrong value for exec5")
 	}
 }
+
+func TestGetDesktopName(t *testing.T) {
+	d := getDesktop(getTestingPath("desktops/desktop1.desktop"), Custom)
+
+	if desktopName := d.getDesktopName(); desktopName != "Desk1" {
+		t.Errorf("TestGetDesktopName: desktop1 got unexpected desktop name '%s'", d.getDesktopName())
+	}
+
+	d = getDesktop(getTestingPath("desktops/desktop2.desktop"), Custom)
+
+	if desktopName := d.getDesktopName(); desktopName != "Desktop2" {
+		t.Errorf("TestGetDesktopName: desktop2 got unexpected desktop name '%s'", d.getDesktopName())
+	}
+}

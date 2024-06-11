@@ -100,6 +100,17 @@ func (d *desktop) getStrExec() (string, bool) {
 	return d.path, false
 }
 
+// Gets correct desktop name, if is available.
+func (d *desktop) getDesktopName() string {
+	if d.desktopNames != "" {
+		names := strings.Split(strings.ReplaceAll(d.desktopNames, ";", ":"), ":")
+		if len(names) > 0 {
+			return names[0]
+		}
+	}
+	return d.name
+}
+
 // lastSession defines structure for last used session on user login.
 type lastSession struct {
 	exec string
