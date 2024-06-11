@@ -40,6 +40,9 @@ const (
 	pathLastSession       = "/.cache/emptty/last-session"
 	pathCustomSessions    = "/etc/emptty/custom-sessions/"
 	pathUserCustomSession = "/.config/emptty-custom-sessions/"
+
+	pathLocalWaylandSessions = "/.local/share/wayland-sessions/"
+	pathLocalXSessions       = "/.local/share/xsessions/"
 )
 
 // enEnvironment defines possible Environments.
@@ -228,39 +231,41 @@ func listAllDesktops(usr *sysuser, pathXorgDesktops, pathWaylandDesktops string)
 	var result []*desktop
 
 	// load Xorg desktops
-	result = append(result, listDesktops(pathXorgDesktops, Xorg)...)
+	result = append(result, listDesktops(Xorg, pathXorgDesktops, usr.homedir+pathLocalXSessions)...)
 
 	// load Wayland desktops
-	result = append(result, listDesktops(pathWaylandDesktops, Wayland)...)
+	result = append(result, listDesktops(Wayland, pathWaylandDesktops, usr.homedir+pathLocalWaylandSessions)...)
 
 	// load custom desktops
-	result = append(result, listDesktops(pathCustomSessions, Custom)...)
+	result = append(result, listDesktops(Custom, pathCustomSessions)...)
 
 	// load custom user desktops
-	result = append(result, listDesktops(usr.homedir+pathUserCustomSession, UserCustom)...)
+	result = append(result, listDesktops(UserCustom, usr.homedir+pathUserCustomSession)...)
 
 	return result
 }
 
-// List desktops, that could be found on defined path.
-func listDesktops(path string, env enEnvironment) []*desktop {
+// List desktops, that could be found on defined paths.
+func listDesktops(env enEnvironment, paths ...string) []*desktop {
 	var result []*desktop
 
-	if strings.HasSuffix(path, "/") {
-		path += "/"
-	}
+	for _, path := range paths {
+		if strings.HasSuffix(path, "/") {
+			path += "/"
+		}
 
-	if fileExists(path) {
-		err := filepath.Walk(path, func(filePath string, fileInfo os.FileInfo, err error) error {
-			if !fileInfo.IsDir() && strings.HasSuffix(filePath, ".desktop") {
-				d := getDesktop(filePath, env)
-				result = append(result, d)
-			}
-			return nil
-		})
-		handleErr(err)
-	}
+		if fileExists(path) {
+			err := filepath.Walk(path, func(filePath string, fileInfo os.FileInfo, err error) error {
+				if !fileInfo.IsDir() && strings.HasSuffix(filePath, ".desktop") {
+					d := getDesktop(filePath, env)
+					result = append(result, d)
+				}
+				return nil
+			})
+			handleErr(err)
+		}
 
+	}
 	return result
 }
 

@@ -210,12 +210,12 @@ func TestGetLastDesktop(t *testing.T) {
 }
 
 func TestListDesktops(t *testing.T) {
-	desktops := listDesktops(getTestingPath("userHome"), Custom)
+	desktops := listDesktops(Custom, getTestingPath("userHome"))
 	if len(desktops) > 0 {
 		t.Error("TestListDesktops: no desktop was expected")
 	}
 
-	desktops = listDesktops(getTestingPath("desktops"), Custom)
+	desktops = listDesktops(Custom, getTestingPath("desktops"))
 	if len(desktops) == 0 {
 		t.Error("TestListDesktops: desktops were expected")
 	}
