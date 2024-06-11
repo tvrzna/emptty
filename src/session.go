@@ -91,6 +91,7 @@ func (s *commonSession) start() {
 
 	if s.conf.AlwaysDbusLaunch {
 		if s.auth.usr().getenv(dbusSessionBusAddress) == "" {
+			s.dbus = &dbus{}
 			s.dbus.launch(s.auth.usr())
 		} else {
 			logPrint("DBUS_SESSION_BUS_ADDRESS is already set, skipping start of DBUS_LAUNCH")
@@ -115,7 +116,7 @@ func (s *commonSession) start() {
 
 	err := session.Wait()
 
-	if s.dbus.pid > 0 {
+	if s.dbus != nil && s.dbus.pid > 0 {
 		s.dbus.interrupt()
 	}
 
