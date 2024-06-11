@@ -20,6 +20,8 @@ const (
 	desktopLang        = "LANG"
 	desktopLoginShell  = "LOGINSHELL"
 	desktopNames       = "DESKTOPNAMES"
+	desktopNoDisplay   = "NODISPLAY"
+	desktopHidden      = "HIDDEN"
 
 	constEnvXorg    = "xorg"
 	constEnvWayland = "wayland"
@@ -91,6 +93,8 @@ type desktop struct {
 	child        *desktop
 	loginShell   string
 	desktopNames string
+	noDisplay    bool
+	hidden       bool
 }
 
 // Gets exec path from desktop and returns true, if command allows dbus-launch.
@@ -258,7 +262,9 @@ func listDesktops(env enEnvironment, paths ...string) []*desktop {
 			err := filepath.Walk(path, func(filePath string, fileInfo os.FileInfo, err error) error {
 				if !fileInfo.IsDir() && strings.HasSuffix(filePath, ".desktop") {
 					d := getDesktop(filePath, env)
-					result = append(result, d)
+					if !d.noDisplay && !d.hidden {
+						result = append(result, d)
+					}
 				}
 				return nil
 			})
@@ -286,6 +292,10 @@ func getDesktop(path string, env enEnvironment) *desktop {
 			d.env = parseEnv(value, constEnvXorg)
 		case desktopNames:
 			d.desktopNames = value
+		case desktopNoDisplay:
+			d.noDisplay = parseBool(value, "false")
+		case desktopHidden:
+			d.hidden = parseBool(value, "false")
 		}
 	})
 	return &d

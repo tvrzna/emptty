@@ -153,6 +153,8 @@ See [samples](SAMPLES.md#custom-sessions)
 
 `DesktopNames` Value passed into `XDG_CURRENT_DESKTOP` variable.
 
+`NoDisplay` / `Hidden` Boolean value, that controls visibility of desktop session.
+
 #### `${HOME}./xinitrc`
 If config `XINITRC_LAUNCH` is set to true, it enables possibility to use .xinitrc script. See [samples](SAMPLES.md#xinitrc)
 
