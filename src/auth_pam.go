@@ -3,7 +3,6 @@
 package src
 
 import (
-	"bufio"
 	"errors"
 	"fmt"
 	"os"
@@ -16,6 +15,7 @@ const tagPam = ""
 
 // PamHandle defines structure of handle specifically designed for using PAM authorization
 type pamHandle struct {
+	*authBase
 	trans *pam.Transaction
 	u     *sysuser
 }
@@ -50,15 +50,7 @@ func (h *pamHandle) authUser(conf *config) {
 			if conf.Autologin {
 				break
 			}
-			if !conf.HideEnterLogin {
-				hostname, _ := os.Hostname()
-				fmt.Printf("%s login: ", hostname)
-			}
-			input, err := bufio.NewReader(os.Stdin).ReadString('\n')
-			if err != nil {
-				return "", err
-			}
-			return input[:len(input)-1], nil
+			return h.selectUser(conf)
 		case pam.ErrorMsg:
 			logPrint(msg)
 			return "", nil
@@ -85,6 +77,7 @@ func (h *pamHandle) authUser(conf *config) {
 	usr, _ := user.Lookup(pamUsr)
 
 	h.u = getSysuser(usr)
+	h.saveLastSelectedUser(conf, pamUsr)
 }
 
 func (h *pamHandle) handleErr(err error) {

@@ -157,6 +157,9 @@ func TestLoadConfig(t *testing.T) {
 		t.Error("TestLoadConfig: WAYLAND_SESSIONS_PATH value is not correct")
 	}
 
+	if conf.SelectLastUser != PerTty {
+		t.Error("TestLoadConfig: SELECT_LAST_USER value is not correct")
+	}
 }
 
 func TestLangLoadConfig(t *testing.T) {

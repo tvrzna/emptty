@@ -3,7 +3,6 @@
 package src
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 	"os/user"
@@ -13,6 +12,7 @@ const tagPam = "nopam"
 
 // PamHandle defines structure of handle specifically designed for not using PAM authorization
 type nopamHandle struct {
+	*authBase
 	u *sysuser
 }
 
@@ -42,12 +42,9 @@ func (n *nopamHandle) authUser(conf *config) {
 		}
 		username = conf.DefaultUser
 	} else {
-		if !conf.HideEnterLogin {
-			fmt.Printf("%s login: ", hostname)
-		}
-		input, err := bufio.NewReader(os.Stdin).ReadString('\n')
+		var err error
+		username, err = n.selectUser(conf)
 		handleErr(err)
-		username = input[:len(input)-1]
 	}
 	if !conf.HideEnterPassword {
 		fmt.Print("Password: ")
@@ -56,6 +53,7 @@ func (n *nopamHandle) authUser(conf *config) {
 	handleErr(err)
 
 	if n.authPassword(username, password) {
+		n.saveLastSelectedUser(conf, username)
 		usr, err := user.Lookup(username)
 		username = ""
 

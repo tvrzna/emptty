@@ -108,6 +108,9 @@ Path to directory, where Xorg sessions' desktop files are stored. Default value 
 `WAYLAND_SESSIONS_PATH`
 Path to directory, where Wayland sessions' desktop files are stored. Default value is "/usr/share/wayland-sessions/".
 
+`SELECT_LAST_USER`
+Enables funtionality of saving last successfully logged in user for next login. Possible values are "false", "per-tty" or "global". Default value is false.
+
 #### Dynamic MOTD
 If `DYNAMIC_MOTD` is set to `true`, this file exists and is executable for its owner, the result is printed as your own MOTD. Be very careful with this script!
 
