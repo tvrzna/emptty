@@ -1,0 +1,6 @@
+#%PAM-1.0
+auth            sufficient      pam_succeed_if.so user ingroup nopasswdlogin
+auth            include         base-auth
+account         include         base-account
+password        include         base-password
+session         include         base-session
