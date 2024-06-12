@@ -79,6 +79,10 @@ func (s *commonSession) start() {
 		s.auth.usr().setenv(envXdgSessionType, s.d.env.sessionType())
 	}
 
+	if s.conf.AlwaysDbusLaunch {
+		s.dbus = &dbus{}
+	}
+
 	session, strExec := s.prepareGuiCommand()
 	s.cmd = session
 
@@ -89,9 +93,8 @@ func (s *commonSession) start() {
 		logPrint(sessionErrLogErr)
 	}
 
-	if s.conf.AlwaysDbusLaunch {
-		if s.auth.usr().getenv(dbusSessionBusAddress) == "" {
-			s.dbus = &dbus{}
+	if s.dbus != nil {
+		if s.auth.usr().getenv(dbusSessionBusAddress) == "" || s.conf.AlwaysDbusLaunch {
 			s.dbus.launch(s.auth.usr())
 		} else {
 			logPrint("DBUS_SESSION_BUS_ADDRESS is already set, skipping start of DBUS_LAUNCH")
