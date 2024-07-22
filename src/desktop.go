@@ -147,8 +147,8 @@ func selectDesktop(usr *sysuser, conf *config, d *desktop) (*desktop, *desktop) 
 		}
 	}
 
-	// If there is just one desktop and selection is set to Auto, select first desktop
-	if len(desktops) == 1 && d != nil && d.selection == SelectionAuto {
+	// If there is just one desktop and AutoSelection is set or selection is set to Auto, select first desktop
+	if len(desktops) == 1 && (conf.AutoSelection || (d != nil && d.selection == SelectionAuto)) {
 		return desktops[0], desktops[lastDesktop]
 	}
 

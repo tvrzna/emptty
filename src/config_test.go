@@ -160,6 +160,10 @@ func TestLoadConfig(t *testing.T) {
 	if conf.SelectLastUser != PerTty {
 		t.Error("TestLoadConfig: SELECT_LAST_USER value is not correct")
 	}
+
+	if !conf.AutoSelection {
+		t.Error("TestLoadConfig: AUTO_SELECTION value is not correct")
+	}
 }
 
 func TestLangLoadConfig(t *testing.T) {

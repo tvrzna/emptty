@@ -111,6 +111,9 @@ Path to directory, where Wayland sessions' desktop files are stored. Default val
 `SELECT_LAST_USER`
 Enables funtionality of saving last successfully logged in user for next login. Possible values are "false", "per-tty" or "global". Default value is false.
 
+`AUTO_SELECTION`
+If set to "true" and only one desktop is available, it automatically select that desktop. Possible values are "true" or "false". Default value is false.
+
 #### Dynamic MOTD
 If `DYNAMIC_MOTD` is set to `true`, this file exists and is executable for its owner, the result is printed as your own MOTD. Be very careful with this script!
 
