@@ -148,16 +148,17 @@ func nextArg(args []string, i int, callback func(value string)) {
 
 // Prints help
 func printHelp() {
-	fmt.Println("Usage: emptty [options]")
-	fmt.Println("Options:")
-	fmt.Printf("  -h, --help\t\t\tprint this help\n")
-	fmt.Printf("  -v, --version\t\t\tprint version\n")
-	fmt.Printf("  -d, --daemon\t\t\tstart in daemon mode\n")
-	fmt.Printf("  -c, --config PATH\t\tload configuration from specified path\n")
-	fmt.Printf("  -i, --ignore-config\t\tskips loading of configuration from file, loads only argument configuration\n")
-	fmt.Printf("  -t, --tty NUMBER\t\toverrides configured TTY number\n")
-	fmt.Printf("  -u, --default-user USER_NAME\toverrides configured Default User\n")
-	fmt.Printf("  -a, --autologin [SESSION]\toverrides configured autologin to true and if next argument is defined, it defines also Autologin Session.\n")
+	fmt.Print(`Usage: emptty [options]
+Options:
+  -h, --help			print this help
+  -v, --version			print version
+  -d, --daemon			start in daemon mode
+  -c, --config PATH		load configuration from specified path
+  -i, --ignore-config		skips loading of configuration from file, loads only argument configuration
+  -t, --tty NUMBER		overrides configured TTY number
+  -u, --default-user USER_NAME	overrides configured Default User
+  -a, --autologin [SESSION]	overrides configured autologin to true and if next argument is defined, it defines also Autologin Session
+`)
 }
 
 // Gets current version
