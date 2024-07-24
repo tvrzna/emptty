@@ -1,7 +1,6 @@
 package src
 
 import (
-	"bufio"
 	"errors"
 	"fmt"
 	"log"
@@ -65,11 +64,7 @@ func handleErr(err error) {
 	if err != nil {
 		logPrint(err)
 		fmt.Printf("Error: %s\n", err)
-		fmt.Printf("\nPress Enter to continue...")
-		if !TEST_MODE {
-			bufio.NewReader(os.Stdin).ReadString('\n')
-			os.Exit(1)
-		}
+		waitForReturnToExit(1)
 	}
 }
 

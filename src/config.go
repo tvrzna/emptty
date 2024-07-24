@@ -31,6 +31,7 @@ type config struct {
 	HideEnterLogin      bool             `config:"HIDE_ENTER_LOGIN" parser:"ParseBool" default:"false"`
 	HideEnterPassword   bool             `config:"HIDE_ENTER_PASSWORD" parser:"ParseBool" default:"false"`
 	AutoSelection       bool             `config:"AUTO_SELECTION" parser:"ParseBool" default:"false"`
+	AllowCommands       bool             `config:"IDENTIFY_ENVS" parser:"ParseBool" default:"true"`
 	DefaultSessionEnv   enEnvironment    `config:"DEFAULT_SESSION_ENV" parser:"ParseEnv" default:""`
 	AutologinSessionEnv enEnvironment    `config:"AUTOLOGIN_SESSION_ENV" parser:"ParseEnv" default:""`
 	Logging             enLogging        `config:"LOGGING" parser:"ParseLogging" default:"rotate"`
@@ -53,6 +54,8 @@ type config struct {
 	XorgSessionsPath    string           `config:"XORG_SESSIONS_PATH" parser:"SanitizeValue" default:"/usr/share/xsessions/"`
 	WaylandSessionsPath string           `config:"WAYLAND_SESSIONS_PATH" parser:"SanitizeValue" default:"/usr/share/wayland-sessions/"`
 	SelectLastUser      enSelectLastUser `config:"SELECT_LAST_USER" parser:"ParseSelectLastUser" default:"false"`
+	CmdPoweroff         string           `config:"CMD_POWEROFF" parser:"SanitizeValue" default:"poweroff"`
+	CmdReboot           string           `config:"CMD_REBOOT" parser:"SanitizeValue" default:"reboot"`
 }
 
 // LoadConfig handles loading of application configuration.

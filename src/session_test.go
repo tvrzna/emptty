@@ -6,6 +6,7 @@ import (
 )
 
 type testAuth struct {
+	*authBase
 	u *sysuser
 }
 
@@ -29,7 +30,7 @@ func (t *testAuth) openAuthSession(sessionType string) error {
 func TestPrepareGuiCommandWithChild(t *testing.T) {
 	c := &config{}
 	u := &sysuser{uid: 3000, gid: 2000}
-	a := &testAuth{u}
+	a := &testAuth{&authBase{}, u}
 	d := &desktop{path: "/dev/null", exec: "/usr/bin/none"}
 	d.child = d
 
@@ -50,7 +51,7 @@ func TestPrepareGuiCommandWithChild(t *testing.T) {
 func TestPrepareGuiCommandXinitrc(t *testing.T) {
 	c := &config{}
 	u := &sysuser{uid: 3000, gid: 2000, homedir: getTestingPath("userHome3")}
-	a := &testAuth{u}
+	a := &testAuth{&authBase{}, u}
 	d := &desktop{path: "/dev/null", exec: "/usr/bin/none", loginShell: "/bin/login-shell"}
 
 	s := &commonSession{nil, a, d, c, nil, nil, false}

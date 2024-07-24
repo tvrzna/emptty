@@ -3,6 +3,7 @@ package src
 import (
 	"bufio"
 	"errors"
+	"fmt"
 	"net"
 	"os"
 	"os/exec"
@@ -189,6 +190,19 @@ func cmdAsUser(usr *sysuser, name string, arg ...string) *exec.Cmd {
 	cmd.SysProcAttr = &syscall.SysProcAttr{}
 	cmd.SysProcAttr.Credential = &syscall.Credential{Uid: usr.uidu32(), Gid: usr.gidu32(), Groups: usr.gidsu32}
 	return cmd
+}
+
+// Processes selected command as exec.Cmd
+func processCommandAsCmd(name string) error {
+	var arg []string
+	if strings.Contains(name, " ") {
+		nameArgs := parseExec(name)
+		name = nameArgs[0]
+		arg = append(nameArgs[1:], arg...)
+	}
+	name, _ = exec.LookPath(name)
+	cmd := exec.Command(name, arg...)
+	return cmd.Run()
 }
 
 // Splits execString by spaces respecting double quotes.
@@ -474,4 +488,12 @@ func chvt(tty int) bool {
 		}
 	}
 	return true
+}
+
+func waitForReturnToExit(code int) {
+	fmt.Printf("\nPress Enter to continue...")
+	if !TEST_MODE {
+		bufio.NewReader(os.Stdin).ReadString('\n')
+		os.Exit(code)
+	}
 }

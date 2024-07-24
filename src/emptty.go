@@ -36,7 +36,9 @@ func Main() {
 	initLogger(conf)
 	printMotd(conf)
 
-	login(conf, initSessionHandle())
+	if command := login(conf, initSessionHandle()); command != "" {
+		processCommand(command, conf)
+	}
 
 	stopDaemon(conf, fTTY)
 }
@@ -177,4 +179,32 @@ func getVersion() string {
 		return buildVersion[1:] + " (" + tags.String() + ")"
 	}
 	return version
+}
+
+// Process commands input in login buffer
+func processCommand(command string, c *config) {
+	switch command {
+	case "help", "?":
+		fmt.Print(`
+Available commands:
+  :help, :?			print this help
+  :poweroff, :shutdown		process poweroff command
+  :reboot			process reboot command
+`)
+		waitForReturnToExit(0)
+	case "poweroff", "shutdown":
+		if err := processCommandAsCmd(c.CmdPoweroff); err != nil {
+			handleErr(err)
+		} else {
+			waitForReturnToExit(0)
+		}
+	case "reboot":
+		if err := processCommandAsCmd(c.CmdReboot); err != nil {
+			handleErr(err)
+		} else {
+			waitForReturnToExit(0)
+		}
+	default:
+		handleStrErr(fmt.Sprintf("Unknown command '%s'", command))
+	}
 }

@@ -114,6 +114,21 @@ Enables funtionality of saving last successfully logged in user for next login. 
 `AUTO_SELECTION`
 If set to "true" and only one desktop is available, it automatically select that desktop. Possible values are "true" or "false". Default value is false.
 
+`ALLOW_COMMANDS`
+If set to "true" and no default user is selected, it allows to enter commands into login input. Possible values are "true" or "false", Default value is true.
+
+`CMD_POWEROFF`
+Command to be used to perform poweroff. Default value is "poweroff".
+
+`CMD_REBOOT`
+Command to be used to perform reboot. Default value is "reboot".
+
+#### Commands
+If commands are allowed and default user is not defined, there could be used commands in login input. All of these [commands](#commands) need to start with colon `:`. Escape characters are ignored to prevent issues with muscle memory from VI.
+ - `:help`, `:?` prints available commands
+ - `:poweroff`, `:shutdown` processess poweroff command
+ - `:reboot` processes reboot command
+
 #### Dynamic MOTD
 If `DYNAMIC_MOTD` is set to `true`, this file exists and is executable for its owner, the result is printed as your own MOTD. Be very careful with this script!
 
@@ -229,7 +244,7 @@ __NOTE:__ If any issue starts to appear and you want to report it, ensure you do
 - wayland (optional)
 
 
-### Commands
+### Make Commands
 ---
 - `make clean` to cleanup already built binary.
 - `make build` to build binary and gzip man page.

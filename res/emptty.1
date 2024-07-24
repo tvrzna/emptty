@@ -178,6 +178,21 @@ Enables funtionality of saving last successfully logged in user for next login. 
 .IP AUTO_SELECTION
 If set to "true" and only one desktop is available, it automatically select that desktop. Possible values are "true" or "false". Default value is false.
 
+.IP ALLOW_COMMANDS
+If set to "true" and no default user is selected, it allows to enter commands into login input. Possible values are "true" or "false", Default value is true.
+
+.IP CMD_POWEROFF
+Command to be used to perform poweroff. Default value is "poweroff".
+
+.IP CMD_REBOOT
+Command to be used to perform reboot. Default value is "reboot".
+
+.SH COMMANDS
+If commands are allowed and default user is not defined, there could be used commands in login input. All of these commands need to start with colon ":". Escape characters are ignored to prevent issues with muscle memory from VI.
+ - :help, :? - prints available commands
+ - :poweroff, :shutdown - processess poweroff command
+ - :reboot - processes reboot command
+
 .SH DYNAMIC MOTD
 Optional file stored by default as /etc/emptty/motd-gen.sh. Could be overridden.
 

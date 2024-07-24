@@ -22,7 +22,7 @@ type pamHandle struct {
 
 // Creates authHandle and handles authorization
 func auth(conf *config) *pamHandle {
-	h := &pamHandle{}
+	h := &pamHandle{authBase: &authBase{}}
 	h.authUser(conf)
 	return h
 }
@@ -32,25 +32,24 @@ func auth(conf *config) *pamHandle {
 //
 // If autologin is enabled, it behaves as user has been authorized.
 func (h *pamHandle) authUser(conf *config) {
-	h.trans, _ = pam.StartFunc("emptty", conf.DefaultUser, func(s pam.Style, msg string) (string, error) {
+	username, err := h.selectUser(conf)
+	handleErr(err)
+	if h.command != "" {
+		return
+	}
+
+	h.trans, _ = pam.StartFunc("emptty", username, func(s pam.Style, msg string) (string, error) {
 		switch s {
 		case pam.PromptEchoOff:
 			if conf.Autologin {
 				break
-			}
-			if conf.DefaultUser != "" && !conf.HideEnterLogin {
-				hostname, _ := os.Hostname()
-				fmt.Printf("%s login: %s\n", hostname, conf.DefaultUser)
 			}
 			if !conf.HideEnterPassword {
 				fmt.Print("Password: ")
 			}
 			return readPassword()
 		case pam.PromptEchoOn:
-			if conf.Autologin {
-				break
-			}
-			return h.selectUser(conf)
+			return "", nil
 		case pam.ErrorMsg:
 			logPrint(msg)
 			return "", nil

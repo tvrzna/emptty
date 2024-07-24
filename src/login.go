@@ -16,16 +16,20 @@ type authHandle interface {
 	closeAuth()
 	defineSpecificEnvVariables()
 	openAuthSession(string) error
+	getCommand() string
 }
 
 // Login into graphical environment
-func login(conf *config, h *sessionHandle) {
+func login(conf *config, h *sessionHandle) string {
 	h.auth = auth(conf)
+	if h.auth != nil && h.auth.getCommand() != "" {
+		return h.auth.getCommand()
+	}
 
 	if err := handleLoginRetries(conf, h.auth.usr()); err != nil {
 		h.auth.closeAuth()
 		handleStrErr("Exceeded maximum number of allowed login retries in short period.")
-		return
+		return ""
 	}
 
 	d := processDesktopSelection(h.auth.usr(), conf)
@@ -35,7 +39,7 @@ func login(conf *config, h *sessionHandle) {
 	if err := h.auth.openAuthSession(d.env.sessionType()); err != nil {
 		h.auth.closeAuth()
 		handleStrErr("No active transaction")
-		return
+		return ""
 	}
 
 	h.session = createSession(h.auth, d, conf)
@@ -44,6 +48,8 @@ func login(conf *config, h *sessionHandle) {
 	h.auth.closeAuth()
 
 	runDisplayScript(conf.DisplayStopScript)
+
+	return ""
 }
 
 // Process whole desktop load, selection and last used save.

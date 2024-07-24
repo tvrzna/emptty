@@ -25,10 +25,23 @@ const (
 )
 
 type authBase struct {
+	command string
+}
+
+func (a *authBase) getCommand() string {
+	return a.command
 }
 
 // Performs input selection user. If saving last user is enabled (PerTty/Global), user is read from defined path and used as predefined value.
 func (a *authBase) selectUser(c *config) (string, error) {
+	if c.DefaultUser != "" {
+		if !c.HideEnterLogin {
+			hostname, _ := os.Hostname()
+			fmt.Printf("%s login: %s\n", hostname, c.DefaultUser)
+		}
+		return c.DefaultUser, nil
+	}
+
 	lastUser := a.getLastSelectedUser(c)
 	if !c.HideEnterLogin {
 		hostname, _ := os.Hostname()
@@ -43,6 +56,11 @@ func (a *authBase) selectUser(c *config) (string, error) {
 		return "", err
 	}
 	username := input[:len(input)-1]
+
+	if c.AllowCommands && strings.HasPrefix(strings.ReplaceAll(username, "\x1b", ""), ":") {
+		a.command = strings.ReplaceAll(username, "\x1b", "")[1:]
+		return "", nil
+	}
 
 	if lastUser != "" && username == "" {
 		username = lastUser

@@ -18,7 +18,7 @@ type nopamHandle struct {
 
 // Creates authHandle and handles authorization
 func auth(conf *config) *nopamHandle {
-	h := &nopamHandle{}
+	h := &nopamHandle{authBase: &authBase{}}
 	h.authUser(conf)
 	return h
 }
@@ -34,18 +34,13 @@ func (n *nopamHandle) authUser(conf *config) {
 		n.u = getSysuser(usr)
 		return
 	}
-	hostname, _ := os.Hostname()
-	var username string
-	if conf.DefaultUser != "" {
-		if !conf.HideEnterLogin {
-			fmt.Printf("%s login: %s\n", hostname, conf.DefaultUser)
-		}
-		username = conf.DefaultUser
-	} else {
-		var err error
-		username, err = n.selectUser(conf)
-		handleErr(err)
+
+	username, err := n.selectUser(conf)
+	handleErr(err)
+	if n.command != "" {
+		return
 	}
+
 	if !conf.HideEnterPassword {
 		fmt.Print("Password: ")
 	}
