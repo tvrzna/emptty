@@ -94,7 +94,7 @@ exec dbus-launch $@
 #### User-specific
 Create folder custom-sessions as super user
 ```
-$ mkdir -p ~/.config/emptty-custom-sessions/
+$ mkdir -p ~/.config/emptty/custom-sessions
 ```
 
 #### System-wide
