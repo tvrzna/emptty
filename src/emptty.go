@@ -190,6 +190,7 @@ Available commands:
   :help, :?			print this help
   :poweroff, :shutdown		process poweroff command
   :reboot			process reboot command
+  :suspend, :zzz		process suspend command
 `)
 		waitForReturnToExit(0)
 	case "poweroff", "shutdown":
@@ -200,6 +201,29 @@ Available commands:
 		}
 	case "reboot":
 		if err := processCommandAsCmd(c.CmdReboot); err != nil {
+			handleErr(err)
+		} else {
+			waitForReturnToExit(0)
+		}
+	case "suspend", "zzz":
+		var variants []string
+		if c.CmdSuspend != "" {
+			variants = append(variants, c.CmdSuspend)
+		}
+		variants = append(variants, "zzz")
+		variants = append(variants, "systemctl suspend")
+		variants = append(variants, "loginctl suspend")
+
+		var err error
+		for _, v := range variants {
+			if err = processCommandAsCmd(v); err != nil {
+				continue
+			} else {
+				break
+			}
+		}
+
+		if err != nil {
 			handleErr(err)
 		} else {
 			waitForReturnToExit(0)
