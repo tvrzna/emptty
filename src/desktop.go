@@ -110,12 +110,28 @@ func (d *desktop) getStrExec() (string, bool) {
 // Gets correct desktop name, if is available.
 func (d *desktop) getDesktopName() string {
 	if d.desktopNames != "" {
-		names := strings.Split(strings.ReplaceAll(d.desktopNames, ";", ":"), ":")
+		names := strings.Split(d.desktopNames, ":")
 		if len(names) > 0 {
 			return names[0]
 		}
 	}
 	return d.name
+}
+
+// Sets desktop names in expected format
+func (d *desktop) setDesktopNames(desktopNames string) {
+	val := sanitizeValue(desktopNames, "")
+	if val != "" {
+		var names []string
+		for _, name := range strings.Split(strings.ReplaceAll(val, ";", ":"), ":") {
+			if name != "" {
+				names = append(names, name)
+			}
+		}
+		if len(names) > 0 {
+			d.desktopNames = strings.Join(names, ":")
+		}
+	}
 }
 
 // lastSession defines structure for last used session on user login.
@@ -291,7 +307,7 @@ func getDesktop(path string, env enEnvironment) *desktop {
 		case desktopEnvironment, desktopEnv:
 			d.env = parseEnv(value, constEnvXorg)
 		case desktopNames:
-			d.desktopNames = value
+			d.setDesktopNames(value)
 		case desktopNoDisplay:
 			d.noDisplay = parseBool(value, "false")
 		case desktopHidden:
@@ -327,7 +343,7 @@ func loadUserDesktop(homeDir string) (d *desktop, lang string) {
 			case desktopLoginShell:
 				d.loginShell = sanitizeValue(value, "")
 			case desktopNames:
-				d.desktopNames = sanitizeValue(value, "")
+				d.setDesktopNames(value)
 			}
 		}, true)
 		handleErr(err)

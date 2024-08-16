@@ -221,7 +221,7 @@ func TestListDesktops(t *testing.T) {
 	}
 
 	for _, d := range desktops {
-		if d.name == "Desktop1" && d.exec != "/usr/bin/desktop1" && d.desktopNames != "Desk1;DESKTOP_1" {
+		if d.name == "Desktop1" && (d.exec != "/usr/bin/desktop1" || d.desktopNames != "Desk1:DESKTOP_1") {
 			t.Error("TestListDesktops: wrongly loaded desktop")
 		}
 		if d.name == "Desktop2" && d.env != Wayland {
