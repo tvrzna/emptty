@@ -31,7 +31,7 @@ type config struct {
 	HideEnterLogin      bool             `config:"HIDE_ENTER_LOGIN" parser:"ParseBool" default:"false"`
 	HideEnterPassword   bool             `config:"HIDE_ENTER_PASSWORD" parser:"ParseBool" default:"false"`
 	AutoSelection       bool             `config:"AUTO_SELECTION" parser:"ParseBool" default:"false"`
-	AllowCommands       bool             `config:"IDENTIFY_ENVS" parser:"ParseBool" default:"true"`
+	AllowCommands       bool             `config:"ALLOW_COMMANDS" parser:"ParseBool" default:"true"`
 	DefaultSessionEnv   enEnvironment    `config:"DEFAULT_SESSION_ENV" parser:"ParseEnv" default:""`
 	AutologinSessionEnv enEnvironment    `config:"AUTOLOGIN_SESSION_ENV" parser:"ParseEnv" default:""`
 	Logging             enLogging        `config:"LOGGING" parser:"ParseLogging" default:"rotate"`
