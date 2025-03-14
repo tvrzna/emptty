@@ -141,6 +141,19 @@ func (s *commonSession) start() {
 	}
 }
 
+// Make full path to envXdgRuntimeDir with proper permissions
+func (s *commonSession) mkXdgRuntimeDir() {
+	// All users need to interact with the parent directory
+	dirPath := filepath.Dir(s.auth.usr().getenv(envXdgRuntimeDir))
+	handleErr(os.MkdirAll(dirPath, 0755))
+
+	// Make the users specific XDG folder
+	handleErr(os.Mkdir(s.auth.usr().getenv(envXdgRuntimeDir), 0700))
+
+	// Set owner of XDG folder
+	os.Chown(s.auth.usr().getenv(envXdgRuntimeDir), s.auth.usr().uid, s.auth.usr().gid)
+}
+
 // Prepares environment and env variables for authorized user.
 func (s *commonSession) defineEnvironment() {
 	s.auth.defineSpecificEnvVariables()
@@ -181,10 +194,7 @@ func (s *commonSession) defineEnvironment() {
 	// create XDG folder
 	if !s.conf.NoXdgFallback {
 		if !fileExists(s.auth.usr().getenv(envXdgRuntimeDir)) {
-			handleErr(os.MkdirAll(s.auth.usr().getenv(envXdgRuntimeDir), 0700))
-
-			// Set owner of XDG folder
-			os.Chown(s.auth.usr().getenv(envXdgRuntimeDir), s.auth.usr().uid, s.auth.usr().gid)
+			s.mkXdgRuntimeDir()
 
 			logPrint("Created XDG folder")
 		} else {
