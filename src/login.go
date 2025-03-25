@@ -108,6 +108,12 @@ func handleLoginRetries(conf *config, usr *sysuser) (result error) {
 			}
 		})
 
+		// Get current retry count
+		content, err := os.ReadFile(usr.getLoginRetryPath())
+		if err == nil {
+			retries, _ = strconv.Atoi(strings.TrimSpace(string(content)))
+		}
+
 		file, err := os.Open(usr.getLoginRetryPath())
 		if err != nil {
 			logPrint(err)
@@ -117,19 +123,17 @@ func handleLoginRetries(conf *config, usr *sysuser) (result error) {
 		// Check if last retry was within last 2 seconds
 		limit := time.Now().Add(-2 * time.Second)
 		if info, err := file.Stat(); err == nil {
-			if info.ModTime().After(limit) {
-				content, err := os.ReadFile(usr.getLoginRetryPath())
-				if err == nil {
-					retries, _ = strconv.Atoi(strings.TrimSpace(string(content)))
-				}
-				retries++
-
-				if retries >= conf.AutologinMaxRetry {
-					result = errors.New("exceeded maximum number of allowed login retries in short period")
-					retries = 0
-				}
+			if info.ModTime().Before(limit) {
+				retries = 0
 			}
 		}
+
+		if retries > conf.AutologinMaxRetry {
+			result = errors.New("exceeded maximum number of allowed login retries in short period")
+			retries = 0
+		}
+
+		retries++
 		writeLoginRetrys(usr, retries)
 	}
 
