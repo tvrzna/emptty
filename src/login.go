@@ -42,6 +42,9 @@ func login(conf *config, h *sessionHandle) string {
 		return ""
 	}
 
+	// Clear on successful login
+	clearLoginRetrys(conf, h.auth.usr())
+
 	h.session = createSession(h.auth, d, conf)
 	h.session.start()
 
@@ -105,6 +108,12 @@ func handleLoginRetries(conf *config, usr *sysuser) (result error) {
 			}
 		})
 
+		// Get current retry count
+		content, err := os.ReadFile(usr.getLoginRetryPath())
+		if err == nil {
+			retries, _ = strconv.Atoi(strings.TrimSpace(string(content)))
+		}
+
 		file, err := os.Open(usr.getLoginRetryPath())
 		if err != nil {
 			logPrint(err)
@@ -114,25 +123,38 @@ func handleLoginRetries(conf *config, usr *sysuser) (result error) {
 		// Check if last retry was within last 2 seconds
 		limit := time.Now().Add(-2 * time.Second)
 		if info, err := file.Stat(); err == nil {
-			if info.ModTime().After(limit) {
-				content, err := os.ReadFile(usr.getLoginRetryPath())
-				if err == nil {
-					retries, _ = strconv.Atoi(strings.TrimSpace(string(content)))
-				}
-				retries++
-
-				if retries >= conf.AutologinMaxRetry {
-					result = errors.New("exceeded maximum number of allowed login retries in short period")
-					retries = 0
-				}
+			if info.ModTime().Before(limit) {
+				retries = 0
 			}
 		}
-		doAsUser(usr, func() {
-			if err := os.WriteFile(usr.getLoginRetryPath(), []byte(strconv.Itoa(retries)), 0600); err != nil {
-				logPrint(err)
-			}
-		})
+
+		if retries > conf.AutologinMaxRetry {
+			result = errors.New("exceeded maximum number of allowed login retries in short period")
+			retries = 0
+		}
+
+		retries++
+		writeLoginRetrys(usr, retries)
 	}
 
 	return result
+}
+
+func clearLoginRetrys(conf *config, usr *sysuser) {
+	// infinite allowed retries, return to avoid writing into file
+	if conf.AutologinMaxRetry < 0 {
+		return
+	}
+
+	if conf.Autologin && conf.AutologinSession != "" && conf.AutologinMaxRetry >= 0 {
+		writeLoginRetrys(usr, 0)
+	}
+}
+
+func writeLoginRetrys(usr *sysuser, retries int) {
+	doAsUser(usr, func() {
+		if err := os.WriteFile(usr.getLoginRetryPath(), []byte(strconv.Itoa(retries)), 0600); err != nil {
+			logPrint(err)
+		}
+	})
 }
