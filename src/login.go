@@ -42,6 +42,9 @@ func login(conf *config, h *sessionHandle) string {
 		return ""
 	}
 
+	// Clear on successful login
+	clearLoginRetrys(conf, h.auth.usr())
+
 	h.session = createSession(h.auth, d, conf)
 	h.session.start()
 
@@ -127,12 +130,27 @@ func handleLoginRetries(conf *config, usr *sysuser) (result error) {
 				}
 			}
 		}
-		doAsUser(usr, func() {
-			if err := os.WriteFile(usr.getLoginRetryPath(), []byte(strconv.Itoa(retries)), 0600); err != nil {
-				logPrint(err)
-			}
-		})
+		writeLoginRetrys(usr, retries)
 	}
 
 	return result
+}
+
+func clearLoginRetrys(conf *config, usr *sysuser) {
+	// infinite allowed retries, return to avoid writing into file
+	if conf.AutologinMaxRetry < 0 {
+		return
+	}
+
+	if conf.Autologin && conf.AutologinSession != "" && conf.AutologinMaxRetry >= 0 {
+		writeLoginRetrys(usr, 0)
+	}
+}
+
+func writeLoginRetrys(usr *sysuser, retries int) {
+	doAsUser(usr, func() {
+		if err := os.WriteFile(usr.getLoginRetryPath(), []byte(strconv.Itoa(retries)), 0600); err != nil {
+			logPrint(err)
+		}
+	})
 }
