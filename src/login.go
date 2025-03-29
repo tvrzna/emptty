@@ -6,11 +6,10 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
-	"time"
 )
 
 const (
-	loginRetryFile = "/tmp/emptty/login-retry"
+	loginRetryFileBase = "/tmp/emptty/login-retry-"
 )
 
 // AuthHandle interface defines handle for authorization
@@ -102,37 +101,79 @@ func handleLoginRetries(conf *config, usr *sysuser) (result error) {
 	}
 
 	if conf.Autologin && conf.AutologinSession != "" && conf.AutologinMaxRetry >= 0 {
-		retries := 0
-		if err := mkDirsForFile(loginRetryFile, 0700); err != nil {
-			logPrint(err)
-		}
-
-		file, err := os.Open(loginRetryFile)
-		if err != nil {
-			logPrint(err)
-		}
-		defer file.Close()
+		retriesPath := getLoginRetryPath(conf)
+		retries, lastTime := readRetryFile(retriesPath)
 
 		// Check if last retry was within last 2 seconds
-		limit := time.Now().Add(-2 * time.Second)
-		if info, err := file.Stat(); err == nil {
-			if info.ModTime().After(limit) {
-				content, err := os.ReadFile(loginRetryFile)
-				if err == nil {
-					retries, _ = strconv.Atoi(strings.TrimSpace(string(content)))
-				}
-				retries++
+		currTime := getUptime()
+		limit := currTime - 2
+		if lastTime >= limit {
+			retries++
 
-				if retries >= conf.AutologinMaxRetry {
-					result = errors.New("exceeded maximum number of allowed login retries in short period")
-					retries = 0
-				}
+			if retries >= conf.AutologinMaxRetry {
+				result = errors.New("exceeded maximum number of allowed login retries in short period")
+				retries = 0
 			}
 		}
-		if err := os.WriteFile(loginRetryFile, []byte(strconv.Itoa(retries)), 0600); err != nil {
-			logPrint(err)
-		}
+		writeRetryFile(retriesPath, retries, currTime)
 	}
 
 	return result
+}
+
+// Parse the retry file at the given path and return time and retry count
+func readRetryFile(path string) (retries int, time float64) {
+	content, err := os.ReadFile(path)
+	if err != nil {
+		return retries, time
+	}
+	contentSlice := strings.Split(string(content), ":")
+	contentSliceLen := len(contentSlice)
+
+	if contentSliceLen > 0 && contentSliceLen <= 2 {
+		retries, _ = strconv.Atoi(strings.TrimSpace(contentSlice[0]))
+		if contentSliceLen == 2 {
+			time, _ = strconv.ParseFloat(strings.TrimSpace(contentSlice[1]), 64)
+		}
+	} else {
+		logPrint("Unable to parse the user login retry file")
+	}
+
+	return retries, time
+}
+
+// Write the given retry count and time to a file at the given path
+func writeRetryFile(path string, retries int, time float64) {
+	if err := mkDirsForFile(path, 0700); err != nil {
+		logPrint(err)
+	}
+
+	result := []byte(strconv.Itoa(retries) + ":")
+	result = strconv.AppendFloat(result, time, 'f', -1, 64)
+	if err := os.WriteFile(path, result, 0600); err != nil {
+		logPrint(err)
+	}
+}
+
+// Attempt to fetch the current device uptime
+func getUptime() (uptime float64) {
+	data, err := os.ReadFile("/proc/uptime")
+	if err != nil {
+		logPrint("Unable to read /proc/uptime")
+		return 0
+	}
+
+	slice := strings.Split(string(data), " ")
+	uptime, err = strconv.ParseFloat(slice[0], 64)
+	if err != nil {
+		logPrint("Unable to parse uptime value")
+		return 0
+	}
+
+	return uptime
+}
+
+// Return a tty specific retry file path, future proofing for multi-seat
+func getLoginRetryPath(conf *config) string {
+	return loginRetryFileBase + conf.strTTY()
 }
