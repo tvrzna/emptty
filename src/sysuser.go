@@ -8,10 +8,6 @@ import (
 	"strings"
 )
 
-const (
-	pathUserRetryFile = "/.cache/emptty/login-retry"
-)
-
 // Type sysuser defines default structure of user to easier passing of all values.
 type sysuser struct {
 	username string
@@ -101,9 +97,4 @@ func (u *sysuser) getShell() string {
 		return C.GoString(pwd.pw_shell)
 	}
 	return "/bin/sh"
-}
-
-// Gets path to login retry file
-func (u *sysuser) getLoginRetryPath() string {
-	return u.homedir + pathUserRetryFile
 }

@@ -2,7 +2,6 @@ package src
 
 import (
 	"os/user"
-	"strings"
 	"testing"
 )
 
@@ -25,10 +24,6 @@ func TestGetSysuser(t *testing.T) {
 
 	if u.gidu32() != 2000 {
 		t.Error("TestGetSysuser: gid32 does not match")
-	}
-
-	if !strings.HasPrefix(u.getLoginRetryPath(), "/dev/null") || !strings.HasSuffix(u.getLoginRetryPath(), pathUserRetryFile) {
-		t.Error("TestGetSysuser: unexpected login retry path")
 	}
 }
 

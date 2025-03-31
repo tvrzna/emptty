@@ -9,6 +9,10 @@ import (
 	"time"
 )
 
+const (
+	loginRetryFile = "/tmp/emptty/login-retry"
+)
+
 // AuthHandle interface defines handle for authorization
 type authHandle interface {
 	usr() *sysuser
@@ -99,13 +103,11 @@ func handleLoginRetries(conf *config, usr *sysuser) (result error) {
 
 	if conf.Autologin && conf.AutologinSession != "" && conf.AutologinMaxRetry >= 0 {
 		retries := 0
-		doAsUser(usr, func() {
-			if err := mkDirsForFile(usr.getLoginRetryPath(), 0744); err != nil {
-				logPrint(err)
-			}
-		})
+		if err := mkDirsForFile(loginRetryFile, 0700); err != nil {
+			logPrint(err)
+		}
 
-		file, err := os.Open(usr.getLoginRetryPath())
+		file, err := os.Open(loginRetryFile)
 		if err != nil {
 			logPrint(err)
 		}
@@ -115,7 +117,7 @@ func handleLoginRetries(conf *config, usr *sysuser) (result error) {
 		limit := time.Now().Add(-2 * time.Second)
 		if info, err := file.Stat(); err == nil {
 			if info.ModTime().After(limit) {
-				content, err := os.ReadFile(usr.getLoginRetryPath())
+				content, err := os.ReadFile(loginRetryFile)
 				if err == nil {
 					retries, _ = strconv.Atoi(strings.TrimSpace(string(content)))
 				}
@@ -127,11 +129,9 @@ func handleLoginRetries(conf *config, usr *sysuser) (result error) {
 				}
 			}
 		}
-		doAsUser(usr, func() {
-			if err := os.WriteFile(usr.getLoginRetryPath(), []byte(strconv.Itoa(retries)), 0600); err != nil {
-				logPrint(err)
-			}
-		})
+		if err := os.WriteFile(loginRetryFile, []byte(strconv.Itoa(retries)), 0600); err != nil {
+			logPrint(err)
+		}
 	}
 
 	return result
