@@ -1,4 +1,4 @@
-.TH EMPTTY 1 "August 2024" "emptty 0.13.0" emptty
+.TH EMPTTY 1 "April 2025" "emptty 0.13.0" emptty
 
 .SH NAME
 emptty \- Dead simple CLI Display Manager on TTY
@@ -64,7 +64,9 @@ The default session used, if Autologin is enabled. If session is not found in li
 .IP AUTOLOGIN_SESSION_ENV
 Optional environment of autologin desktop session. Possible values are "xorg" and "wayland".
 .IP AUTOLOGIN_MAX_RETRY
-If Autologin is enabled and session does not start correctly, the number of retries in short period is kept to eventually stop the infinite loop of restarts. -1 is for infinite retries, 0 is for no retry. Default value is 2.
+If session does not start correctly in specified period, the number of retries in short period is kept to eventually stop the infinite loop of restarts. -1 is for infinite retries, 0 is for no retry. Default value is 2.
+.IP AUTOLOGIN_RETRY_PERIOD
+Time period in seconds, that is used for checking session login retries. Default value is 2.
 .IP LANG
 defines locale for all users. Default value is "en_US.UTF-8"
 .IP DBUS_LAUNCH

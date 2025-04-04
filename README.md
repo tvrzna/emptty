@@ -41,6 +41,8 @@ __NOTE:__ to enable autologin DEFAULT_USER must be in group nopasswdlogin, other
 
 `AUTOLOGIN_MAX_RETRY` If Autologin is enabled and session does not start correctly, the number of retries in short period is kept to eventually stop the infinite loop of restarts. -1 is for infinite retries, 0 is for no retry. Default value is 2.
 
+`AUTOLOGIN_RETRY_PERIOD` Time period in seconds, that is used for checking session login retries. Default value is 2.
+
 `LANG` defines locale for all users. Default value is "en_US.UTF-8"
 
 `DBUS_LAUNCH` Starts "dbus-launch" before desktop command. After end of session "dbus-daemon" is interrupted. Default value is true. If user config is handled as script (does not contain `Exec` option), this config is overridden to false.

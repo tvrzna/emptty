@@ -164,6 +164,10 @@ func TestLoadConfig(t *testing.T) {
 	if !conf.AutoSelection {
 		t.Error("TestLoadConfig: AUTO_SELECTION value is not correct")
 	}
+
+	if conf.AutologinRtryPeriod != 2 {
+		t.Error("TestLoadConfig: AUTOLOGIN_RETRY_PERIOD value is not correct")
+	}
 }
 
 func TestLangLoadConfig(t *testing.T) {

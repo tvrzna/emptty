@@ -100,13 +100,13 @@ func handleLoginRetries(conf *config) (result error) {
 		return nil
 	}
 
-	if conf.Autologin && conf.AutologinSession != "" && conf.AutologinMaxRetry >= 0 {
+	if conf.AutologinMaxRetry >= 0 {
 		retriesPath := getLoginRetryPath(conf)
 		retries, lastTime := readRetryFile(retriesPath)
 
-		// Check if last retry was within last 2 seconds
+		// Check if last retry was within last X seconds defined by AutologinRetryPeriod
 		currTime := getUptime()
-		limit := currTime - 2
+		limit := currTime - float64(conf.AutologinRtryPeriod)
 		if lastTime >= limit {
 			retries++
 

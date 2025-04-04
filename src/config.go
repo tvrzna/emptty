@@ -37,6 +37,7 @@ type config struct {
 	Logging             enLogging        `config:"LOGGING" parser:"ParseLogging" default:"rotate"`
 	SessionErrLog       enLogging        `config:"SESSION_ERROR_LOGGING" parser:"ParseLogging" default:"disabled"`
 	AutologinMaxRetry   int              `config:"AUTOLOGIN_MAX_RETRY" parser:"ParseInt" default:"2"`
+	AutologinRtryPeriod int              `config:"AUTOLOGIN_RETRY_PERIOD" parser:"ParsePositiveInt" default:"2"`
 	Tty                 int              `config:"TTY_NUMBER" parser:"ParseTTY" default:"0"`
 	DefaultUser         string           `config:"DEFAULT_USER" parser:"SanitizeValue" default:""`
 	DefaultSession      string           `config:"DEFAULT_SESSION" parser:"SanitizeValue" default:""`
@@ -134,6 +135,15 @@ func (c *config) ParseBool(value, defaultValue string) bool {
 // Parses int value from string.
 func (c *config) ParseInt(value, defaultValue string) int {
 	result, _ := strconv.Atoi(sanitizeValue(value, defaultValue))
+	return result
+}
+
+// Parses only positive int value from string.
+func (c *config) ParsePositiveInt(value, defaultValue string) int {
+	result, _ := strconv.Atoi(sanitizeValue(value, defaultValue))
+	if result <= 0 {
+		result, _ = strconv.Atoi(defaultValue)
+	}
 	return result
 }
 
