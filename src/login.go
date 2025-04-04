@@ -29,7 +29,7 @@ func login(conf *config, h *sessionHandle) string {
 		return h.auth.getCommand()
 	}
 
-	if err := handleLoginRetries(conf, h.auth.usr()); err != nil {
+	if err := handleLoginRetries(conf); err != nil {
 		h.auth.closeAuth()
 		handleStrErr("Exceeded maximum number of allowed login retries in short period.")
 		return ""
@@ -94,7 +94,7 @@ func runDisplayScript(scriptPath string) {
 }
 
 // Handles keeping information about last login with retry.
-func handleLoginRetries(conf *config, usr *sysuser) (result error) {
+func handleLoginRetries(conf *config) (result error) {
 	// infinite allowed retries, return to avoid writing into file
 	if conf.AutologinMaxRetry < 0 {
 		return nil

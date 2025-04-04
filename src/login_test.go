@@ -9,24 +9,22 @@ import (
 
 func TestHandleLoginRetriesInfinite(t *testing.T) {
 	c := &config{Autologin: true, AutologinSession: "/dev/null", AutologinMaxRetry: -1}
-	u := &sysuser{homedir: "/tmp/emptty-test"}
 
 	for i := 0; i < 5; i++ {
-		err := handleLoginRetries(c, u)
+		err := handleLoginRetries(c)
 		if err != nil {
 			t.Error("TestHandleLoginRetriesInfinite: No error from handleLoginRetries was expected")
 		}
 	}
 
-	os.RemoveAll(u.homedir)
+	os.Remove(getLoginRetryPath(c))
 }
 
 func TestHandleLoginRetriesNoRetry(t *testing.T) {
 	c := &config{Autologin: true, AutologinSession: "/dev/null", AutologinMaxRetry: 0}
-	u := &sysuser{homedir: "/tmp/emptty-test"}
 
 	for i := 0; i < 5; i++ {
-		err := handleLoginRetries(c, u)
+		err := handleLoginRetries(c)
 		if err != nil {
 			break
 		}
@@ -35,15 +33,14 @@ func TestHandleLoginRetriesNoRetry(t *testing.T) {
 		}
 	}
 
-	os.RemoveAll(u.homedir)
+	os.Remove(getLoginRetryPath(c))
 }
 
 func TestHandleLoginRetries2Retries(t *testing.T) {
 	c := &config{Autologin: true, AutologinSession: "/dev/null", AutologinMaxRetry: 2}
-	u := &sysuser{homedir: "/tmp/emptty-test"}
 
 	for i := 0; i < 5; i++ {
-		err := handleLoginRetries(c, u)
+		err := handleLoginRetries(c)
 		if err != nil {
 			break
 		}
@@ -52,7 +49,7 @@ func TestHandleLoginRetries2Retries(t *testing.T) {
 		}
 	}
 
-	os.RemoveAll(u.homedir)
+	os.Remove(getLoginRetryPath(c))
 }
 
 func TestGetUptime(t *testing.T) {
