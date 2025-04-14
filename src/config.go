@@ -39,7 +39,7 @@ type config struct {
 	SessionErrLog       enLogging        `config:"SESSION_ERROR_LOGGING" parser:"ParseLogging" string:"StringLog" default:"disabled"`
 	AutologinMaxRetry   int              `config:"AUTOLOGIN_MAX_RETRY" parser:"ParseInt" string:"StringInt" default:"2"`
 	AutologinRtryPeriod int              `config:"AUTOLOGIN_RETRY_PERIOD" parser:"ParsePositiveInt" string:"StringInt" default:"2"`
-	Tty                 int              `config:"TTY_NUMBER" parser:"ParseTTY" string:"StringInt" default:"0"`
+	Tty                 int              `config:"TTY_NUMBER" parser:"ParseTTY" string:"StringInt" default:"7"`
 	DefaultUser         string           `config:"DEFAULT_USER" parser:"SanitizeValue" default:""`
 	DefaultSession      string           `config:"DEFAULT_SESSION" parser:"SanitizeValue" default:""`
 	AutologinSession    string           `config:"AUTOLOGIN_SESSION" parser:"SanitizeValue" default:""`
