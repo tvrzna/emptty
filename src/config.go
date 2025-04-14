@@ -1,6 +1,7 @@
 package src
 
 import (
+	"fmt"
 	"os"
 	"reflect"
 	"strconv"
@@ -14,31 +15,31 @@ const (
 // config defines structure of application configuration.
 type config struct {
 	DaemonMode          bool
-	Autologin           bool             `config:"AUTOLOGIN" parser:"ParseBool" default:"false"`
-	SwitchTTY           bool             `config:"SWITCH_TTY" parser:"ParseBool" default:"true"`
-	PrintIssue          bool             `config:"PRINT_ISSUE" parser:"ParseBool" default:"true"`
-	PrintMotd           bool             `config:"PRINT_MOTD" parser:"ParseBool" default:"true"`
-	DbusLaunch          bool             `config:"DBUS_LAUNCH" parser:"ParseBool" default:"true"`
-	AlwaysDbusLaunch    bool             `config:"ALWAYS_DBUS_LAUNCH" parser:"ParseBool" default:"false"`
-	XinitrcLaunch       bool             `config:"XINITRC_LAUNCH" parser:"ParseBool" default:"false"`
-	VerticalSelection   bool             `config:"VERTICAL_SELECTION" parser:"ParseBool" default:"false"`
-	DynamicMotd         bool             `config:"DYNAMIC_MOTD" parser:"ParseBool" default:"false"`
-	EnableNumlock       bool             `config:"ENABLE_NUMLOCK" parser:"ParseBool" default:"false"`
-	NoXdgFallback       bool             `config:"NO_XDG_FALLBACK" parser:"ParseBool" default:"false"`
-	DefaultXauthority   bool             `config:"DEFAULT_XAUTHORITY" parser:"ParseBool" default:"false"`
-	RootlessXorg        bool             `config:"ROOTLESS_XORG" parser:"ParseBool" default:"false"`
-	IdentifyEnvs        bool             `config:"IDENTIFY_ENVS" parser:"ParseBool" default:"false"`
-	HideEnterLogin      bool             `config:"HIDE_ENTER_LOGIN" parser:"ParseBool" default:"false"`
-	HideEnterPassword   bool             `config:"HIDE_ENTER_PASSWORD" parser:"ParseBool" default:"false"`
-	AutoSelection       bool             `config:"AUTO_SELECTION" parser:"ParseBool" default:"false"`
-	AllowCommands       bool             `config:"ALLOW_COMMANDS" parser:"ParseBool" default:"true"`
-	DefaultSessionEnv   enEnvironment    `config:"DEFAULT_SESSION_ENV" parser:"ParseEnv" default:""`
-	AutologinSessionEnv enEnvironment    `config:"AUTOLOGIN_SESSION_ENV" parser:"ParseEnv" default:""`
-	Logging             enLogging        `config:"LOGGING" parser:"ParseLogging" default:"rotate"`
-	SessionErrLog       enLogging        `config:"SESSION_ERROR_LOGGING" parser:"ParseLogging" default:"disabled"`
-	AutologinMaxRetry   int              `config:"AUTOLOGIN_MAX_RETRY" parser:"ParseInt" default:"2"`
-	AutologinRtryPeriod int              `config:"AUTOLOGIN_RETRY_PERIOD" parser:"ParsePositiveInt" default:"2"`
-	Tty                 int              `config:"TTY_NUMBER" parser:"ParseTTY" default:"0"`
+	Autologin           bool             `config:"AUTOLOGIN" parser:"ParseBool" string:"StringBool" default:"false"`
+	SwitchTTY           bool             `config:"SWITCH_TTY" parser:"ParseBool" string:"StringBool" default:"true"`
+	PrintIssue          bool             `config:"PRINT_ISSUE" parser:"ParseBool" string:"StringBool" default:"true"`
+	PrintMotd           bool             `config:"PRINT_MOTD" parser:"ParseBool" string:"StringBool" default:"true"`
+	DbusLaunch          bool             `config:"DBUS_LAUNCH" parser:"ParseBool" string:"StringBool" default:"true"`
+	AlwaysDbusLaunch    bool             `config:"ALWAYS_DBUS_LAUNCH" parser:"ParseBool" string:"StringBool" default:"false"`
+	XinitrcLaunch       bool             `config:"XINITRC_LAUNCH" parser:"ParseBool" string:"StringBool" default:"false"`
+	VerticalSelection   bool             `config:"VERTICAL_SELECTION" parser:"ParseBool" string:"StringBool" default:"false"`
+	DynamicMotd         bool             `config:"DYNAMIC_MOTD" parser:"ParseBool" string:"StringBool" default:"false"`
+	EnableNumlock       bool             `config:"ENABLE_NUMLOCK" parser:"ParseBool" string:"StringBool" default:"false"`
+	NoXdgFallback       bool             `config:"NO_XDG_FALLBACK" parser:"ParseBool" string:"StringBool" default:"false"`
+	DefaultXauthority   bool             `config:"DEFAULT_XAUTHORITY" parser:"ParseBool" string:"StringBool" default:"false"`
+	RootlessXorg        bool             `config:"ROOTLESS_XORG" parser:"ParseBool" string:"StringBool" default:"false"`
+	IdentifyEnvs        bool             `config:"IDENTIFY_ENVS" parser:"ParseBool" string:"StringBool" default:"false"`
+	HideEnterLogin      bool             `config:"HIDE_ENTER_LOGIN" parser:"ParseBool" string:"StringBool" default:"false"`
+	HideEnterPassword   bool             `config:"HIDE_ENTER_PASSWORD" parser:"ParseBool" string:"StringBool" default:"false"`
+	AutoSelection       bool             `config:"AUTO_SELECTION" parser:"ParseBool" string:"StringBool" default:"false"`
+	AllowCommands       bool             `config:"ALLOW_COMMANDS" parser:"ParseBool" string:"StringBool" default:"true"`
+	DefaultSessionEnv   enEnvironment    `config:"DEFAULT_SESSION_ENV" parser:"ParseEnv" string:"StringEnv" default:""`
+	AutologinSessionEnv enEnvironment    `config:"AUTOLOGIN_SESSION_ENV" parser:"ParseEnv" string:"StringEnv" default:""`
+	Logging             enLogging        `config:"LOGGING" parser:"ParseLogging" string:"StringLog" default:"rotate"`
+	SessionErrLog       enLogging        `config:"SESSION_ERROR_LOGGING" parser:"ParseLogging" string:"StringLog" default:"disabled"`
+	AutologinMaxRetry   int              `config:"AUTOLOGIN_MAX_RETRY" parser:"ParseInt" string:"StringInt" default:"2"`
+	AutologinRtryPeriod int              `config:"AUTOLOGIN_RETRY_PERIOD" parser:"ParsePositiveInt" string:"StringInt" default:"2"`
+	Tty                 int              `config:"TTY_NUMBER" parser:"ParseTTY" string:"StringInt" default:"0"`
 	DefaultUser         string           `config:"DEFAULT_USER" parser:"SanitizeValue" default:""`
 	DefaultSession      string           `config:"DEFAULT_SESSION" parser:"SanitizeValue" default:""`
 	AutologinSession    string           `config:"AUTOLOGIN_SESSION" parser:"SanitizeValue" default:""`
@@ -47,14 +48,14 @@ type config struct {
 	XorgArgs            string           `config:"XORG_ARGS" parser:"SanitizeValue" default:""`
 	DynamicMotdPath     string           `config:"DYNAMIC_MOTD_PATH" parser:"SanitizeValue" default:"/etc/emptty/motd-gen.sh"`
 	MotdPath            string           `config:"MOTD_PATH" parser:"SanitizeValue" default:"/etc/emptty/motd"`
-	FgColor             string           `config:"FG_COLOR" parser:"ConvertFgColor" default:""`
-	BgColor             string           `config:"BG_COLOR" parser:"ConvertBgColor" default:""`
+	FgColor             string           `config:"FG_COLOR" parser:"ConvertFgColor" string:"StringFgColor" default:""`
+	BgColor             string           `config:"BG_COLOR" parser:"ConvertBgColor" string:"StringBgColor" default:""`
 	DisplayStartScript  string           `config:"DISPLAY_START_SCRIPT" parser:"SanitizeValue" default:""`
 	DisplayStopScript   string           `config:"DISPLAY_STOP_SCRIPT" parser:"SanitizeValue" default:""`
 	SessionErrLogFile   string           `config:"SESSION_ERROR_LOGGING_FILE" parser:"SanitizeValue" default:"/var/log/emptty/session-errors.[TTY_NUMBER].log"`
 	XorgSessionsPath    string           `config:"XORG_SESSIONS_PATH" parser:"SanitizeValue" default:"/usr/share/xsessions/"`
 	WaylandSessionsPath string           `config:"WAYLAND_SESSIONS_PATH" parser:"SanitizeValue" default:"/usr/share/wayland-sessions/"`
-	SelectLastUser      enSelectLastUser `config:"SELECT_LAST_USER" parser:"ParseSelectLastUser" default:"false"`
+	SelectLastUser      enSelectLastUser `config:"SELECT_LAST_USER" parser:"ParseSelectLastUser" string:"StringLastUser" default:"false"`
 	CmdPoweroff         string           `config:"CMD_POWEROFF" parser:"SanitizeValue" default:"poweroff"`
 	CmdReboot           string           `config:"CMD_REBOOT" parser:"SanitizeValue" default:"reboot"`
 	CmdSuspend          string           `config:"CMD_SUSPEND" parser:"SanitizeValue" default:""`
@@ -183,11 +184,67 @@ func (c *config) ttyPath() string {
 // Parses select last user config option.
 func (c *config) ParseSelectLastUser(value, defaultValue string) enSelectLastUser {
 	switch strings.ToLower(sanitizeValue(value, defaultValue)) {
-	case "per-tty":
+	case constEnSelectLastUserPerTTy:
 		return PerTty
-	case "global":
+	case constEnSelectLastUserGlobal:
 		return Global
 	}
 	return False
-
 }
+
+func (c *config) printConfig() {
+	configType := reflect.TypeOf(*c)
+	configValue := reflect.ValueOf(*c)
+	confValue := reflect.ValueOf(c)
+
+	for i := 0; i < configType.NumField(); i++ {
+		field := configType.Field(i)
+		param := field.Tag.Get("config")
+		if param == "" {
+			continue
+		}
+
+		value := configValue.Field(i).Interface()
+		stringName := field.Tag.Get("string")
+		if stringName != "" {
+			parser := confValue.MethodByName(stringName)
+			if parser.Kind() != reflect.Invalid {
+				value = parser.Call([]reflect.Value{reflect.ValueOf(value)})[0]
+			}
+		}
+		fmt.Printf("%s=%s\n", param, value)
+	}
+}
+
+func (c *config) StringBool(value bool) string {
+	if value {
+		return "true"
+	}
+	return "false"
+}
+
+func (c *config) StringEnv(value enEnvironment) string {
+	return value.stringify()
+}
+
+func (c *config) StringLog(value enLogging) string {
+	return value.stringify()
+}
+
+func (c *config) StringLastUser(value enSelectLastUser) string {
+	return []string{constEnSelectLastUserFalse, constEnSelectLastUserPerTTy, constEnSelectLastUserGlobal}[int(value)]
+}
+
+func (c *config) StringInt(value int) string {
+	return strconv.Itoa(value)
+}
+
+func (c *config) StringFgColor(value string) string {
+	return stringColor(value, true)
+}
+
+func (c *config) StringBgColor(value string) string {
+	return stringColor(value, false)
+}
+
+//TODO: escaping

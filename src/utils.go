@@ -178,6 +178,52 @@ func convertColor(name string, isForeground bool) string {
 	return strconv.Itoa(colorNumber)
 }
 
+func stringColor(value string, isForeground bool) string {
+	colorNumber, err := strconv.Atoi(value)
+	if err != nil {
+		return ""
+	}
+
+	if !isForeground {
+		colorNumber -= 10
+	}
+
+	isLight := false
+	if colorNumber >= 90 {
+		isLight = true
+		colorNumber -= 60
+	}
+
+	colorValue := ""
+	switch colorNumber {
+	case 0:
+		return ""
+	case 30:
+		colorValue = "BLACK"
+	case 31:
+		colorValue = "RED"
+	case 32:
+		colorValue = "GREEN"
+	case 33:
+		colorValue = "YELLOW"
+	case 34:
+		colorValue = "BLUE"
+	case 35:
+		colorValue = "MAGENTA"
+	case 36:
+		colorValue = "CYAN"
+	case 37:
+		colorValue = "WHITE"
+	default:
+		return ""
+	}
+
+	if isLight {
+		colorValue = "LIGHT_" + colorValue
+	}
+	return colorValue
+}
+
 // Prepares *exec.Cmd to be started as sysuser.
 func cmdAsUser(usr *sysuser, name string, arg ...string) *exec.Cmd {
 	if strings.Contains(name, " ") {

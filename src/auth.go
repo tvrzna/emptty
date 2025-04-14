@@ -9,6 +9,10 @@ import (
 
 const (
 	pathLastLoggedInUser = "/var/cache/emptty/lastuser"
+
+	constEnSelectLastUserFalse  = "false"
+	constEnSelectLastUserPerTTy = "per-tty"
+	constEnSelectLastUserGlobal = "global"
 )
 
 type enSelectLastUser byte

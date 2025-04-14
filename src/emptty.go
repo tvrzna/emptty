@@ -106,6 +106,8 @@ func loadConfigPath(args []string) (configPath string) {
 
 // Process arguments with affection on configuration
 func processArgs(args []string, conf *config) {
+	printConfig := false
+
 	for i, arg := range args {
 		switch arg {
 		case "-t", "--tty":
@@ -134,7 +136,14 @@ func processArgs(args []string, conf *config) {
 			nextArg(args, i, func(val string) {
 				conf.AutologinSession = val
 			})
+		case "-C", "--print-config":
+			printConfig = true
 		}
+	}
+
+	if printConfig {
+		conf.printConfig()
+		os.Exit(0)
 	}
 }
 
@@ -156,6 +165,7 @@ Options:
   -v, --version			print version
   -d, --daemon			start in daemon mode
   -c, --config PATH		load configuration from specified path
+  -C, --print-config	prints currently loaded configuration
   -i, --ignore-config		skips loading of configuration from file, loads only argument configuration
   -t, --tty NUMBER		overrides configured TTY number
   -u, --default-user USER_NAME	overrides configured Default User

@@ -124,3 +124,9 @@ func parseLogging(strLogging, defaultValue string) enLogging {
 	}
 	return Rotate
 }
+
+// Stringify logging option
+func (l *enLogging) stringify() string {
+	strings := []string{"", constLogDisabled, constLogAppending, constLogRotate}
+	return strings[int(*l)]
+}
