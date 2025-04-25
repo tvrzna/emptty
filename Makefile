@@ -50,11 +50,6 @@ install-pam:
 	@install -DZ res/pam -m 644 -T ${DESTDIR}/etc/pam.d/${DISTFILE}
 	@echo "Done"
 
-install-pam-debian:
-	@echo "Installing pam-debian file..."
-	@install -DZ res/pam-debian -m 644 -T ${DESTDIR}/etc/pam.d/${DISTFILE}
-	@echo "Done"
-
 install-pam-fedora:
 	@echo "Installing pam-fedora file..."
 	@install -DZ res/pam-fedora -m 644 -T ${DESTDIR}/etc/pam.d/${DISTFILE}
