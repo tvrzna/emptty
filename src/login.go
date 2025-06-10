@@ -29,7 +29,7 @@ func login(conf *config, h *sessionHandle) string {
 		return h.auth.getCommand()
 	}
 
-	if err := handleLoginRetries(conf); err != nil {
+	if err := handleLoginRetries(conf, &DefaultLoginRetryPathProvider{}); err != nil {
 		h.auth.closeAuth()
 		handleStrErr("Exceeded maximum number of allowed login retries in short period.")
 		return ""
@@ -94,14 +94,14 @@ func runDisplayScript(scriptPath string) {
 }
 
 // Handles keeping information about last login with retry.
-func handleLoginRetries(conf *config) (result error) {
+func handleLoginRetries(conf *config, retryProvider LoginRetryPathProvider) (result error) {
 	// infinite allowed retries, return to avoid writing into file
 	if conf.AutologinMaxRetry < 0 {
 		return nil
 	}
 
 	if conf.AutologinMaxRetry >= 0 {
-		retriesPath := getLoginRetryPath(conf)
+		retriesPath := retryProvider.getLoginRetryPath(conf)
 		retries, lastTime := readRetryFile(retriesPath)
 
 		// Check if last retry was within last X seconds defined by AutologinRetryPeriod
@@ -173,7 +173,14 @@ func getUptime() (uptime float64) {
 	return uptime
 }
 
+type LoginRetryPathProvider interface {
+	getLoginRetryPath(conf *config) string
+}
+
+type DefaultLoginRetryPathProvider struct {
+}
+
 // Return a tty specific retry file path, future proofing for multi-seat
-func getLoginRetryPath(conf *config) string {
+func (r *DefaultLoginRetryPathProvider) getLoginRetryPath(conf *config) string {
 	return loginRetryFileBase + conf.strTTY()
 }
