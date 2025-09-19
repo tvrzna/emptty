@@ -114,6 +114,9 @@ func (h *pamHandle) closeAuth() {
 			if err := h.trans.End(); err != nil {
 				logPrint(err)
 			}
+			h.trans = nil
+			h.u = nil
+			h.pamState = pamClosed
 		}()
 
 		if h.pamState >= pamSessionOpened {
@@ -127,10 +130,6 @@ func (h *pamHandle) closeAuth() {
 				logPrint(err)
 			}
 		}
-
-		h.trans = nil
-		h.u = nil
-		h.pamState = pamClosed
 	}
 }
 
