@@ -13,11 +13,22 @@ import (
 
 const tagPam = ""
 
+type pamState byte
+
+const (
+	pamInit pamState = iota
+	pamAuthenticated
+	pamCredsEstablished
+	pamSessionOpened
+	pamClosed
+)
+
 // PamHandle defines structure of handle specifically designed for using PAM authorization
 type pamHandle struct {
 	*authBase
 	trans *pam.Transaction
 	u     *sysuser
+	pamState
 }
 
 // Creates authHandle and handles authorization
@@ -38,6 +49,7 @@ func (h *pamHandle) authUser(conf *config) {
 		return
 	}
 
+	h.pamState = pamInit
 	h.trans, _ = pam.StartFunc("emptty", username, func(s pam.Style, msg string) (string, error) {
 		switch s {
 		case pam.PromptEchoOff:
@@ -66,11 +78,13 @@ func (h *pamHandle) authUser(conf *config) {
 		addBtmpEntry(username, os.Getpid(), conf.strTTY())
 		h.handleErr(bkpErr)
 	}
+	h.pamState = pamAuthenticated
 	logPrint("Authenticate OK")
 
 	h.handleErr(h.trans.AcctMgmt(pam.Silent))
 	h.handleErr(h.trans.SetItem(pam.Tty, "tty"+conf.strTTY()))
 	h.handleErr(h.trans.SetCred(pam.EstablishCred))
+	h.pamState = pamCredsEstablished
 
 	pamUsr, _ := h.trans.GetItem(pam.User)
 	usr, _ := user.Lookup(pamUsr)
@@ -93,17 +107,30 @@ func (h *pamHandle) usr() *sysuser {
 
 // Handles close of PAM authentication
 func (h *pamHandle) closeAuth() {
-	if h != nil && h.trans != nil {
+	if h != nil && h.trans != nil && h.pamState < pamClosed {
 		logPrint("Closing PAM auth")
-		if err := h.trans.SetCred(pam.DeleteCred); err != nil {
-			logPrint(err)
+
+		defer func() {
+			if err := h.trans.End(); err != nil {
+				logPrint(err)
+			}
+		}()
+
+		if h.pamState >= pamSessionOpened {
+			if err := h.trans.CloseSession(pam.Silent); err != nil {
+				logPrint(err)
+			}
 		}
-		if err := h.trans.CloseSession(pam.Silent); err != nil {
-			logPrint(err)
+
+		if h.pamState >= pamCredsEstablished {
+			if err := h.trans.SetCred(pam.DeleteCred); err != nil {
+				logPrint(err)
+			}
 		}
-		h.trans.End()
+
 		h.trans = nil
 		h.u = nil
+		h.pamState = pamClosed
 	}
 }
 
@@ -123,7 +150,12 @@ func (h *pamHandle) openAuthSession(sessionType string) error {
 		if err := h.trans.PutEnv(fmt.Sprintf("XDG_SESSION_TYPE=%s", sessionType)); err != nil {
 			return err
 		}
-		return h.trans.OpenSession(pam.Silent)
+		if err := h.trans.OpenSession(pam.Silent); err != nil {
+			return err
+		} else {
+			h.pamState = pamSessionOpened
+			return nil
+		}
 	}
 	return errors.New("no active transaction")
 }

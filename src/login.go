@@ -36,6 +36,9 @@ func login(conf *config, h *sessionHandle) string {
 	}
 
 	d := processDesktopSelection(h.auth.usr(), conf)
+	if h.interrupted {
+		return ""
+	}
 
 	runDisplayScript(conf.DisplayStartScript)
 

@@ -14,8 +14,9 @@ const version = "0.14.0"
 var buildVersion string
 
 type sessionHandle struct {
-	session *commonSession
-	auth    authHandle
+	session     *commonSession
+	auth        authHandle
+	interrupted bool
 }
 
 func init() {
@@ -59,6 +60,8 @@ func handleInterrupt(c chan os.Signal, h *sessionHandle) {
 	<-c
 	logPrint("Caught interrupt signal")
 	setTerminalEcho(os.Stdout.Fd(), true)
+	h.interrupted = true
+
 	if h.session != nil && h.session.cmd != nil {
 		h.session.interrupted = true
 		h.session.cmd.Process.Signal(os.Interrupt)
