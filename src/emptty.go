@@ -64,14 +64,19 @@ func handleInterrupt(c chan os.Signal, h *sessionHandle) {
 
 	if h.session != nil && h.session.cmd != nil {
 		h.session.interrupted = true
-		h.session.cmd.Process.Signal(os.Interrupt)
-		h.session.cmd.Wait()
-	} else {
-		if h.auth != nil {
-			h.auth.closeAuth()
+		if err := h.session.cmd.Process.Signal(os.Interrupt); err != nil {
+			logPrint("Application not responding to signal")
+		} else {
+			// Only attempt clean shutdown if cmd is still
+			// responsive
+			h.session.cmd.Wait()
 		}
-		os.Exit(1)
 	}
+	// Always attempt to close active auth instances before exit
+	if h.auth != nil {
+		h.auth.closeAuth()
+	}
+	os.Exit(1)
 }
 
 // Process core arguments for help and version, because they don't require any further application run
