@@ -23,18 +23,6 @@ const (
 	desktopNoDisplay   = "NODISPLAY"
 	desktopHidden      = "HIDDEN"
 
-	constEnvXorg    = "xorg"
-	constEnvWayland = "wayland"
-
-	constEnvSUndefined  = "Undefined"
-	constEnvSXorg       = "Xorg"
-	constEnvSWayland    = "Wayland"
-	constEnvSCustom     = "Custom"
-	constEnvSUserCustom = "User Custom"
-
-	constEnvSTXorg    = "x11"
-	constEnvSTWayland = "wayland"
-
 	constTrue  = "true"
 	constFalse = "false"
 	constAuto  = "auto"
@@ -45,26 +33,6 @@ const (
 
 	pathLocalWaylandSessions = "/.local/share/wayland-sessions/"
 	pathLocalXSessions       = "/.local/share/xsessions/"
-)
-
-// enEnvironment defines possible Environments.
-type enEnvironment byte
-
-const (
-	// Undefined represents no environment
-	Undefined enEnvironment = iota
-
-	// Xorg represents Xorg environment
-	Xorg
-
-	// Wayland represents Wayland environment
-	Wayland
-
-	// Custom represents custom desktops, only helper before real env is loaded
-	Custom
-
-	// UserCustom represents user's desktops, only helper before real env is loaded
-	UserCustom
 )
 
 type enSelection byte
@@ -295,7 +263,7 @@ func listDesktops(env enEnvironment, paths ...string) []*desktop {
 func getDesktop(path string, env enEnvironment) *desktop {
 	d := desktop{env: env, envOrigin: env, isUser: false, path: path}
 	if env == Custom || env == UserCustom {
-		d.env = Xorg
+		d.env = defaultEnvValue
 	}
 
 	readProperties(path, func(key string, value string) {
@@ -305,7 +273,7 @@ func getDesktop(path string, env enEnvironment) *desktop {
 		case desktopExec:
 			d.exec = value
 		case desktopEnvironment, desktopEnv:
-			d.env = parseEnv(value, constEnvXorg)
+			d.env = parseEnv(value, defaultEnv())
 		case desktopNames:
 			d.setDesktopNames(value)
 		case desktopNoDisplay:
@@ -326,7 +294,7 @@ func loadUserDesktop(homeDir string) (d *desktop, lang string) {
 		if !fileExists(confFile) {
 			continue
 		}
-		d := &desktop{isUser: true, path: confFile, env: Xorg, selection: SelectionFalse}
+		d := &desktop{isUser: true, path: confFile, env: defaultEnvValue, selection: SelectionFalse}
 
 		err := readPropertiesWithSupport(confFile, func(key string, value string) {
 			switch key {
@@ -335,7 +303,7 @@ func loadUserDesktop(homeDir string) (d *desktop, lang string) {
 			case desktopExec, confCommand:
 				d.exec = sanitizeValue(value, "")
 			case desktopEnvironment, desktopEnv:
-				d.env = parseEnv(value, constEnvXorg)
+				d.env = parseEnv(value, defaultEnv())
 			case desktopLang:
 				lang = value
 			case confSelection:
@@ -382,7 +350,7 @@ func getUserLastSession(usr *sysuser) *lastSession {
 			l := lastSession{}
 			l.exec = strings.TrimSpace(arrContent[0])
 			if len(arrContent) > 1 {
-				l.env = parseEnv(arrContent[1], constEnvXorg)
+				l.env = parseEnv(arrContent[1], defaultEnv())
 				return &l
 			}
 		}
@@ -407,40 +375,6 @@ func setUserLastSession(usr *sysuser, d *desktop) {
 // Checks, if user last session file already exists.
 func isLastDesktopForSave(usr *sysuser, lastDesktop, currentDesktop *desktop) bool {
 	return !fileExists(usr.homedir+pathLastSession) || lastDesktop.exec != currentDesktop.exec || lastDesktop.env != currentDesktop.env
-}
-
-// Parse input env and selects corresponding environment.
-func parseEnv(env, defaultValue string) enEnvironment {
-	switch strings.ToLower(sanitizeValue(env, defaultValue)) {
-	case constEnvXorg:
-		return Xorg
-	case constEnvWayland:
-		return Wayland
-	}
-	return Xorg
-}
-
-// Stringify enEnvironment value.
-func (e enEnvironment) stringify() string {
-	switch e {
-	case Xorg:
-		return constEnvXorg
-	case Wayland:
-		return constEnvWayland
-	}
-	return constEnvXorg
-}
-
-// String value of enEnvironment
-func (e enEnvironment) string() string {
-	strings := []string{constEnvSUndefined, constEnvSXorg, constEnvSWayland, constEnvSCustom, constEnvSUserCustom}
-	return strings[e]
-}
-
-// Session type of enEnvironment
-func (e enEnvironment) sessionType() string {
-	strings := []string{"", constEnvSTXorg, constEnvSTWayland, "", ""}
-	return strings[e]
 }
 
 // Parse input selection

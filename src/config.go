@@ -33,6 +33,7 @@ type config struct {
 	HideEnterPassword   bool             `config:"HIDE_ENTER_PASSWORD" parser:"ParseBool" string:"StringBool" default:"false"`
 	AutoSelection       bool             `config:"AUTO_SELECTION" parser:"ParseBool" string:"StringBool" default:"false"`
 	AllowCommands       bool             `config:"ALLOW_COMMANDS" parser:"ParseBool" string:"StringBool" default:"true"`
+	DefaultEnv          enEnvironment    `config:"DEFAULT_ENV" parser:"ParseDefaultEnv" string:"StringEnv" default:"" priority:"true"`
 	DefaultSessionEnv   enEnvironment    `config:"DEFAULT_SESSION_ENV" parser:"ParseEnv" string:"StringEnv" default:""`
 	AutologinSessionEnv enEnvironment    `config:"AUTOLOGIN_SESSION_ENV" parser:"ParseEnv" string:"StringEnv" default:""`
 	Logging             enLogging        `config:"LOGGING" parser:"ParseLogging" string:"StringLog" default:"rotate"`
@@ -77,25 +78,35 @@ func loadConfig(path string) *config {
 	configType := reflect.TypeOf(c)
 	configValue := reflect.ValueOf(&c)
 
-	for i := 0; i < configType.NumField(); i++ {
-		field := configType.Field(i)
+	processFields := func(priority bool) {
+		for i := 0; i < configType.NumField(); i++ {
+			field := configType.Field(i)
 
-		configParam := field.Tag.Get("config")
-		parserName := field.Tag.Get("parser")
-		defaultValue := field.Tag.Get("default")
-		if parserName != "" && configParam != "" {
-			settingValue, exists := configMap[configParam]
-			if !exists {
-				settingValue = defaultValue
+			priorityValue := field.Tag.Get("priority")
+			if (priority && priorityValue != "true") || (!priority && priorityValue == "true") {
+				continue
 			}
 
-			parser := configValue.MethodByName(parserName)
-			if parser.Kind() != reflect.Invalid {
-				val := parser.Call([]reflect.Value{reflect.ValueOf(settingValue), reflect.ValueOf(defaultValue)})[0]
-				configValue.Elem().Field(i).Set(val)
+			configParam := field.Tag.Get("config")
+			parserName := field.Tag.Get("parser")
+			defaultValue := field.Tag.Get("default")
+			if parserName != "" && configParam != "" {
+				settingValue, exists := configMap[configParam]
+				if !exists {
+					settingValue = defaultValue
+				}
+
+				parser := configValue.MethodByName(parserName)
+				if parser.Kind() != reflect.Invalid {
+					val := parser.Call([]reflect.Value{reflect.ValueOf(settingValue), reflect.ValueOf(defaultValue)})[0]
+					configValue.Elem().Field(i).Set(val)
+				}
 			}
 		}
 	}
+
+	processFields(true)
+	processFields(false)
 
 	if c.Lang == "" {
 		defaultLang := os.Getenv(envLang)
@@ -159,6 +170,20 @@ func (c *config) ParseEnv(value, defaultValue string) enEnvironment {
 		return Undefined
 	}
 	return parseEnv(value, defaultValue)
+}
+
+// Parses default environment type from string
+func (c *config) ParseDefaultEnv(value, defaultValue string) enEnvironment {
+	switch strings.ToLower(sanitizeValue(value, defaultValue)) {
+	case constEnvXorg:
+		defaultEnvValue = Xorg
+	case constEnvWayland:
+		defaultEnvValue = Wayland
+	default:
+		// The default of default, could be once defined by build tag.
+		defaultEnvValue = Xorg
+	}
+	return defaultEnvValue
 }
 
 // Coverts string foreground color name into ANSI color value.

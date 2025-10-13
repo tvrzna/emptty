@@ -26,6 +26,8 @@ Default startup configuration. On each change it requires to restart emptty.
 
 `PRINT_MOTD` Enables printing of default motd, static motd or dynamic motd.
 
+`DEFAULT_ENV` Defines default environment used for starting undefined sessions (e.g. from `emptty` file). Possible values are "xorg" and "wayland". Default of default is xorg.
+
 `DEFAULT_USER` Preselected user, if AUTOLOGIN is enabled, this user is logged in.
 
 `DEFAULT_SESSION` Preselected desktop session, if user does not use `emptty` file. Has lower priority than `AUTOLOGIN_SESSION`

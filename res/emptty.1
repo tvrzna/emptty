@@ -1,4 +1,4 @@
-.TH EMPTTY 1 "April 2025" "emptty 0.14.0" emptty
+.TH EMPTTY 1 "October 2025" "emptty 0.14.0" emptty
 
 .SH NAME
 emptty \- Dead simple CLI Display Manager on TTY
@@ -48,6 +48,8 @@ Enables switching to defined TTY number. Default is true.
 Enables printing of /etc/issue in daemon mode.
 .IP PRINT_MOTD
 Enables printing of default motd, static motd or dynamic motd.
+.IP DEFAULT_ENV
+Defines default environment used for starting undefined sessions (e.g. from `emptty` file). Possible values are "xorg" and "wayland". Default of default is xorg.
 .IP DEFAULT_USER
 Preselected user, if AUTOLOGIN is enabled, this user is logged in.
 .IP DEFAULT_SESSION

@@ -168,6 +168,10 @@ func TestLoadConfig(t *testing.T) {
 	if conf.AutologinRtryPeriod != 2 {
 		t.Error("TestLoadConfig: AUTOLOGIN_RETRY_PERIOD value is not correct")
 	}
+
+	if conf.DefaultEnv != defaultEnvValue && defaultEnvValue != Wayland {
+		t.Error("TestLoadConfig: DEFAULT_ENV value is not correct")
+	}
 }
 
 func TestLangLoadConfig(t *testing.T) {
