@@ -140,7 +140,12 @@ func selectDesktop(usr *sysuser, conf *config, d *desktop) (*desktop, *desktop) 
 	for {
 		fmt.Printf("\n")
 		printDesktops(conf, desktops)
-		fmt.Printf("\nSelect [%d]: ", lastDesktop)
+		if conf.VerticalSelection {
+			indent := strings.Repeat(" ", conf.IndentSelection)
+			fmt.Printf("\n\n%sSelect [%d]: ", indent, lastDesktop)
+		} else {
+			fmt.Printf("\nSelect [%d]: ", lastDesktop)
+		}
 
 		selection, _ := bufio.NewReader(os.Stdin).ReadString('\n')
 		selection = strings.TrimSpace(selection)
