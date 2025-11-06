@@ -54,6 +54,7 @@ func TestPrintDesktops(t *testing.T) {
 
 	conf.VerticalSelection = false
 	conf.IdentifyEnvs = false
+	conf.IndentSelection = 0
 	result = readOutput(func() {
 		printDesktops(conf, desktops)
 	})
@@ -63,6 +64,7 @@ func TestPrintDesktops(t *testing.T) {
 
 	conf.VerticalSelection = true
 	conf.IdentifyEnvs = false
+	conf.IndentSelection = 0
 	result = readOutput(func() {
 		printDesktops(conf, desktops)
 	})
@@ -72,6 +74,7 @@ func TestPrintDesktops(t *testing.T) {
 
 	conf.VerticalSelection = false
 	conf.IdentifyEnvs = true
+	conf.IndentSelection = 0
 	result = readOutput(func() {
 		printDesktops(conf, desktops)
 	})
@@ -81,6 +84,7 @@ func TestPrintDesktops(t *testing.T) {
 
 	conf.VerticalSelection = true
 	conf.IdentifyEnvs = true
+	conf.IndentSelection = 0
 	result = readOutput(func() {
 		printDesktops(conf, desktops)
 	})
@@ -88,6 +92,15 @@ func TestPrintDesktops(t *testing.T) {
 		t.Error("TestPrintDesktops: wrong output for VerticalSelection=true, IdentifyEnvs=true")
 	}
 
+	conf.VerticalSelection = true
+	conf.IdentifyEnvs = false
+	conf.IndentSelection = 4
+	result = readOutput(func() {
+		printDesktops(conf, desktops)
+	})
+	if result != "    [0] a\n    [1] b\n    [2] c\n    [3] d" {
+		t.Error("TestPrintDesktops: wrong output for VerticalSelection=true, IndentSelection=4")
+	}
 }
 
 func TestParseEnv(t *testing.T) {

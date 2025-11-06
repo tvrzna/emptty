@@ -163,11 +163,15 @@ func printDesktops(conf *config, desktops []*desktop) {
 	dSeparator := ", "
 	eSeparator := " "
 	if conf.VerticalSelection {
-		dSeparator = "\n"
-		eSeparator = "\n"
+		indent := strings.Repeat(" ", conf.IndentSelection)
+		dSeparator = "\n" + indent
+		eSeparator = "\n" + indent
 	}
 
 	lastEnv := Undefined
+	if conf.VerticalSelection {
+		fmt.Print(strings.Repeat(" ", conf.IndentSelection))
+	}
 	for i, v := range desktops {
 		printSeparator := true
 		if conf.IdentifyEnvs && v.envOrigin != lastEnv {

@@ -57,6 +57,10 @@ func TestLoadConfig(t *testing.T) {
 		t.Error("TestLoadConfig: VERTICAL_SELECTION value is not correct")
 	}
 
+	if conf.IndentSelection != 0 {
+		t.Error("TestLoadConfig: INDENT_SELECTION value is not correct")
+	}
+
 	if conf.Logging != Disabled {
 		t.Error("TestLoadConfig: LOGGING value is not correct")
 	}

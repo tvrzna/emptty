@@ -23,6 +23,7 @@ type config struct {
 	AlwaysDbusLaunch    bool             `config:"ALWAYS_DBUS_LAUNCH" parser:"ParseBool" string:"StringBool" default:"false"`
 	XinitrcLaunch       bool             `config:"XINITRC_LAUNCH" parser:"ParseBool" string:"StringBool" default:"false"`
 	VerticalSelection   bool             `config:"VERTICAL_SELECTION" parser:"ParseBool" string:"StringBool" default:"false"`
+	IndentSelection     int              `config:"INDENT_SELECTION" parser:"ParseInt" string:"StringInt" default:"0"`
 	DynamicMotd         bool             `config:"DYNAMIC_MOTD" parser:"ParseBool" string:"StringBool" default:"false"`
 	EnableNumlock       bool             `config:"ENABLE_NUMLOCK" parser:"ParseBool" string:"StringBool" default:"false"`
 	NoXdgFallback       bool             `config:"NO_XDG_FALLBACK" parser:"ParseBool" string:"StringBool" default:"false"`
