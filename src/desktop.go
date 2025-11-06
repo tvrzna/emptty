@@ -187,7 +187,15 @@ func printDesktops(conf *config, desktops []*desktop) {
 		if printSeparator && i > 0 {
 			fmt.Print(dSeparator)
 		}
-		fmt.Printf("[%d] %s", i, v.name)
+		if conf.VerticalSelection {
+			extraIndent := ""
+			if i < 10 {
+				extraIndent = " "
+			}
+			fmt.Printf("%s[%d] %s", extraIndent, i, v.name)
+		} else {
+			fmt.Printf("[%d] %s", i, v.name)
+		}
 	}
 }
 
