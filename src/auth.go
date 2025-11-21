@@ -38,10 +38,15 @@ func (a *authBase) getCommand() string {
 
 // Performs input selection user. If saving last user is enabled (PerTty/Global), user is read from defined path and used as predefined value.
 func (a *authBase) selectUser(c *config) (string, error) {
+	indent := ""
+	if c.IndentSelection > 0 {
+		indent = strings.Repeat(" ", c.IndentSelection)
+	}
+
 	if c.DefaultUser != "" {
 		if !c.HideEnterLogin {
 			hostname, _ := os.Hostname()
-			fmt.Printf("%s login: %s\n", hostname, c.DefaultUser)
+			fmt.Printf("%s%s login: %s\n", indent, hostname, c.DefaultUser)
 		}
 		return c.DefaultUser, nil
 	}
@@ -53,7 +58,7 @@ func (a *authBase) selectUser(c *config) (string, error) {
 		if lastUser != "" {
 			lastUserDisplay = " [" + lastUser + "]"
 		}
-		fmt.Printf("%s login%s: ", hostname, lastUserDisplay)
+		fmt.Printf("%s%s login%s: ", indent, hostname, lastUserDisplay)
 	}
 	input, err := bufio.NewReader(os.Stdin).ReadString('\n')
 	if err != nil {
