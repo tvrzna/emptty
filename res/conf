@@ -34,9 +34,6 @@ XINITRC_LAUNCH=false
 # Prints available WM/DE each on new line instead of printing on single line.
 VERTICAL_SELECTION=false
 
-# Horizontal offset if VERTICAL_SELECTION is in use
-#INDENT_SELECTION=0
-
 # Defines the way, how is logging handled. Possible values are "rotate", "appending" or "disabled".
 #LOGGING=rotate
 
