@@ -43,6 +43,7 @@ func TestStringEnv(t *testing.T) {
 	}
 }
 
+
 func TestPrintDesktops(t *testing.T) {
 	desktops := []*desktop{{name: "a", envOrigin: Xorg},
 		{name: "b", envOrigin: Wayland},
@@ -74,8 +75,8 @@ func TestPrintDesktops(t *testing.T) {
 	result = readOutput(func() {
 		printDesktops(conf, desktops)
 	})
-	if result != " [0] a\n [1] b\n [2] c\n [3] d\n [4] e\n [5] f\n [6] g\n [7] h\n [8] i\n [9] j\n[10] k" {
-		t.Error("TestPrintDesktops: wrong output for VerticalSelection=true, IdentifyEnvs=false")
+	if result != "[0] a\n[1] b\n[2] c\n[3] d\n[4] e\n[5] f\n[6] g\n[7] h\n[8] i\n[9] j\n[10] k" {
+		t.Error("TestPrintDesktops: wrong output for VerticalSelection=true, IdentifyEnvs=false, IndentSelection=0")
 	}
 
 	conf.VerticalSelection = false
@@ -93,8 +94,8 @@ func TestPrintDesktops(t *testing.T) {
 	result = readOutput(func() {
 		printDesktops(conf, desktops)
 	})
-	if result != "|Xorg|\n [0] a\n\n|Wayland|\n [1] b\n\n|Custom|\n [2] c\n\n|User Custom|\n [3] d\n\n|Xorg|\n [4] e\n\n|Wayland|\n [5] f\n\n|Custom|\n [6] g\n\n|User Custom|\n [7] h\n\n|Xorg|\n [8] i\n\n|Wayland|\n [9] j\n\n|Custom|\n[10] k" {
-		t.Error("TestPrintDesktops: wrong output for VerticalSelection=true, IdentifyEnvs=true")
+	if result != "|Xorg|\n[0] a\n\n|Wayland|\n[1] b\n\n|Custom|\n[2] c\n\n|User Custom|\n[3] d\n\n|Xorg|\n[4] e\n\n|Wayland|\n[5] f\n\n|Custom|\n[6] g\n\n|User Custom|\n[7] h\n\n|Xorg|\n[8] i\n\n|Wayland|\n[9] j\n\n|Custom|\n[10] k" {
+		t.Error("TestPrintDesktops: wrong output for VerticalSelection=true, IdentifyEnvs=true, IndentSelection=0")
 	}
 
 	conf.VerticalSelection = true
