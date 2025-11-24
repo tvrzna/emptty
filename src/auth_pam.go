@@ -59,7 +59,7 @@ func (h *pamHandle) authUser(conf *config) {
 			}
 			if !conf.HideEnterPassword {
 				indent := ""
-				if conf.IndentSelection > 0 {
+				if conf.VerticalSelection && conf.IndentSelection > 0 {
 					indent = strings.Repeat(" ", conf.IndentSelection)
 				}
 				fmt.Print(indent + "Password: ")
