@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"os/user"
-	"strings"
 )
 
 const tagPam = "nopam"
@@ -43,11 +42,7 @@ func (n *nopamHandle) authUser(conf *config) {
 	}
 
 	if !conf.HideEnterPassword {
-		indent := ""
-		if conf.VerticalSelection && conf.IndentSelection > 0 {
-			indent = strings.Repeat(" ", conf.IndentSelection)
-		}
-		fmt.Print(indent + "Password: ")
+		fmt.Print(conf.GetIndentString() + "Password: ")
 	}
 	password, err := readPassword()
 	handleErr(err)
