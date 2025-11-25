@@ -171,6 +171,9 @@ func (s *commonSession) defineEnvironment() {
 	}
 	s.auth.usr().setenv(envShell, s.auth.usr().getShell())
 	s.auth.usr().setenvIfEmpty(envLang, s.conf.Lang)
+	if s.conf.UserLang != "" {
+		s.auth.usr().setenv(envLang, s.conf.UserLang)
+	}
 	s.auth.usr().setenvIfEmpty(envPath, os.Getenv(envPath))
 
 	if !s.conf.NoXdgFallback {

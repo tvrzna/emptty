@@ -46,6 +46,7 @@ type config struct {
 	DefaultSession      string           `config:"DEFAULT_SESSION" parser:"SanitizeValue" default:""`
 	AutologinSession    string           `config:"AUTOLOGIN_SESSION" parser:"SanitizeValue" default:""`
 	Lang                string           `config:"LANG" parser:"SanitizeValue" default:""`
+	UserLang            string           ``
 	LoggingFile         string           `config:"LOGGING_FILE" parser:"SanitizeValue" default:"/var/log/emptty/[TTY_NUMBER].log"`
 	XorgArgs            string           `config:"XORG_ARGS" parser:"SanitizeValue" default:""`
 	DynamicMotdPath     string           `config:"DYNAMIC_MOTD_PATH" parser:"SanitizeValue" default:"/etc/emptty/motd-gen.sh"`

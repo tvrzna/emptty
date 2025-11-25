@@ -77,7 +77,7 @@ func processDesktopSelection(usr *sysuser, conf *config) *desktop {
 	}
 
 	if usrLang != "" {
-		conf.Lang = usrLang
+		conf.UserLang = usrLang
 	}
 
 	return d
