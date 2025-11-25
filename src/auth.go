@@ -41,7 +41,7 @@ func (a *authBase) selectUser(c *config) (string, error) {
 	if c.DefaultUser != "" {
 		if !c.HideEnterLogin {
 			hostname, _ := os.Hostname()
-			fmt.Printf("%s login: %s\n", hostname, c.DefaultUser)
+			fmt.Printf("%s%s login: %s\n", c.GetIndentString(), hostname, c.DefaultUser)
 		}
 		return c.DefaultUser, nil
 	}
@@ -53,7 +53,7 @@ func (a *authBase) selectUser(c *config) (string, error) {
 		if lastUser != "" {
 			lastUserDisplay = " [" + lastUser + "]"
 		}
-		fmt.Printf("%s login%s: ", hostname, lastUserDisplay)
+		fmt.Printf("%s%s login%s: ", c.GetIndentString(), hostname, lastUserDisplay)
 	}
 	input, err := bufio.NewReader(os.Stdin).ReadString('\n')
 	if err != nil {

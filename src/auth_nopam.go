@@ -42,7 +42,7 @@ func (n *nopamHandle) authUser(conf *config) {
 	}
 
 	if !conf.HideEnterPassword {
-		fmt.Print("Password: ")
+		fmt.Print(conf.GetIndentString() + "Password: ")
 	}
 	password, err := readPassword()
 	handleErr(err)

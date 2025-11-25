@@ -55,6 +55,8 @@ __NOTE:__ to enable autologin DEFAULT_USER must be in group nopasswdlogin, other
 
 `VERTICAL_SELECTION` Prints available WM/DE each on new line instead of printing on single line.
 
+`INDENT_SELECTION` Horizontal offset for vertical selection, useful for centering the menu on screen.
+
 `LOGGING` Defines the way, how is logging handled. Possible values are "rotate", "appending" or "disabled". Default value is "rotate".
 
 `LOGGING_FILE` Overrides path of log file. Default value is `/var/log/emptty/[TTY_NUMBER].log`.

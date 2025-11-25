@@ -57,7 +57,7 @@ func (h *pamHandle) authUser(conf *config) {
 				break
 			}
 			if !conf.HideEnterPassword {
-				fmt.Print("Password: ")
+				fmt.Print(conf.GetIndentString() + "Password: ")
 			}
 			return readPassword()
 		case pam.PromptEchoOn:
