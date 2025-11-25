@@ -137,15 +137,11 @@ func selectDesktop(usr *sysuser, conf *config, d *desktop) (*desktop, *desktop) 
 	}
 
 	// Otherwise go through selection process
+	indent := conf.GetIndentString()
 	for {
 		fmt.Printf("\n")
 		printDesktops(conf, desktops)
-		if conf.VerticalSelection {
-			indent := strings.Repeat(" ", conf.IndentSelection)
-			fmt.Printf("\n\n%sSelect [%d]: ", indent, lastDesktop)
-		} else {
-			fmt.Printf("\nSelect [%d]: ", lastDesktop)
-		}
+		fmt.Printf("\n\n%sSelect [%d]: ", indent, lastDesktop)
 
 		selection, _ := bufio.NewReader(os.Stdin).ReadString('\n')
 		selection = strings.TrimSpace(selection)
@@ -168,15 +164,13 @@ func printDesktops(conf *config, desktops []*desktop) {
 	dSeparator := ", "
 	eSeparator := " "
 	if conf.VerticalSelection {
-		indent := strings.Repeat(" ", conf.IndentSelection)
+		indent := conf.GetIndentString()
 		dSeparator = "\n" + indent
 		eSeparator = "\n" + indent
+		fmt.Print(indent)
 	}
 
 	lastEnv := Undefined
-	if conf.VerticalSelection {
-		fmt.Print(strings.Repeat(" ", conf.IndentSelection))
-	}
 	for i, v := range desktops {
 		printSeparator := true
 		if conf.IdentifyEnvs && v.envOrigin != lastEnv {
@@ -194,10 +188,10 @@ func printDesktops(conf *config, desktops []*desktop) {
 		}
 
 		extraIndent := ""
-		if conf.VerticalSelection && conf.IndentSelection > 0 && i < 10 {
+		if conf.VerticalSelection && conf.IndentSelection > 0 && i < 10 && len(desktops) > 10 {
 			extraIndent = " "
 		}
-			fmt.Printf("%s[%d] %s", extraIndent, i, v.name)
+		fmt.Printf("%s[%d] %s", extraIndent, i, v.name)
 	}
 }
 

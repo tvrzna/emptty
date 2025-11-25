@@ -274,11 +274,8 @@ func (c *config) StringBgColor(value string) string {
 }
 
 func (c *config) GetIndentString() string {
-	if c.VerticalSelection == true && c.IndentSelection > 0 {
+	if c.VerticalSelection && c.IndentSelection > 0 {
 		return strings.Repeat(" ", c.IndentSelection)
 	}
 	return ""
 }
-
-
-//TODO: escaping
