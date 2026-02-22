@@ -39,6 +39,9 @@ func login(conf *config, h *sessionHandle) string {
 	if h.interrupted {
 		return ""
 	}
+	if d.exec == desktopEntryCommandExecValue {
+		return d.name
+	}
 
 	runDisplayScript(conf.DisplayStartScript)
 

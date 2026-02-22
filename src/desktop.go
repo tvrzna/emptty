@@ -33,6 +33,8 @@ const (
 
 	pathLocalWaylandSessions = "/.local/share/wayland-sessions/"
 	pathLocalXSessions       = "/.local/share/xsessions/"
+
+	desktopEntryCommandExecValue = "emptty-cmd"
 )
 
 type enSelection byte
@@ -147,6 +149,23 @@ func selectDesktop(usr *sysuser, conf *config, d *desktop) (*desktop, *desktop) 
 		selection = strings.TrimSpace(selection)
 		if selection == "" {
 			selection = strconv.Itoa(lastDesktop)
+		}
+
+		// Parse command if specified
+		if conf.AllowCommands && strings.HasPrefix(strings.ReplaceAll(selection, "\x1b", ""), ":") {
+			d := desktop{name: strings.ReplaceAll(selection, "\x1b", "")[1:],
+				exec: desktopEntryCommandExecValue}
+			if d.name == "?" || d.name == "help" {
+				fmt.Print(`
+Available commands:
+  :help, :?			print this help
+  :poweroff, :shutdown		process poweroff command
+  :reboot			process reboot command
+  :suspend, :zzz		process suspend command
+`)
+				continue
+			}
+			return &d, desktops[lastDesktop]
 		}
 
 		id, err := strconv.ParseUint(selection, 10, 32)
