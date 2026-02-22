@@ -4,7 +4,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/tvrzna/emptty?style=flat-square)](https://goreportcard.com/report/github.com/tvrzna/emptty)
 
 Dead simple CLI Display Manager on TTY
-a
+
 ![](screenshot.png)
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/emptty.svg?exclude_unsupported=1)](https://repology.org/project/emptty/versions)
