@@ -10,7 +10,29 @@ import (
 	"syscall"
 )
 
-const version = "0.15.0"
+const (
+	version = "0.15.0"
+
+	builtinCmdHelpString = `
+Available commands:
+  :help, :?			print this help
+  :poweroff, :shutdown		process poweroff command
+  :reboot			process reboot command
+  :suspend, :zzz		process suspend command
+`
+	terminalHelpString = `Usage: emptty [options]
+Options:
+  -h, --help			print this help
+  -v, --version			print version
+  -d, --daemon			start in daemon mode
+  -c, --config PATH		load configuration from specified path
+  -C, --print-config	prints currently loaded configuration
+  -i, --ignore-config		skips loading of configuration from file, loads only argument configuration
+  -t, --tty NUMBER		overrides configured TTY number
+  -u, --default-user USER_NAME	overrides configured Default User
+  -a, --autologin [SESSION]	overrides configured autologin to true and if next argument is defined, it defines also Autologin Session
+`
+)
 
 var buildVersion string
 var errPrintCommandHelp = errors.New("just print help")
@@ -169,18 +191,7 @@ func nextArg(args []string, i int, callback func(value string)) {
 
 // Prints help
 func printHelp() {
-	fmt.Print(`Usage: emptty [options]
-Options:
-  -h, --help			print this help
-  -v, --version			print version
-  -d, --daemon			start in daemon mode
-  -c, --config PATH		load configuration from specified path
-  -C, --print-config	prints currently loaded configuration
-  -i, --ignore-config		skips loading of configuration from file, loads only argument configuration
-  -t, --tty NUMBER		overrides configured TTY number
-  -u, --default-user USER_NAME	overrides configured Default User
-  -a, --autologin [SESSION]	overrides configured autologin to true and if next argument is defined, it defines also Autologin Session
-`)
+	fmt.Print(terminalHelpString)
 }
 
 // Gets current version
@@ -209,13 +220,7 @@ func shouldProcessCommand(input string, conf *config) bool {
 func processCommand(command string, c *config, continuable bool) error {
 	switch command {
 	case "help", "?":
-		fmt.Print(`
-Available commands:
-  :help, :?			print this help
-  :poweroff, :shutdown		process poweroff command
-  :reboot			process reboot command
-  :suspend, :zzz		process suspend command
-`)
+		fmt.Print(builtinCmdHelpString)
 		if continuable {
 			return errPrintCommandHelp
 		}
