@@ -1,6 +1,7 @@
 package src
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"os/signal"
@@ -12,6 +13,7 @@ import (
 const version = "0.15.0"
 
 var buildVersion string
+var errPrintCommandHelp = errors.New("just print help")
 
 type sessionHandle struct {
 	session     *commonSession
@@ -38,7 +40,7 @@ func Main() {
 	printMotd(conf)
 
 	if command := login(conf, initSessionHandle()); command != "" {
-		processCommand(command, conf)
+		processCommand(command, conf, false)
 	}
 
 	stopDaemon(conf, fTTY)
@@ -199,8 +201,12 @@ func getVersion() string {
 	return version
 }
 
+func shouldProcessCommand(input string, conf *config) bool {
+	return conf.AllowCommands && strings.HasPrefix(strings.ReplaceAll(input, "\x1b", ""), ":")
+}
+
 // Process commands input in login buffer
-func processCommand(command string, c *config) {
+func processCommand(command string, c *config, continuable bool) error {
 	switch command {
 	case "help", "?":
 		fmt.Print(`
@@ -210,6 +216,9 @@ Available commands:
   :reboot			process reboot command
   :suspend, :zzz		process suspend command
 `)
+		if continuable {
+			return errPrintCommandHelp
+		}
 		waitForReturnToExit(0)
 	case "poweroff", "shutdown":
 		if err := processCommandAsCmd(c.CmdPoweroff); err != nil {
@@ -247,6 +256,11 @@ Available commands:
 			waitForReturnToExit(0)
 		}
 	default:
-		handleStrErr(fmt.Sprintf("Unknown command '%s'", command))
+		err := fmt.Errorf("Unknown command '%s'", command)
+		if continuable {
+			return err
+		}
+		handleErr(err)
 	}
+	return nil
 }
