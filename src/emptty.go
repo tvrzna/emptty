@@ -1,6 +1,7 @@
 package src
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"os/signal"
@@ -9,9 +10,32 @@ import (
 	"syscall"
 )
 
-const version = "0.15.0"
+const (
+	version = "0.15.0"
+
+	builtinCmdHelpString = `
+Available commands:
+  :help, :?			print this help
+  :poweroff, :shutdown		process poweroff command
+  :reboot			process reboot command
+  :suspend, :zzz		process suspend command
+`
+	terminalHelpString = `Usage: emptty [options]
+Options:
+  -h, --help			print this help
+  -v, --version			print version
+  -d, --daemon			start in daemon mode
+  -c, --config PATH		load configuration from specified path
+  -C, --print-config	prints currently loaded configuration
+  -i, --ignore-config		skips loading of configuration from file, loads only argument configuration
+  -t, --tty NUMBER		overrides configured TTY number
+  -u, --default-user USER_NAME	overrides configured Default User
+  -a, --autologin [SESSION]	overrides configured autologin to true and if next argument is defined, it defines also Autologin Session
+`
+)
 
 var buildVersion string
+var errPrintCommandHelp = errors.New("just print help")
 
 type sessionHandle struct {
 	session     *commonSession
@@ -38,7 +62,7 @@ func Main() {
 	printMotd(conf)
 
 	if command := login(conf, initSessionHandle()); command != "" {
-		processCommand(command, conf)
+		processCommand(command, conf, false)
 	}
 
 	stopDaemon(conf, fTTY)
@@ -167,18 +191,7 @@ func nextArg(args []string, i int, callback func(value string)) {
 
 // Prints help
 func printHelp() {
-	fmt.Print(`Usage: emptty [options]
-Options:
-  -h, --help			print this help
-  -v, --version			print version
-  -d, --daemon			start in daemon mode
-  -c, --config PATH		load configuration from specified path
-  -C, --print-config	prints currently loaded configuration
-  -i, --ignore-config		skips loading of configuration from file, loads only argument configuration
-  -t, --tty NUMBER		overrides configured TTY number
-  -u, --default-user USER_NAME	overrides configured Default User
-  -a, --autologin [SESSION]	overrides configured autologin to true and if next argument is defined, it defines also Autologin Session
-`)
+	fmt.Print(terminalHelpString)
 }
 
 // Gets current version
@@ -199,17 +212,18 @@ func getVersion() string {
 	return version
 }
 
+func shouldProcessCommand(input string, conf *config) bool {
+	return conf.AllowCommands && strings.HasPrefix(strings.ReplaceAll(input, "\x1b", ""), ":")
+}
+
 // Process commands input in login buffer
-func processCommand(command string, c *config) {
+func processCommand(command string, c *config, continuable bool) error {
 	switch command {
 	case "help", "?":
-		fmt.Print(`
-Available commands:
-  :help, :?			print this help
-  :poweroff, :shutdown		process poweroff command
-  :reboot			process reboot command
-  :suspend, :zzz		process suspend command
-`)
+		fmt.Print(builtinCmdHelpString)
+		if continuable {
+			return errPrintCommandHelp
+		}
 		waitForReturnToExit(0)
 	case "poweroff", "shutdown":
 		if err := processCommandAsCmd(c.CmdPoweroff); err != nil {
@@ -247,6 +261,11 @@ Available commands:
 			waitForReturnToExit(0)
 		}
 	default:
-		handleStrErr(fmt.Sprintf("Unknown command '%s'", command))
+		err := fmt.Errorf("Unknown command '%s'", command)
+		if continuable {
+			return err
+		}
+		handleErr(err)
 	}
+	return nil
 }

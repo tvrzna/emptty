@@ -170,6 +170,12 @@ Available commands:
 
 		id, err := strconv.ParseUint(selection, 10, 32)
 		if err != nil {
+			if shouldProcessCommand(selection, conf) {
+				err = processCommand(selection[1:], conf, true)
+				if err != nil && err != errPrintCommandHelp {
+					fmt.Printf("\n%s\n", err)
+				}
+			}
 			continue
 		}
 		if int(id) < len(desktops) {
