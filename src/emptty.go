@@ -226,16 +226,20 @@ func processCommand(command string, c *config, continuable bool) error {
 		}
 		waitForReturnToExit(0)
 	case "poweroff", "shutdown":
-		if err := processCommandAsCmd(c.CmdPoweroff); err != nil {
-			handleErr(err)
-		} else {
+		if err := processCommandAsCmd(c.CmdPoweroff); err == nil {
 			waitForReturnToExit(0)
+		} else if continuable {
+			return err
+		} else {
+			handleErr(err)
 		}
 	case "reboot":
-		if err := processCommandAsCmd(c.CmdReboot); err != nil {
-			handleErr(err)
-		} else {
+		if err := processCommandAsCmd(c.CmdReboot); err == nil {
 			waitForReturnToExit(0)
+		} else if continuable {
+			return err
+		} else {
+			handleErr(err)
 		}
 	case "suspend", "zzz":
 		var variants []string
@@ -255,11 +259,13 @@ func processCommand(command string, c *config, continuable bool) error {
 			}
 		}
 
-		if err != nil {
-			handleErr(err)
-		} else {
+		if err == nil {
 			waitForReturnToExit(0)
+		} else if continuable {
+			return err
 		}
+
+		handleErr(err)
 	default:
 		err := fmt.Errorf("Unknown command '%s'", command)
 		if continuable {
