@@ -109,8 +109,9 @@ type lastSession struct {
 }
 
 // Allows to select desktop, which could be selected.
-func selectDesktop(usr *sysuser, conf *config, d *desktop) (*desktop, *desktop) {
+func selectDesktop(auth authHandle, conf *config, d *desktop) (*desktop, *desktop) {
 	allowAutoselectDesktop := d == nil || d.selection == SelectionFalse
+	usr := auth.usr()
 
 	desktops := listAllDesktops(usr, conf.XorgSessionsPath, conf.WaylandSessionsPath)
 	if len(desktops) == 0 {
@@ -152,7 +153,7 @@ func selectDesktop(usr *sysuser, conf *config, d *desktop) (*desktop, *desktop) 
 		id, err := strconv.ParseUint(selection, 10, 32)
 		if err != nil {
 			if shouldProcessCommand(selection, conf) {
-				err = processCommand(strings.ReplaceAll(selection, "\x1b", "")[1:], conf, true)
+				err = processCommand(strings.ReplaceAll(selection, "\x1b", "")[1:], conf, auth, true)
 				if err != nil && err != errPrintCommandHelp {
 					fmt.Printf("\n%s\n", err)
 				}

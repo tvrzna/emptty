@@ -62,7 +62,7 @@ func Main() {
 	printMotd(conf)
 
 	if command := login(conf, initSessionHandle()); command != "" {
-		processCommand(command, conf, false)
+		processCommand(command, conf, nil, false)
 	}
 
 	stopDaemon(conf, fTTY)
@@ -217,7 +217,12 @@ func shouldProcessCommand(input string, conf *config) bool {
 }
 
 // Process commands input in login buffer
-func processCommand(command string, c *config, continuable bool) error {
+func processCommand(command string, c *config, auth authHandle, continuable bool) error {
+	// Cleanest solution found without code duplication and/or goto statements
+	if auth != nil && command != "help" && command != "?" {
+		auth.closeAuth()
+	}
+
 	switch command {
 	case "help", "?":
 		fmt.Print(builtinCmdHelpString)
