@@ -36,6 +36,18 @@ Options:
 
 var buildVersion string
 var errPrintCommandHelp = errors.New("just print help")
+var errUnknownCommand *ErrUnknownCommand
+
+type ErrUnknownCommand struct {
+	Msg string
+}
+
+func (e *ErrUnknownCommand) Error() string {
+	return e.Msg
+}
+func NewErrUnknownCommand(msg string) *ErrUnknownCommand {
+	return &ErrUnknownCommand{Msg: msg}
+}
 
 type sessionHandle struct {
 	session     *commonSession
@@ -222,14 +234,6 @@ func shouldProcessCommand(input string, conf *config) bool {
 
 // Process commands input in login buffer
 func processCommand(command string, c *config, auth authHandle, continuable bool) error {
-	// Cleanest solution found without code duplication and/or goto statements
-	if auth != nil &&
-		(command == "poweroff" || command == "shutdown" ||
-			command == "reboot" ||
-			command == "suspend" || command == "zzz") {
-		auth.closeAuth()
-	}
-
 	switch command {
 	case "help", "?":
 		fmt.Print(builtinCmdHelpString)
@@ -238,6 +242,9 @@ func processCommand(command string, c *config, auth authHandle, continuable bool
 		}
 		waitForReturnToExit(0)
 	case "poweroff", "shutdown":
+		if auth != nil {
+			auth.closeAuth()
+		}
 		if err := processCommandAsCmd(c.CmdPoweroff); err == nil {
 			waitForReturnToExit(0)
 		} else if continuable {
@@ -246,6 +253,9 @@ func processCommand(command string, c *config, auth authHandle, continuable bool
 			handleErr(err)
 		}
 	case "reboot":
+		if auth != nil {
+			auth.closeAuth()
+		}
 		if err := processCommandAsCmd(c.CmdReboot); err == nil {
 			waitForReturnToExit(0)
 		} else if continuable {
@@ -254,6 +264,9 @@ func processCommand(command string, c *config, auth authHandle, continuable bool
 			handleErr(err)
 		}
 	case "suspend", "zzz":
+		if auth != nil {
+			auth.closeAuth()
+		}
 		var variants []string
 		if c.CmdSuspend != "" {
 			variants = append(variants, c.CmdSuspend)
@@ -279,7 +292,7 @@ func processCommand(command string, c *config, auth authHandle, continuable bool
 
 		handleErr(err)
 	default:
-		err := fmt.Errorf("Unknown command '%s'", command)
+		err := NewErrUnknownCommand(fmt.Sprintf("Unknown command '%s'", command))
 		if continuable {
 			return err
 		}

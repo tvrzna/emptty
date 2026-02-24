@@ -2,6 +2,7 @@ package src
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -154,8 +155,10 @@ func selectDesktop(auth authHandle, conf *config, d *desktop) (*desktop, *deskto
 		if err != nil {
 			if shouldProcessCommand(selection, conf) {
 				err = processCommand(formatCommand(selection), conf, auth, true)
-				if err != nil && err != errPrintCommandHelp {
+				if errors.As(err, &errUnknownCommand) {
 					fmt.Printf("\n%s\n", err)
+				} else if !errors.Is(err, errPrintCommandHelp) {
+					handleErr(err)
 				}
 			}
 			continue
