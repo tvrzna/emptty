@@ -4,19 +4,21 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"testing"
 )
 
 type MockedRetryPathProvider struct {
+	once     sync.Once
 	fileName string
 }
 
 func (r *MockedRetryPathProvider) getLoginRetryPath(conf *config) string {
-	if r.fileName == "" {
-		f, _ := os.CreateTemp(os.TempDir(), "emptty-login-retry-"+conf.strTTY())
+	r.once.Do(func() {
+		f, _ := os.CreateTemp("", "emptty-login-retry-"+conf.strTTY())
 		r.fileName = f.Name()
 		f.Close()
-	}
+	})
 	return r.fileName
 }
 
@@ -36,7 +38,7 @@ func TestHandleLoginRetriesInfinite(t *testing.T) {
 
 func TestHandleLoginRetriesNoRetry(t *testing.T) {
 	r := &MockedRetryPathProvider{}
-	c := &config{Autologin: true, AutologinSession: "/dev/null", AutologinMaxRetry: 0}
+	c := &config{Autologin: true, AutologinSession: "/dev/null", AutologinMaxRetry: 0, AutologinRtryPeriod: 1}
 
 	for i := 0; i < 5; i++ {
 		err := handleLoginRetries(c, r)
