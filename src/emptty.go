@@ -212,6 +212,10 @@ func getVersion() string {
 	return version
 }
 
+func formatCommand(command string) string {
+	return strings.ReplaceAll(command, "\x1b", "")[1:]
+}
+
 func shouldProcessCommand(input string, conf *config) bool {
 	return conf.AllowCommands && strings.HasPrefix(strings.ReplaceAll(input, "\x1b", ""), ":")
 }
@@ -219,7 +223,10 @@ func shouldProcessCommand(input string, conf *config) bool {
 // Process commands input in login buffer
 func processCommand(command string, c *config, auth authHandle, continuable bool) error {
 	// Cleanest solution found without code duplication and/or goto statements
-	if auth != nil && command != "help" && command != "?" {
+	if auth != nil &&
+		(command == "poweroff" || command == "shutdown" ||
+			command == "reboot" ||
+			command == "suspend" || command == "zzz") {
 		auth.closeAuth()
 	}
 
