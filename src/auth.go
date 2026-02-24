@@ -61,7 +61,7 @@ func (a *authBase) selectUser(c *config) (string, error) {
 	}
 	username := input[:len(input)-1]
 
-	if c.AllowCommands && strings.HasPrefix(strings.ReplaceAll(username, "\x1b", ""), ":") {
+	if c.AllowCommands && shouldProcessCommand(username, c) {
 		a.command = strings.ReplaceAll(username, "\x1b", "")[1:]
 		return "", nil
 	}
