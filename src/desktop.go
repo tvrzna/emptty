@@ -154,11 +154,8 @@ func selectDesktop(auth authHandle, conf *config, d *desktop) (*desktop, *deskto
 		id, err := strconv.ParseUint(selection, 10, 32)
 		if err != nil {
 			if shouldProcessCommand(selection, conf) {
-				err = processCommand(formatCommand(selection), conf, auth, true)
-				if errors.As(err, &errUnknownCommand) {
+				if err = processCommand(formatCommand(selection), conf, auth, true); !errors.Is(err, errPrintCommandHelp) {
 					fmt.Printf("\n%s\n", err)
-				} else if !errors.Is(err, errPrintCommandHelp) {
-					handleErr(err)
 				}
 			}
 			continue

@@ -36,18 +36,6 @@ Options:
 
 var buildVersion string
 var errPrintCommandHelp = errors.New("just print help")
-var errUnknownCommand *ErrUnknownCommand
-
-type ErrUnknownCommand struct {
-	Msg string
-}
-
-func (e *ErrUnknownCommand) Error() string {
-	return e.Msg
-}
-func NewErrUnknownCommand(msg string) *ErrUnknownCommand {
-	return &ErrUnknownCommand{Msg: msg}
-}
 
 type sessionHandle struct {
 	session     *commonSession
@@ -242,38 +230,35 @@ func processCommand(command string, c *config, auth authHandle, continuable bool
 		}
 		waitForReturnToExit(0)
 	case "poweroff", "shutdown":
-		if auth != nil {
+		if continuable && auth != nil {
 			auth.closeAuth()
 		}
 		if err := processCommandAsCmd(c.CmdPoweroff); err == nil {
 			waitForReturnToExit(0)
-		} else if continuable {
-			return err
 		} else {
 			handleErr(err)
 		}
 	case "reboot":
-		if auth != nil {
+		if continuable && auth != nil {
 			auth.closeAuth()
 		}
 		if err := processCommandAsCmd(c.CmdReboot); err == nil {
 			waitForReturnToExit(0)
-		} else if continuable {
-			return err
 		} else {
 			handleErr(err)
 		}
 	case "suspend", "zzz":
-		if auth != nil {
+		if continuable && auth != nil {
 			auth.closeAuth()
 		}
-		var variants []string
-		if c.CmdSuspend != "" {
-			variants = append(variants, c.CmdSuspend)
+		variants := []string{
+			"zzz",
+			"systemctl suspend",
+			"loginctl suspend",
 		}
-		variants = append(variants, "zzz")
-		variants = append(variants, "systemctl suspend")
-		variants = append(variants, "loginctl suspend")
+		if c.CmdSuspend != "" {
+			variants = append([]string{c.CmdSuspend}, variants...)
+		}
 
 		var err error
 		for _, v := range variants {
@@ -286,13 +271,11 @@ func processCommand(command string, c *config, auth authHandle, continuable bool
 
 		if err == nil {
 			waitForReturnToExit(0)
-		} else if continuable {
-			return err
+		} else {
+			handleErr(err)
 		}
-
-		handleErr(err)
 	default:
-		err := NewErrUnknownCommand(fmt.Sprintf("Unknown command '%s'", command))
+		err := fmt.Errorf("Unknown command '%s'", command)
 		if continuable {
 			return err
 		}
