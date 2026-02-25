@@ -35,7 +35,7 @@ func login(conf *config, h *sessionHandle) string {
 		return ""
 	}
 
-	d := processDesktopSelection(h.auth.usr(), conf)
+	d := processDesktopSelection(h.auth, conf)
 	if h.interrupted {
 		return ""
 	}
@@ -59,11 +59,12 @@ func login(conf *config, h *sessionHandle) string {
 }
 
 // Process whole desktop load, selection and last used save.
-func processDesktopSelection(usr *sysuser, conf *config) *desktop {
+func processDesktopSelection(auth authHandle, conf *config) *desktop {
+	usr := auth.usr()
 	d, usrLang := loadUserDesktop(usr.homedir)
 
 	if d == nil || d.selection != SelectionFalse {
-		selectedDesktop, lastDesktop := selectDesktop(usr, conf, d)
+		selectedDesktop, lastDesktop := selectDesktop(auth, conf, d)
 		if isLastDesktopForSave(usr, lastDesktop, selectedDesktop) {
 			setUserLastSession(usr, selectedDesktop)
 		}
