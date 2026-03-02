@@ -176,6 +176,10 @@ func TestLoadConfig(t *testing.T) {
 	if conf.DefaultEnv != defaultEnvValue && defaultEnvValue != Wayland {
 		t.Error("TestLoadConfig: DEFAULT_ENV value is not correct")
 	}
+
+	if conf.WaitExitTimeout != 3 || cfgWaitExitTimeout != 3 {
+		t.Error("TestLoadConfig: WAIT_EXIT_TIMEOUT value is not correct")
+	}
 }
 
 func TestLangLoadConfig(t *testing.T) {

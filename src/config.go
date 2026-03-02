@@ -42,6 +42,7 @@ type config struct {
 	AutologinMaxRetry   int              `config:"AUTOLOGIN_MAX_RETRY" parser:"ParseInt" string:"StringInt" default:"2"`
 	AutologinRtryPeriod int              `config:"AUTOLOGIN_RETRY_PERIOD" parser:"ParsePositiveInt" string:"StringInt" default:"2"`
 	Tty                 int              `config:"TTY_NUMBER" parser:"ParseTTY" string:"StringInt" default:"7"`
+	WaitExitTimeout     int              `config:"WAIT_EXIT_TIMEOUT" parser:"ParseWaitExitTimeout" default:"-1"`
 	DefaultUser         string           `config:"DEFAULT_USER" parser:"SanitizeValue" default:""`
 	DefaultSession      string           `config:"DEFAULT_SESSION" parser:"SanitizeValue" default:""`
 	AutologinSession    string           `config:"AUTOLOGIN_SESSION" parser:"SanitizeValue" default:""`
@@ -63,6 +64,8 @@ type config struct {
 	CmdReboot           string           `config:"CMD_REBOOT" parser:"SanitizeValue" default:"reboot"`
 	CmdSuspend          string           `config:"CMD_SUSPEND" parser:"SanitizeValue" default:""`
 }
+
+var cfgWaitExitTimeout = -1
 
 // LoadConfig handles loading of application configuration.
 func loadConfig(path string) *config {
@@ -150,6 +153,12 @@ func (c *config) ParseBool(value, defaultValue string) bool {
 func (c *config) ParseInt(value, defaultValue string) int {
 	result, _ := strconv.Atoi(sanitizeValue(value, defaultValue))
 	return result
+}
+
+// Parses int value for wait exit timeout and sets it into global variable.
+func (c *config) ParseWaitExitTimeout(value, defaultValue string) int {
+	cfgWaitExitTimeout = c.ParseInt(value, defaultValue)
+	return cfgWaitExitTimeout
 }
 
 // Parses only positive int value from string.

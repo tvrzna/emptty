@@ -1,4 +1,4 @@
-.TH EMPTTY 1 "December 2025" "emptty 0.15.0" emptty
+.TH EMPTTY 1 "March 2026" "emptty 0.15.0" emptty
 
 .SH NAME
 emptty \- Dead simple CLI Display Manager on TTY
@@ -198,6 +198,9 @@ Command to be used to perform reboot. Default value is "reboot".
 
 .IP CMD_SUSPEND
 Command to be used to perform suspend. Default value is blank, but it tries to use "systemctl suspend", "loginctl suspend" or "zzz".
+
+.IP WAIT_EXIT_TIMEOUT
+Timeout in seconds before emptty automatically exits. If value is 0 or lower, there is no timeout. Default value is -1.
 
 .SH COMMANDS
 If commands are allowed and default user is not defined, there could be used commands in login input. All of these commands need to start with colon ":". Escape characters are ignored to prevent issues with muscle memory from VI.

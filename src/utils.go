@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+	"time"
 	"unsafe"
 )
 
@@ -537,9 +538,40 @@ func chvt(tty int) bool {
 }
 
 func waitForReturnToExit(code int) {
-	fmt.Printf("\nPress Enter to continue...")
-	if !TEST_MODE {
-		bufio.NewReader(os.Stdin).ReadString('\n')
-		os.Exit(code)
+	if TEST_MODE {
+		fmt.Printf("\nPress Enter to continue...")
+	} else {
+		remainingTimeout := cfgWaitExitTimeout
+		if remainingTimeout <= 0 {
+			fmt.Printf("\nPress Enter to continue...")
+			bufio.NewReader(os.Stdin).ReadString('\n')
+			os.Exit(code)
+			return
+		}
+
+		fmt.Printf("\nPress Enter to continue or wait %d seconds...", remainingTimeout)
+
+		inputDone := make(chan struct{})
+
+		go func() {
+			bufio.NewReader(os.Stdin).ReadString('\n')
+			close(inputDone)
+		}()
+
+		ticker := time.NewTicker(time.Second)
+		defer ticker.Stop()
+
+		for {
+			select {
+			case <-inputDone:
+				os.Exit(code)
+			case <-ticker.C:
+				remainingTimeout--
+				fmt.Printf("\r\033[KPress Enter to continue or wait %d seconds...", remainingTimeout)
+				if remainingTimeout <= 0 {
+					os.Exit(code)
+				}
+			}
+		}
 	}
 }
