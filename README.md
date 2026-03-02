@@ -281,6 +281,8 @@ __NOTE:__ If any issue starts to appear and you want to report it, ensure you do
 - `make uninstall` to remove emptty from your system
 ---
 
+PAM for Debian-based distros is available in [Debian repository](https://salsa.debian.org/go-team/packages/emptty/-/blob/debian/sid/debian/emptty.pam?ref_type=heads).
+
 ### Build tags
 Different distros could handle libc dependencies in different ways and `emptty` have direct references to these libc functions. For these cases there are Build tags to disable incompatible functionality or just to avoid some unwanted dependency.
 The usage during build is really simple, just add parameter and optional tags split with ",".
