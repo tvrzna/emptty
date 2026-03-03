@@ -86,7 +86,7 @@ func readXAuthority(displayNum, xauthorityPath string) (string, []byte, error) {
 			return "", nil, err
 		}
 
-		if family == 256 &&
+		if (family == 0 || family == 256) &&
 			display == displayNum &&
 			name == "MIT-MAGIC-COOKIE-1" {
 			return name, []byte(authData), nil
