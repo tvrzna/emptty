@@ -246,11 +246,9 @@ __NOTE:__ If any issue starts to appear and you want to report it, ensure you do
 - go (>= 1.20)
 - gcc
 - pam-devel
-- libx11-devel (libx11)
 
 ### Dependencies
 - pam
-- libx11
 - xorg / xorg-server (optional)
 - xauth / xorg-xauth (required for xorg)
 - mcookie (required for xorg)
@@ -292,9 +290,6 @@ $ make build TAGS=tag1,tag2
 
 #### nopam
 This tag disables dependency on PAM. In Linux it switch to basic authentication with `shadow`.
-
-#### noxlib
-This tag disables dependency on libx11, could be useful, if only Wayland desktop is expected to be used.
 
 #### noutmp
 This tag disables dependency on UTMP/UTMPX. Its implementation is different by each libc/distro, this provides ability to build if incompatibility occurs.

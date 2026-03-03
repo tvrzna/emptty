@@ -197,7 +197,7 @@ func printHelp() {
 // Gets current version
 func getVersion() string {
 	tags := strings.Builder{}
-	for _, tag := range []string{tagPam, tagUtmp, tagXlib} {
+	for _, tag := range []string{tagPam, tagUtmp} {
 		if tags.Len() > 0 {
 			tags.WriteString(", ")
 		}
