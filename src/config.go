@@ -15,25 +15,25 @@ const (
 // config defines structure of application configuration.
 type config struct {
 	DaemonMode          bool
-	Autologin           bool             `config:"AUTOLOGIN" parser:"ParseBool" default:"false"`
-	SwitchTTY           bool             `config:"SWITCH_TTY" parser:"ParseBool" default:"true"`
-	PrintIssue          bool             `config:"PRINT_ISSUE" parser:"ParseBool" default:"true"`
-	PrintMotd           bool             `config:"PRINT_MOTD" parser:"ParseBool" default:"true"`
-	DbusLaunch          bool             `config:"DBUS_LAUNCH" parser:"ParseBool" default:"true"`
-	AlwaysDbusLaunch    bool             `config:"ALWAYS_DBUS_LAUNCH" parser:"ParseBool" default:"false"`
-	XinitrcLaunch       bool             `config:"XINITRC_LAUNCH" parser:"ParseBool" default:"false"`
-	VerticalSelection   bool             `config:"VERTICAL_SELECTION" parser:"ParseBool" default:"false"`
+	Autologin           bool             `config:"AUTOLOGIN" default:"false"`
+	SwitchTTY           bool             `config:"SWITCH_TTY" default:"true"`
+	PrintIssue          bool             `config:"PRINT_ISSUE" default:"true"`
+	PrintMotd           bool             `config:"PRINT_MOTD" default:"true"`
+	DbusLaunch          bool             `config:"DBUS_LAUNCH" default:"true"`
+	AlwaysDbusLaunch    bool             `config:"ALWAYS_DBUS_LAUNCH" default:"false"`
+	XinitrcLaunch       bool             `config:"XINITRC_LAUNCH" default:"false"`
+	VerticalSelection   bool             `config:"VERTICAL_SELECTION" default:"false"`
 	IndentSelection     int              `config:"INDENT_SELECTION" parser:"ParsePositiveInt" default:"0"`
-	DynamicMotd         bool             `config:"DYNAMIC_MOTD" parser:"ParseBool" default:"false"`
-	EnableNumlock       bool             `config:"ENABLE_NUMLOCK" parser:"ParseBool" default:"false"`
-	NoXdgFallback       bool             `config:"NO_XDG_FALLBACK" parser:"ParseBool" default:"false"`
-	DefaultXauthority   bool             `config:"DEFAULT_XAUTHORITY" parser:"ParseBool" default:"false"`
-	RootlessXorg        bool             `config:"ROOTLESS_XORG" parser:"ParseBool" default:"false"`
-	IdentifyEnvs        bool             `config:"IDENTIFY_ENVS" parser:"ParseBool" default:"false"`
-	HideEnterLogin      bool             `config:"HIDE_ENTER_LOGIN" parser:"ParseBool" default:"false"`
-	HideEnterPassword   bool             `config:"HIDE_ENTER_PASSWORD" parser:"ParseBool" default:"false"`
-	AutoSelection       bool             `config:"AUTO_SELECTION" parser:"ParseBool" default:"false"`
-	AllowCommands       bool             `config:"ALLOW_COMMANDS" parser:"ParseBool" default:"true"`
+	DynamicMotd         bool             `config:"DYNAMIC_MOTD" default:"false"`
+	EnableNumlock       bool             `config:"ENABLE_NUMLOCK" default:"false"`
+	NoXdgFallback       bool             `config:"NO_XDG_FALLBACK" default:"false"`
+	DefaultXauthority   bool             `config:"DEFAULT_XAUTHORITY" default:"false"`
+	RootlessXorg        bool             `config:"ROOTLESS_XORG" default:"false"`
+	IdentifyEnvs        bool             `config:"IDENTIFY_ENVS" default:"false"`
+	HideEnterLogin      bool             `config:"HIDE_ENTER_LOGIN" default:"false"`
+	HideEnterPassword   bool             `config:"HIDE_ENTER_PASSWORD" default:"false"`
+	AutoSelection       bool             `config:"AUTO_SELECTION" default:"false"`
+	AllowCommands       bool             `config:"ALLOW_COMMANDS" default:"true"`
 	DefaultEnv          enEnvironment    `config:"DEFAULT_ENV" parser:"ParseDefaultEnv" default:"" priority:"true"`
 	DefaultSessionEnv   enEnvironment    `config:"DEFAULT_SESSION_ENV" parser:"ParseEnv" default:""`
 	AutologinSessionEnv enEnvironment    `config:"AUTOLOGIN_SESSION_ENV" parser:"ParseEnv" default:""`
@@ -43,26 +43,26 @@ type config struct {
 	AutologinRtryPeriod int              `config:"AUTOLOGIN_RETRY_PERIOD" parser:"ParsePositiveInt" default:"2"`
 	Tty                 int              `config:"TTY_NUMBER" parser:"ParseTTY" default:"7"`
 	WaitExitTimeout     int              `config:"WAIT_EXIT_TIMEOUT" parser:"ParseWaitExitTimeout" default:"-1"`
-	DefaultUser         string           `config:"DEFAULT_USER" parser:"SanitizeValue" default:""`
-	DefaultSession      string           `config:"DEFAULT_SESSION" parser:"SanitizeValue" default:""`
-	AutologinSession    string           `config:"AUTOLOGIN_SESSION" parser:"SanitizeValue" default:""`
-	Lang                string           `config:"LANG" parser:"SanitizeValue" default:""`
+	DefaultUser         string           `config:"DEFAULT_USER" default:""`
+	DefaultSession      string           `config:"DEFAULT_SESSION" default:""`
+	AutologinSession    string           `config:"AUTOLOGIN_SESSION" default:""`
+	Lang                string           `config:"LANG" default:""`
 	UserLang            string           ``
-	LoggingFile         string           `config:"LOGGING_FILE" parser:"SanitizeValue" default:"/var/log/emptty/[TTY_NUMBER].log"`
-	XorgArgs            string           `config:"XORG_ARGS" parser:"SanitizeValue" default:""`
-	DynamicMotdPath     string           `config:"DYNAMIC_MOTD_PATH" parser:"SanitizeValue" default:"/etc/emptty/motd-gen.sh"`
-	MotdPath            string           `config:"MOTD_PATH" parser:"SanitizeValue" default:"/etc/emptty/motd"`
+	LoggingFile         string           `config:"LOGGING_FILE" default:"/var/log/emptty/[TTY_NUMBER].log"`
+	XorgArgs            string           `config:"XORG_ARGS" default:""`
+	DynamicMotdPath     string           `config:"DYNAMIC_MOTD_PATH" default:"/etc/emptty/motd-gen.sh"`
+	MotdPath            string           `config:"MOTD_PATH" default:"/etc/emptty/motd"`
 	FgColor             string           `config:"FG_COLOR" parser:"ConvertFgColor" string:"StringFgColor" default:""`
 	BgColor             string           `config:"BG_COLOR" parser:"ConvertBgColor" string:"StringBgColor" default:""`
-	DisplayStartScript  string           `config:"DISPLAY_START_SCRIPT" parser:"SanitizeValue" default:""`
-	DisplayStopScript   string           `config:"DISPLAY_STOP_SCRIPT" parser:"SanitizeValue" default:""`
-	SessionErrLogFile   string           `config:"SESSION_ERROR_LOGGING_FILE" parser:"SanitizeValue" default:"/var/log/emptty/session-errors.[TTY_NUMBER].log"`
-	XorgSessionsPath    string           `config:"XORG_SESSIONS_PATH" parser:"SanitizeValue" default:"/usr/share/xsessions/"`
-	WaylandSessionsPath string           `config:"WAYLAND_SESSIONS_PATH" parser:"SanitizeValue" default:"/usr/share/wayland-sessions/"`
+	DisplayStartScript  string           `config:"DISPLAY_START_SCRIPT" default:""`
+	DisplayStopScript   string           `config:"DISPLAY_STOP_SCRIPT" default:""`
+	SessionErrLogFile   string           `config:"SESSION_ERROR_LOGGING_FILE" default:"/var/log/emptty/session-errors.[TTY_NUMBER].log"`
+	XorgSessionsPath    string           `config:"XORG_SESSIONS_PATH" default:"/usr/share/xsessions/"`
+	WaylandSessionsPath string           `config:"WAYLAND_SESSIONS_PATH" default:"/usr/share/wayland-sessions/"`
 	SelectLastUser      enSelectLastUser `config:"SELECT_LAST_USER" parser:"ParseSelectLastUser" string:"StringLastUser" default:"false"`
-	CmdPoweroff         string           `config:"CMD_POWEROFF" parser:"SanitizeValue" default:"poweroff"`
-	CmdReboot           string           `config:"CMD_REBOOT" parser:"SanitizeValue" default:"reboot"`
-	CmdSuspend          string           `config:"CMD_SUSPEND" parser:"SanitizeValue" default:""`
+	CmdPoweroff         string           `config:"CMD_POWEROFF" default:"poweroff"`
+	CmdReboot           string           `config:"CMD_REBOOT" default:"reboot"`
+	CmdSuspend          string           `config:"CMD_SUSPEND" default:""`
 }
 
 var cfgWaitExitTimeout = -1
@@ -95,16 +95,25 @@ func loadConfig(path string) *config {
 			configParam := field.Tag.Get("config")
 			parserName := field.Tag.Get("parser")
 			defaultValue := field.Tag.Get("default")
-			if parserName != "" && configParam != "" {
+			if configParam != "" {
 				settingValue, exists := configMap[configParam]
 				if !exists {
 					settingValue = defaultValue
 				}
 
-				parser := configValue.MethodByName(parserName)
-				if parser.Kind() != reflect.Invalid {
-					val := parser.Call([]reflect.Value{reflect.ValueOf(settingValue), reflect.ValueOf(defaultValue)})[0]
-					configValue.Elem().Field(i).Set(val)
+				if parserName != "" {
+					parser := configValue.MethodByName(parserName)
+					if parser.Kind() != reflect.Invalid {
+						val := parser.Call([]reflect.Value{reflect.ValueOf(settingValue), reflect.ValueOf(defaultValue)})[0]
+						configValue.Elem().Field(i).Set(val)
+					}
+				} else {
+					switch configValue.Elem().Field(i).Type().Kind() {
+					case reflect.String:
+						configValue.Elem().Field(i).SetString(c.SanitizeValue(settingValue, defaultValue))
+					case reflect.Bool:
+						configValue.Elem().Field(i).SetBool(c.ParseBool(settingValue, defaultValue))
+					}
 				}
 			}
 		}
