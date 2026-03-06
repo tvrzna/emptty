@@ -210,6 +210,6 @@ func TestParseExec(t *testing.T) {
 	res := parseExec(str)
 
 	if len(res) != 3 {
-		t.Error("TestParseExec: unexpected lenght of parsed parts of executable")
+		t.Error("TestParseExec: unexpected length of parsed parts of executable")
 	}
 }
