@@ -204,17 +204,35 @@ func printDesktops(conf *config, desktops []*desktop) {
 
 // Finds defined autologinSession in array of desktops by its exec or its name and environment, if defined.
 func findAutoselectDesktop(autologinSession string, env enEnvironment, desktops []*desktop) *desktop {
+	// search by session name first
+	for _, d := range desktops {
+		// skip if this entry doesn't match our env
+		if env != Undefined && env != d.env {
+			continue
+		}
+
+		if strings.EqualFold(autologinSession, d.name) {
+			return d
+		}
+	}
+
+	// assume the string is an exectable with arguments
 	exec, args := getDesktopBaseExec(autologinSession)
 	for _, d := range desktops {
+		// skip if this entry doesn't match our env
+		if env != Undefined && env != d.env {
+			continue
+		}
+
 		desktopExec, _ := getDesktopBaseExec(d.exec)
-		if (exec == desktopExec || strings.EqualFold(autologinSession, d.name)) &&
-			(env == Undefined || env == d.env) {
+		if exec == desktopExec {
 			if args != "" {
 				d.exec = d.exec + " " + args
 			}
 			return d
 		}
 	}
+
 	return nil
 }
 
