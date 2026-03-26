@@ -26,7 +26,7 @@ Options:
   -v, --version			print version
   -d, --daemon			start in daemon mode
   -c, --config PATH		load configuration from specified path
-  -C, --print-config	prints currently loaded configuration
+  -C, --print-config		prints currently loaded configuration
   -i, --ignore-config		skips loading of configuration from file, loads only argument configuration
   -t, --tty NUMBER		overrides configured TTY number
   -u, --default-user USER_NAME	overrides configured Default User
