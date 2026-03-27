@@ -13,31 +13,35 @@ import (
 )
 
 // Opens XDisplay via socket and tries to authenticate with Xauthority.
-func openXDisplay(dispName, xauthorityPath string) error {
+func openXDisplay(dispName, xauthorityPath string) (net.Conn, error) {
 	displayNum, socketPath, err := resolveDisplay(dispName)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	authName, authData, err := readXAuthority(displayNum, xauthorityPath)
 	if err != nil {
-		return fmt.Errorf("xauthority: %w", err)
+		return nil, fmt.Errorf("xauthority: %w", err)
 	}
 
-	for i := 0; i < 50; i++ {
+	counter := 0
+	deadline := time.Now().Add(5 * time.Second)
+
+	for time.Now().Before(deadline) {
 		conn, err := net.DialTimeout("unix", socketPath, 200*time.Millisecond)
 		if err == nil {
 			err = performHandshake(conn, authName, authData)
 			if err == nil {
-				return nil
-			} else {
-				conn.Close()
+				return conn, nil
 			}
+			logPrintf("X11 handshake[#%d] failed: %v", counter, err)
+			conn.Close()
 		}
 		time.Sleep(50 * time.Millisecond)
+		counter++
 	}
 
-	return errors.New("could not open authenticated X display")
+	return nil, errors.New("could not open authenticated X display")
 }
 
 // Gets display number and its socket path from display name.

@@ -62,7 +62,7 @@ func createSession(h authHandle, d *desktop, conf *config) *commonSession {
 	case Wayland:
 		s.session = &waylandSession{s}
 	case Xorg:
-		s.session = &xorgSession{s, nil}
+		s.session = &xorgSession{s, nil, nil}
 	}
 
 	return s

@@ -2,6 +2,7 @@ package src
 
 import (
 	"fmt"
+	"net"
 	"os"
 	"os/exec"
 	"strconv"
@@ -11,7 +12,8 @@ import (
 // xorgSession defines structure for xorg
 type xorgSession struct {
 	*commonSession
-	xorg *exec.Cmd
+	xorg     *exec.Cmd
+	xorgConn net.Conn
 }
 
 // Starts Xorg as carrier for Xorg Session.
@@ -67,8 +69,10 @@ func (x *xorgSession) startCarrier() {
 	}
 	logPrint("Started Xorg")
 
-	if err := openXDisplay(x.auth.usr().getenv(envDisplay), x.auth.usr().getenv(envXauthority)); err != nil {
+	if xorgConn, err := openXDisplay(x.auth.usr().getenv(envDisplay), x.auth.usr().getenv(envXauthority)); err != nil {
 		handleStrErr("Could not open X Display.")
+	} else {
+		x.xorgConn = xorgConn
 	}
 }
 
@@ -86,6 +90,10 @@ func (x *xorgSession) finishCarrier() error {
 	x.xorg.Process.Signal(os.Interrupt)
 	err := x.xorg.Wait()
 	logPrint("Interrupted Xorg")
+
+	if x.xorgConn != nil {
+		x.xorgConn.Close()
+	}
 
 	// Remove auth
 	os.Remove(x.auth.usr().getenv(envXauthority))
