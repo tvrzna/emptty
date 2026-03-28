@@ -12,6 +12,8 @@ import (
 	"time"
 )
 
+const maxWaitToOpenX11Display = 1 * time.Second
+
 // Opens XDisplay via socket and tries to authenticate with Xauthority.
 func openXDisplay(dispName, xauthorityPath string) (net.Conn, error) {
 	displayNum, socketPath, err := resolveDisplay(dispName)
@@ -25,7 +27,7 @@ func openXDisplay(dispName, xauthorityPath string) (net.Conn, error) {
 	}
 
 	counter := 0
-	deadline := time.Now().Add(5 * time.Second)
+	deadline := time.Now().Add(30 * time.Second)
 
 	for time.Now().Before(deadline) {
 		conn, err := net.DialTimeout("unix", socketPath, 200*time.Millisecond)
@@ -34,10 +36,18 @@ func openXDisplay(dispName, xauthorityPath string) (net.Conn, error) {
 			if err == nil {
 				return conn, nil
 			}
-			logPrintf("X11 handshake[#%d] failed: %v", counter, err)
+			logPrintf("X11 handshake [attempt #%d] failed: %v", counter, err)
 			conn.Close()
+		} else {
+			logPrintf("X11 display open [attempt #%d] failed: %v", counter, err)
 		}
-		time.Sleep(50 * time.Millisecond)
+
+		wait := time.Duration(counter+1) * 50 * time.Millisecond
+		if wait > maxWaitToOpenX11Display {
+			wait = maxWaitToOpenX11Display
+		}
+		logPrintf("waiting for %dms", wait)
+		time.Sleep(wait)
 		counter++
 	}
 

@@ -70,6 +70,7 @@ func (x *xorgSession) startCarrier() {
 	logPrint("Started Xorg")
 
 	if xorgConn, err := openXDisplay(x.auth.usr().getenv(envDisplay), x.auth.usr().getenv(envXauthority)); err != nil {
+		logPrintf("Could not open X Display: %v", err)
 		handleStrErr("Could not open X Display.")
 	} else {
 		x.xorgConn = xorgConn
