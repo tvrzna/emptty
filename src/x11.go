@@ -46,7 +46,7 @@ func openXDisplay(dispName, xauthorityPath string) (net.Conn, error) {
 		if wait > maxWaitToOpenX11Display {
 			wait = maxWaitToOpenX11Display
 		}
-		logPrintf("waiting for %dms", wait)
+		logPrintf("waiting for %s to try to open X11 display again", wait)
 		time.Sleep(wait)
 		counter++
 	}
