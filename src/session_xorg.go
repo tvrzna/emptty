@@ -21,10 +21,12 @@ type xorgSession struct {
 
 // Starts Xorg as carrier for Xorg Session.
 func (x *xorgSession) startCarrier() {
-	if !x.conf.DefaultXauthority {
-		x.auth.usr().setenv(envXauthority, x.auth.usr().getenv(envXdgRuntimeDir)+"/.emptty-xauth")
-		os.Remove(x.auth.usr().getenv(envXauthority))
+	if x.conf.DefaultXauthority {
+		x.auth.usr().setenv(envXauthority, filepath.Join(x.auth.usr().homedir, defaultXauthorityPath))
+	} else {
+		x.auth.usr().setenv(envXauthority, filepath.Join(x.auth.usr().getenv(envXdgRuntimeDir), ".emptty-xauth"))
 	}
+	os.Remove(x.auth.usr().getenv(envXauthority))
 
 	x.auth.usr().setenv(envDisplay, ":"+x.getFreeXDisplay())
 
@@ -72,12 +74,7 @@ func (x *xorgSession) startCarrier() {
 	}
 	logPrint("Started Xorg")
 
-	xAuthorityPath := x.auth.usr().getenv(envXauthority)
-	if xAuthorityPath == "" {
-		xAuthorityPath = filepath.Join(x.auth.usr().homedir, defaultXauthorityPath)
-	}
-
-	if xorgConn, err := openXDisplay(x.auth.usr().getenv(envDisplay), xAuthorityPath); err != nil {
+	if xorgConn, err := openXDisplay(x.auth.usr().getenv(envDisplay), x.auth.usr().getenv(envXauthority)); err != nil {
 		logPrintf("Could not open X Display: %v", err)
 		handleStrErr("Could not open X Display.")
 	} else {
