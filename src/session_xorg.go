@@ -5,9 +5,12 @@ import (
 	"net"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"syscall"
 )
+
+const defaultXauthorityPath = ".Xauthority"
 
 // xorgSession defines structure for xorg
 type xorgSession struct {
@@ -69,7 +72,12 @@ func (x *xorgSession) startCarrier() {
 	}
 	logPrint("Started Xorg")
 
-	if xorgConn, err := openXDisplay(x.auth.usr().getenv(envDisplay), x.auth.usr().getenv(envXauthority)); err != nil {
+	xAuthorityPath := x.auth.usr().getenv(envXauthority)
+	if xAuthorityPath == "" {
+		xAuthorityPath = filepath.Join(x.auth.usr().homedir, defaultXauthorityPath)
+	}
+
+	if xorgConn, err := openXDisplay(x.auth.usr().getenv(envDisplay), xAuthorityPath); err != nil {
 		logPrintf("Could not open X Display: %v", err)
 		handleStrErr("Could not open X Display.")
 	} else {

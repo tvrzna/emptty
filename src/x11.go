@@ -29,6 +29,7 @@ func openXDisplay(dispName, xauthorityPath string) (net.Conn, error) {
 	counter := 0
 	deadline := time.Now().Add(30 * time.Second)
 
+	time.Sleep(50 * time.Millisecond)
 	for time.Now().Before(deadline) {
 		conn, err := net.DialTimeout("unix", socketPath, 200*time.Millisecond)
 		if err == nil {
@@ -46,7 +47,7 @@ func openXDisplay(dispName, xauthorityPath string) (net.Conn, error) {
 		if wait > maxWaitToOpenX11Display {
 			wait = maxWaitToOpenX11Display
 		}
-		logPrintf("waiting for %s to try to open X11 display again", wait)
+		logPrintf("X11 display open waiting for %s to try to again", wait)
 		time.Sleep(wait)
 		counter++
 	}
