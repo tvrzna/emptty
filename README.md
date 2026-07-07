@@ -1,13 +1,12 @@
 # emptty
 [![Release](https://img.shields.io/github/release/tvrzna/emptty.svg?style=flat-square)](https://github.com/tvrzna/emptty/releases/latest)
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/tvrzna/emptty/.github/workflows/main.yaml?branch=master&style=flat-square)](https://github.com/tvrzna/emptty/actions?query=workflow:Build)
-[![Go Report Card](https://goreportcard.com/badge/github.com/tvrzna/emptty?style=flat-square)](https://goreportcard.com/report/github.com/tvrzna/emptty)
 
 Dead simple CLI Display Manager on TTY
 
 ![](screenshot.png)
 
-[![Packaging status](https://repology.org/badge/vertical-allrepos/emptty.svg?exclude_unsupported=1)](https://repology.org/project/emptty/versions)
+[![Packaging status](https://repology.org/badge/vertical-allrepos/emptty.svg?exclude_unsupported=1&columns=5)](https://repology.org/project/emptty/versions)
 
 ## Configuration
 
