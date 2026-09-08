@@ -81,6 +81,8 @@ func processDesktopSelection(auth authHandle, conf *config) *desktop {
 		conf.UserLang = usrLang
 	}
 
+	loadSessionConfOverride(conf, sessionNameOf(d))
+
 	return d
 }
 

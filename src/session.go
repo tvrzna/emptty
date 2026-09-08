@@ -192,6 +192,7 @@ func (s *commonSession) defineEnvironment() {
 		}
 	}
 
+	loadSessionEnvOverride(s.auth.usr(), sessionNameOf(s.d))
 	logPrint("Defined Environment")
 
 	// create XDG folder
