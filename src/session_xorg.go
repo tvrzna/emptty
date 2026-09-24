@@ -55,14 +55,19 @@ func (x *xorgSession) startCarrier() {
 		xorgArgs = append(xorgArgs, arrXorgArgs...)
 	}
 
+	xorgCmd := x.conf.XorgCmd
+	if x.conf.XorgCmd == "" {
+		xorgCmd = lookPath("Xorg", "/usr/bin/Xorg")
+	}
+
 	if x.allowRootlessX() {
-		x.xorg = cmdAsUser(x.auth.usr(), lookPath("Xorg", "/usr/bin/Xorg"), xorgArgs...)
+		x.xorg = cmdAsUser(x.auth.usr(), xorgCmd, xorgArgs...)
 		x.xorg.Env = x.auth.usr().environ()
 		if err := x.setTTYOwnership(x.conf, x.auth.usr().uid); err != nil {
 			logPrint(err)
 		}
 	} else {
-		x.xorg = exec.Command(lookPath("Xorg", "/usr/bin/Xorg"), xorgArgs...)
+		x.xorg = exec.Command(xorgCmd, xorgArgs...)
 		os.Setenv(envDisplay, x.auth.usr().getenv(envDisplay))
 		os.Setenv(envXauthority, x.auth.usr().getenv(envXauthority))
 		x.xorg.Env = os.Environ()

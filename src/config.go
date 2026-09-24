@@ -49,6 +49,7 @@ type config struct {
 	Lang                string           `config:"LANG" default:""`
 	UserLang            string           ``
 	LoggingFile         string           `config:"LOGGING_FILE" default:"/var/log/emptty/[TTY_NUMBER].log"`
+	XorgCmd             string           `config:"XORG_CMD" default: ""`
 	XorgArgs            string           `config:"XORG_ARGS" default:""`
 	DynamicMotdPath     string           `config:"DYNAMIC_MOTD_PATH" default:"/etc/emptty/motd-gen.sh"`
 	MotdPath            string           `config:"MOTD_PATH" default:"/etc/emptty/motd"`

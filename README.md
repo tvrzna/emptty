@@ -61,6 +61,8 @@ __NOTE:__ to enable autologin DEFAULT_USER must be in group nopasswdlogin, other
 `LOGGING_FILE` Overrides path of log file. Default value is `/var/log/emptty/[TTY_NUMBER].log`.
 __NOTE:__ It expects existence of directories to defined logging file.
 
+`XORG_CMD` Overrides path to the X server executable, allowing use of different X server implementations.
+
 `XORG_ARGS` Arguments passed to Xorg server.
 
 `DYNAMIC_MOTD` Allows to use dynamic motd script to generate custom MOTD. Possible values are "true" or "false". Default value is false.
