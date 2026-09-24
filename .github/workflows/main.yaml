@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        go-version: ['1.22', '1.23', '1.24', '1.25']
+        go-version: ['1.24', '1.25', '1.26', '1.27']
 
     container:
       image: 'voidlinux/voidlinux:latest'
