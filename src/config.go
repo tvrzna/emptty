@@ -43,6 +43,7 @@ type config struct {
 	AutologinRtryPeriod int              `config:"AUTOLOGIN_RETRY_PERIOD" parser:"ParsePositiveInt" default:"2"`
 	Tty                 int              `config:"TTY_NUMBER" parser:"ParseTTY" default:"7"`
 	WaitExitTimeout     int              `config:"WAIT_EXIT_TIMEOUT" parser:"ParseWaitExitTimeout" default:"-1"`
+	WaitCardDeviceCount int              `config:"WAIT_CARD_DEVICE_COUNT" parser:"ParseInt" default:"0"`
 	DefaultUser         string           `config:"DEFAULT_USER" default:""`
 	DefaultSession      string           `config:"DEFAULT_SESSION" default:""`
 	AutologinSession    string           `config:"AUTOLOGIN_SESSION" default:""`

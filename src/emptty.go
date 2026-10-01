@@ -59,6 +59,7 @@ func Main() {
 	fTTY := startDaemon(conf)
 
 	initLogger(conf)
+	waitForCardDevice(conf)
 	printMotd(conf)
 
 	if command := login(conf, initSessionHandle()); command != "" {

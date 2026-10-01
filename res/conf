@@ -75,3 +75,6 @@ VERTICAL_SELECTION=false
 
 #If set true, environmental groups are printed to differ Xorg/Wayland/Custom/UserCustom desktops.
 IDENTIFY_ENVS=false
+
+# Number of DRI card devices to wait for before starting the session. A machine with 2 GPUs may want to set this to 2.
+#WAIT_CARD_DEVICE_COUNT=0

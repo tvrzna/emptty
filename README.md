@@ -136,6 +136,9 @@ Command to be used to perform suspend. Default value is blank, but it tries to u
 `WAIT_EXIT_TIMEOUT`
 Timeout in seconds before emptty automatically exits. If value is 0 or lower, there is no timeout. Default value is -1.
 
+`WAIT_CARD_DEVICE_COUNT`
+Number of card devices to wait for before starting. If value is 0 or lower, there is no wait. Default value is 0.
+
 #### Commands
 If commands are allowed and default user is not defined, there could be used commands in login input or desktop selection. All of these commands need to start with colon `:`. Escape characters are ignored to prevent issues with muscle memory from VI.
  - `:help`, `:?` prints available commands
